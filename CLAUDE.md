@@ -16,10 +16,16 @@ branch coverage with `tools/Assert-Coverage.ps1`.
 
 ## Boundaries
 
-Never commit credentials or print tokens. Do not remove assertions, suppress findings,
-or weaken coverage thresholds to make checks pass. Live integration tests require Cisco
-IQ credentials and must remain separate from unit coverage runs. Do not publish packages
-without user authorization.
+Keep credentials outside source control and redact tokens from output. Preserve
+assertions and coverage thresholds; if a changed API contract requires an adjustment,
+explain the reason and obtain reviewer approval. Keep live integration tests separate
+from unit coverage runs unless the user explicitly requests a different test arrangement.
+Publish packages only when the user has authorized publication.
+
+## Glossary
+
+- NET: .NET, Microsoft's developer platform; this is a product name.
+- IQ: Cisco IQ, Cisco's support and professional services platform; this is a product name.
 
 ## Repository conventions
 
