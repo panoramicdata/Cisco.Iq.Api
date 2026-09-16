@@ -151,7 +151,11 @@ Configuration loads user secrets then environment variables (`CiscoIq__Token`,
 The integration smoke test exchanges a token and reads at most one asset from production.
 The shared test assembly explicitly sets `failSkips: false` for that credential-free
 integration behavior. CI overrides this with `--fail-skips on` in the unit-only coverage run,
-so an accidentally skipped unit test still fails the build.
+so an accidentally skipped unit test still fails the build. Both CI coverage runs use
+unit tests only. Pushes to main and release tags also run the live integration test with
+`--fail-skips on`, using `CISCO_IQ_TOKEN`, `CISCO_IQ_ACCOUNT_ID` and
+`CISCO_IQ_ACCOUNT_REGION` repository secrets. Those credentials are scoped to that step
+and are not supplied to pull request builds.
 
 ```powershell
 dotnet build --configuration Release
