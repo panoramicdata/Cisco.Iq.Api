@@ -42,6 +42,15 @@ jobs:
           ./tools/Assert-Coverage.ps1 -Path artifacts/coverage/standard.cobertura.xml -MinimumBranchCoverage 100
           ./tools/Assert-Coverage.ps1 -Path artifacts/coverage/extended.cobertura.xml -MinimumBranchCoverage 100
 
+      - name: Upload coverage to Codacy
+        if: github.event_name == 'push'
+        # A reporting service outage must not prevent package releases.
+        continue-on-error: true
+        uses: codacy/codacy-coverage-reporter-action@v1
+        with:
+          project-token: ${{ secrets.CODACY_PROJECT_TOKEN }}
+          coverage-reports: artifacts/coverage/standard.cobertura.xml
+
       - name: Test live authentication and assets
         if: github.event_name == 'push'
         env:
