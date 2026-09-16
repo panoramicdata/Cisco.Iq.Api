@@ -65,7 +65,7 @@ public class CoverageAndRobustnessTests
 		using var client = new CiscoIqClient(AuthenticationTests.Options,
 			new TestTransport((_, _) => Task.FromResult(TestTransport.Json("null"))), PagingAndRetryTests.Exchange);
 		Func<Task> act = enumerate
-			? async () => { await foreach (var _ in client.Assets.GetAssetsAllAsync()) { } }
+			? async () => { await foreach (var item in client.Assets.GetAssetsAllAsync()) { item.Should().NotBeNull(); } }
 			: () => client.Assets.GetAssetsAsync();
 		await act.Should().ThrowAsync<JsonSerializationException>();
 	}
@@ -84,7 +84,7 @@ public class CoverageAndRobustnessTests
 			response.Headers.Add("Link", "<?cursor=next>; rel=next");
 			return Task.FromResult(response);
 		}), PagingAndRetryTests.Exchange);
-		Func<Task> act = async () => { await foreach (var _ in client.Assets.GetAssetsAllAsync()) { } };
+		Func<Task> act = async () => { await foreach (var item in client.Assets.GetAssetsAllAsync()) { item.Should().NotBeNull(); } };
 		if (invalid) { await act.Should().ThrowAsync<JsonSerializationException>(); }
 		else { await act(); }
 		calls.Should().Be(2);
@@ -118,7 +118,7 @@ public class CoverageAndRobustnessTests
 			if (calls == 3) { response.StatusCode = HttpStatusCode.Forbidden; }
 			return response;
 		}), PagingAndRetryTests.Exchange);
-		Func<Task> act = async () => { await foreach (var _ in client.Assets.GetAssetsAllAsync()) { } };
+		Func<Task> act = async () => { await foreach (var item in client.Assets.GetAssetsAllAsync()) { item.Should().NotBeNull(); } };
 		await act.Should().ThrowAsync<CiscoIqAuthorizationException>();
 		calls.Should().Be(3);
 	}
@@ -136,8 +136,12 @@ public class CoverageAndRobustnessTests
 			await using var stream = socket.GetStream();
 			using var reader = new StreamReader(stream, Encoding.ASCII, leaveOpen: true);
 			var headers = new List<string>();
-			string? line;
-			while (!string.IsNullOrEmpty(line = await reader.ReadLineAsync(cancellation.Token))) { headers.Add(line); }
+			var line = await reader.ReadLineAsync(cancellation.Token);
+			while (!string.IsNullOrEmpty(line))
+			{
+				headers.Add(line);
+				line = await reader.ReadLineAsync(cancellation.Token);
+			}
 			headers.Should().Contain("Cookie: account_region=EMEA");
 			await stream.WriteAsync(Encoding.ASCII.GetBytes("HTTP/1.1 200 OK\r\nContent-Length: 2\r\nConnection: close\r\n\r\n{}"), cancellation.Token);
 		}, cancellation.Token);

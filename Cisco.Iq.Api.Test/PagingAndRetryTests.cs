@@ -43,7 +43,7 @@ public class PagingAndRetryTests
 			response.Headers.Add("Link", "<https://example.com/assets>; rel=next");
 			return Task.FromResult(response);
 		}), Exchange);
-		Func<Task> act = async () => { await foreach (var _ in client.Assets.GetAssetsAllAsync()) { } };
+		Func<Task> act = async () => { await foreach (var item in client.Assets.GetAssetsAllAsync()) { item.Should().NotBeNull(); } };
 		await act.Should().ThrowAsync<InvalidDataException>();
 		calls.Should().Be(1);
 	}

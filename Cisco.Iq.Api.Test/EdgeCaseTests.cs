@@ -102,7 +102,7 @@ public class EdgeCaseTests
 		using var client = new CiscoIqClient(AuthenticationTests.Options,
 			new TestTransport((_, _) => Task.FromResult(TestTransport.Json("invalid-json"))), PagingAndRetryTests.Exchange);
 		Func<Task> act = enumerate
-			? async () => { await foreach (var _ in client.Assets.GetAssetsAllAsync()) { } }
+			? async () => { await foreach (var item in client.Assets.GetAssetsAllAsync()) { item.Should().NotBeNull(); } }
 			: () => client.Assets.GetAssetsAsync();
 		await act.Should().ThrowAsync<Refit.ApiException>();
 	}

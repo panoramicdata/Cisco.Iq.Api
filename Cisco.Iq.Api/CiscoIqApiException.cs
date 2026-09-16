@@ -1,3 +1,6 @@
+// Optional parameters preserve the published API and conventional cancellation-token usage.
+#pragma warning disable S2360
+
 using System.Net;
 using Cisco.Iq.Api.Data;
 using Newtonsoft.Json;
@@ -27,23 +30,35 @@ public class CiscoIqApiException : Exception
 
 	internal static async Task<CiscoIqApiException> FromResponseAsync(HttpResponseMessage response, CancellationToken cancellationToken)
 	{
-		ErrorBody? error = null;
+		var error = await ReadErrorBodyAsync(response, cancellationToken).ConfigureAwait(false);
+		var header = response.Headers.TryGetValues("TrackingID", out var values) ? values.FirstOrDefault() : null;
+		return Create(response.StatusCode, error, header, CiscoIqRateLimitStatus.Read(response)?.ResetSeconds);
+	}
+
+	private static async Task<ErrorBody?> ReadErrorBodyAsync(HttpResponseMessage response, CancellationToken cancellationToken)
+	{
 		try
 		{
-			error = JsonConvert.DeserializeObject<ErrorBody>(await response.Content.ReadAsStringAsync(cancellationToken).ConfigureAwait(false));
+			return JsonConvert.DeserializeObject<ErrorBody>(await response.Content.ReadAsStringAsync(cancellationToken).ConfigureAwait(false));
 		}
 		catch (JsonException)
 		{
 			// Gateways may return HTML. Do not include arbitrary response text in exceptions.
+			return null;
 		}
-		var header = response.Headers.TryGetValues("TrackingID", out var values) ? values.FirstOrDefault() : null;
-		return response.StatusCode switch
+	}
+
+	private static CiscoIqApiException Create(HttpStatusCode statusCode, ErrorBody? error, string? header, long? resetSeconds)
+	{
+		var message = error?.Message;
+		var trackingId = error?.TrackingId;
+		return statusCode switch
 		{
-			HttpStatusCode.Unauthorized => new CiscoIqAuthenticationException(error?.Message, error?.TrackingId, header),
-			HttpStatusCode.Forbidden => new CiscoIqAuthorizationException(error?.Message, error?.TrackingId, header),
-			HttpStatusCode.NotFound => new CiscoIqNotFoundException(error?.Message, error?.TrackingId, header),
-			HttpStatusCode.TooManyRequests => new CiscoIqRateLimitException(error?.Message, CiscoIqRateLimitStatus.Read(response)?.ResetSeconds, error?.TrackingId, header),
-			_ => new CiscoIqApiException(response.StatusCode, error?.Message, error?.TrackingId, header)
+			HttpStatusCode.Unauthorized => new CiscoIqAuthenticationException(message, trackingId, header),
+			HttpStatusCode.Forbidden => new CiscoIqAuthorizationException(message, trackingId, header),
+			HttpStatusCode.NotFound => new CiscoIqNotFoundException(message, trackingId, header),
+			HttpStatusCode.TooManyRequests => new CiscoIqRateLimitException(message, resetSeconds, trackingId, header),
+			_ => new CiscoIqApiException(statusCode, message, trackingId, header)
 		};
 	}
 }

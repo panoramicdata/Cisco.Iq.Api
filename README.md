@@ -2,7 +2,7 @@
 
 [![Nuget](https://img.shields.io/nuget/v/Cisco.Iq.Api)](https://www.nuget.org/packages/Cisco.Iq.Api/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
-[![Codacy dashboard](https://img.shields.io/badge/Codacy-dashboard-blue)](https://app.codacy.com/gh/panoramicdata/Cisco.Iq.Api/dashboard)
+[![Codacy Badge](https://app.codacy.com/project/badge/Grade/e07981fba4b949c68a2dc6420f21234d)](https://app.codacy.com/gh/panoramicdata/Cisco.Iq.Api/dashboard?utm_source=gh&utm_medium=referral&utm_content=&utm_campaign=Badge_grade)
 
 A .NET library for the **Cisco IQ** Assets and Assessments REST APIs — asset inventory,
 contracts and coverage, hardware and software lifecycle milestones, security advisory (PSIRT)

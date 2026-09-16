@@ -6,7 +6,8 @@ internal sealed class CiscoIqRateLimitHandler(CiscoIqClientOptions options, Acti
 {
 	protected override async Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken cancellationToken)
 	{
-		for (var attempt = 1; ; attempt++)
+		var attempt = 1;
+		while (true)
 		{
 			using var copy = RequestCopy.Create(request);
 			var response = await base.SendAsync(copy, cancellationToken).ConfigureAwait(false);
@@ -15,14 +16,22 @@ internal sealed class CiscoIqRateLimitHandler(CiscoIqClientOptions options, Acti
 			{
 				observe(status);
 			}
-			var rateLimited = response.StatusCode == HttpStatusCode.TooManyRequests && options.RetryRateLimitedRequests;
-			if (attempt >= options.MaxAttemptCount || (!rateLimited && response.StatusCode != HttpStatusCode.BadGateway))
+			if (!ShouldRetry(response.StatusCode, attempt))
 			{
 				return response;
 			}
-			var seconds = rateLimited ? status?.ResetSeconds ?? 1 : Math.Min(30, Math.Pow(2, attempt - 1)) + System.Security.Cryptography.RandomNumberGenerator.GetInt32(1000) / 1000.0;
+			var seconds = RetrySeconds(response.StatusCode, status, attempt);
 			response.Dispose();
 			await delay(TimeSpan.FromSeconds(seconds), cancellationToken).ConfigureAwait(false);
+			attempt++;
 		}
 	}
+
+	private bool ShouldRetry(HttpStatusCode statusCode, int attempt)
+		=> attempt < options.MaxAttemptCount && (statusCode == HttpStatusCode.BadGateway
+			|| (statusCode == HttpStatusCode.TooManyRequests && options.RetryRateLimitedRequests));
+
+	private static double RetrySeconds(HttpStatusCode statusCode, CiscoIqRateLimitStatus? status, int attempt)
+		=> statusCode == HttpStatusCode.TooManyRequests ? status?.ResetSeconds ?? 1
+			: Math.Min(30, Math.Pow(2, attempt - 1)) + System.Security.Cryptography.RandomNumberGenerator.GetInt32(1000) / 1000.0;
 }

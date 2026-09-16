@@ -15,7 +15,56 @@ public class FilterTests
 			query.Should().BeEquivalentTo(expected.Dequeue());
 			return Task.FromResult(TestTransport.Json("{\"items\":[],\"meta\":{}}"));
 		}), PagingAndRetryTests.Exchange);
+		expected.Enqueue(AssetQuery);
+		await client.Assets.GetAssetsAsync(AssetOptions);
+		await VerifyContractAndAssessmentFiltersAsync(client, expected);
+		expected.Enqueue([]);
+		await client.Assets.GetAssetsAsync(new AssetFilter());
+		expected.Should().BeEmpty();
+	}
+
+	private static async Task VerifyContractAndAssessmentFiltersAsync(CiscoIqClient client, Queue<Dictionary<string, string[]>> expected)
+	{
 		expected.Enqueue(new Dictionary<string, string[]> {
+			["contractNumber"] = ["a value", "b&two"],
+			["contractStatus"] = ["a value", "b&two"],
+			["serviceLevel"] = ["a value", "b&two"],
+			["supportTier"] = ["a value", "b&two"],
+			["partnerName"] = ["a value", "b&two"],
+			["contractEndBefore"] = ["1700000000123"],
+			["contractEndAfter"] = ["1700000000123"]
+		});
+		await client.Assets.GetContractsAsync(new ContractFilter
+		{
+			ContractNumber = ["a value", "b&two"],
+			ContractStatus = ["a value", "b&two"],
+			ServiceLevel = ["a value", "b&two"],
+			SupportTier = ["a value", "b&two"],
+			PartnerName = ["a value", "b&two"],
+			ContractEndBefore = DateTimeOffset.FromUnixTimeMilliseconds(1700000000123),
+			ContractEndAfter = DateTimeOffset.FromUnixTimeMilliseconds(1700000000123)
+		});
+		expected.Enqueue(new Dictionary<string, string[]> {
+			["impact"] = ["a value", "b&two"],
+			["vulnerabilityStatus"] = ["a value", "b&two"]
+		});
+		await client.Assessments.GetSecurityAdvisoriesForAssetAsync("asset", new SecurityAdvisoryFilter
+		{
+			Impact = ["a value", "b&two"],
+			VulnerabilityStatus = ["a value", "b&two"]
+		});
+		expected.Enqueue(new Dictionary<string, string[]> {
+			["impact"] = ["a value", "b&two"],
+			["vulnerabilityStatus"] = ["a value", "b&two"]
+		});
+		await client.Assessments.GetFieldNoticesForAssetAsync("asset", new FieldNoticeFilter
+		{
+			Impact = ["a value", "b&two"],
+			VulnerabilityStatus = ["a value", "b&two"]
+		});
+	}
+
+	private static readonly Dictionary<string, string[]> AssetQuery = new() {
 			["productFamily"] = ["a value", "b&two"],
 			["productId"] = ["a value", "b&two"],
 			["serialNumber"] = ["a value", "b&two"],
@@ -67,8 +116,9 @@ public class FilterTests
 			["sort"] = ["lastSignalDate"],
 			["order"] = ["DESC"],
 			["fields"] = ["assetId,productId"]
-		});
-		await client.Assets.GetAssetsAsync(new AssetFilter
+		};
+
+	private static readonly AssetFilter AssetOptions = new()
 		{
 			ProductFamily = ["a value", "b&two"],
 			ProductId = ["a value", "b&two"],
@@ -121,46 +171,5 @@ public class FilterTests
 			Sort = "lastSignalDate",
 			Order = CiscoIqSortOrder.Descending,
 			Fields = "assetId,productId"
-		});
-		expected.Enqueue(new Dictionary<string, string[]> {
-			["contractNumber"] = ["a value", "b&two"],
-			["contractStatus"] = ["a value", "b&two"],
-			["serviceLevel"] = ["a value", "b&two"],
-			["supportTier"] = ["a value", "b&two"],
-			["partnerName"] = ["a value", "b&two"],
-			["contractEndBefore"] = ["1700000000123"],
-			["contractEndAfter"] = ["1700000000123"]
-		});
-		await client.Assets.GetContractsAsync(new ContractFilter
-		{
-			ContractNumber = ["a value", "b&two"],
-			ContractStatus = ["a value", "b&two"],
-			ServiceLevel = ["a value", "b&two"],
-			SupportTier = ["a value", "b&two"],
-			PartnerName = ["a value", "b&two"],
-			ContractEndBefore = DateTimeOffset.FromUnixTimeMilliseconds(1700000000123),
-			ContractEndAfter = DateTimeOffset.FromUnixTimeMilliseconds(1700000000123)
-		});
-		expected.Enqueue(new Dictionary<string, string[]> {
-			["impact"] = ["a value", "b&two"],
-			["vulnerabilityStatus"] = ["a value", "b&two"]
-		});
-		await client.Assessments.GetSecurityAdvisoriesForAssetAsync("asset", new SecurityAdvisoryFilter
-		{
-			Impact = ["a value", "b&two"],
-			VulnerabilityStatus = ["a value", "b&two"]
-		});
-		expected.Enqueue(new Dictionary<string, string[]> {
-			["impact"] = ["a value", "b&two"],
-			["vulnerabilityStatus"] = ["a value", "b&two"]
-		});
-		await client.Assessments.GetFieldNoticesForAssetAsync("asset", new FieldNoticeFilter
-		{
-			Impact = ["a value", "b&two"],
-			VulnerabilityStatus = ["a value", "b&two"]
-		});
-		expected.Enqueue([]);
-		await client.Assets.GetAssetsAsync(new AssetFilter());
-		expected.Should().BeEmpty();
-	}
+		};
 }

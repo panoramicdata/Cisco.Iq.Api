@@ -1,3 +1,6 @@
+// Optional parameters preserve the published API and conventional cancellation-token usage.
+#pragma warning disable S2360
+
 using Cisco.Iq.Api.Internal;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;

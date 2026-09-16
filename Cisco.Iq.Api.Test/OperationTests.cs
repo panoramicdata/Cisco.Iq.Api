@@ -57,7 +57,7 @@ public class OperationTests
 		{
 			calls++;
 			var response = TestTransport.Json("{\"items\":[{}],\"meta\":{\"count\":null}}");
-			if (calls % 2 == 1) { response.Headers.Add("Link", "<?cursor=next>; rel=\"next\""); }
+			if (calls % 2 != 0) { response.Headers.Add("Link", "<?cursor=next>; rel=\"next\""); }
 			else { request.RequestUri!.Query.Should().Be("?cursor=next"); }
 			return Task.FromResult(response);
 		}), PagingAndRetryTests.Exchange);
