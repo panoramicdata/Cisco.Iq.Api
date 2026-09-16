@@ -16,6 +16,11 @@ public class FilterTests
 			return Task.FromResult(TestTransport.Json("{\"items\":[],\"meta\":{}}"));
 		}), PagingAndRetryTests.Exchange);
 		expected.Enqueue(AssetQuery);
+		AssetOptions.Max = 2;
+		AssetOptions.Offset = 2;
+		AssetOptions.Sort = "lastSignalDate";
+		AssetOptions.Order = CiscoIqSortOrder.Descending;
+		AssetOptions.Fields = "assetId,productId";
 		await client.Assets.GetAssetsAsync(AssetOptions);
 		await VerifyContractAndAssessmentFiltersAsync(client, expected);
 		expected.Enqueue([]);
@@ -64,7 +69,7 @@ public class FilterTests
 		});
 	}
 
-	private static readonly Dictionary<string, string[]> AssetQuery = new() {
+	private static readonly Dictionary<string, string[]> AssetSpecificQuery = new() {
 			["productFamily"] = ["a value", "b&two"],
 			["productId"] = ["a value", "b&two"],
 			["serialNumber"] = ["a value", "b&two"],
@@ -111,6 +116,9 @@ public class FilterTests
 			["softwareLastDateOfSupportBefore"] = ["1700000000123"],
 			["softwareLastDateOfSupportAfter"] = ["1700000000123"],
 			["hasCriticalOrHighSecurityAdvisories"] = ["true"],
+	};
+
+	private static readonly Dictionary<string, string[]> AssetQuery = new(AssetSpecificQuery) {
 			["max"] = ["2"],
 			["offset"] = ["2"],
 			["sort"] = ["lastSignalDate"],
@@ -165,11 +173,6 @@ public class FilterTests
 			HardwareLastDateOfSupportAfter = DateTimeOffset.FromUnixTimeMilliseconds(1700000000123),
 			SoftwareLastDateOfSupportBefore = DateTimeOffset.FromUnixTimeMilliseconds(1700000000123),
 			SoftwareLastDateOfSupportAfter = DateTimeOffset.FromUnixTimeMilliseconds(1700000000123),
-			HasCriticalOrHighSecurityAdvisories = true,
-			Max = 2,
-			Offset = 2,
-			Sort = "lastSignalDate",
-			Order = CiscoIqSortOrder.Descending,
-			Fields = "assetId,productId"
+			HasCriticalOrHighSecurityAdvisories = true
 		};
 }
