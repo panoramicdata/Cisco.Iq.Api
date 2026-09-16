@@ -1,0 +1,32 @@
+{
+	"psirtId": 12,
+	"advisoryId": "example",
+	"title": "example",
+	"description": "example",
+	"additionalNotes": "example",
+	"url": "example",
+	"impact": "example",
+	"cvssScore": 9.7,
+	"cvssTemporalScore": 9.7,
+	"cveIds": [
+		"example-one",
+		"example-two"
+	],
+	"ciscoBugIds": [
+		"example-one",
+		"example-two"
+	],
+	"alertStatusCd": "example",
+	"version": "example",
+	"createdAt": 1700000000123,
+	"firstPublished": 1700000000123,
+	"lastPublished": 1700000000123,
+	"psirtLastUpdateDate": 1700000000123,
+	"affectedAssetsCount": "unknown",
+	"potentiallyAffectedAssetsCount": "unknown",
+	"vulnerabilityStatus": "example",
+	"vulnerabilityReasons": [
+		"example-one",
+		"example-two"
+	]
+}

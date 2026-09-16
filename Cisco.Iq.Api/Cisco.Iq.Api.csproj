@@ -2,8 +2,12 @@
 
 	<PropertyGroup>
 		<TargetFramework>net10.0</TargetFramework>
+		<ImplicitUsings>enable</ImplicitUsings>
+		<PackageId>Cisco.Iq.Api</PackageId>
 		<GeneratePackageOnBuild>true</GeneratePackageOnBuild>
-		<Description>Provides access to the Cisco IQ Assets and Assessments REST APIs - asset inventory, contracts, hardware and software lifecycle milestones, security advisory exposure and field notice impact. Requires a Cisco IQ Personal Access Token or Service Account Token. The Cisco IQ API is in beta; see the README.</Description>
+		<Description>Provides access to the Cisco IQ Assets and Assessments REST APIs - asset inventory, contracts, hardware and software lifecycle milestones, security advisory exposure and field notice impact. Requires a Cisco IQ Personal Access Token or Service Account Token.</Description>
+		<NeutralResourcesLanguage>en</NeutralResourcesLanguage>
+		<GenerateDocumentationFile>true</GenerateDocumentationFile>
 		<PackageProjectUrl>https://github.com/panoramicdata/Cisco.Iq.Api</PackageProjectUrl>
 		<PackageTags>cisco;cisco-iq;assets;inventory;psirt;field-notice;lifecycle;eox;contracts</PackageTags>
 		<PackageIcon>Icon.png</PackageIcon>
@@ -34,7 +38,7 @@
 			<PrivateAssets>all</PrivateAssets>
 			<IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
 		</PackageReference>
-		<PackageReference Include="refit" />
+		<PackageReference Include="Refit" />
 		<PackageReference Include="Refit.Newtonsoft.Json" />
 		<PackageReference Include="SecurityCodeScan.VS2019">
 			<PrivateAssets>all</PrivateAssets>

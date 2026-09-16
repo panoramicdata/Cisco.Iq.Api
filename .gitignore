@@ -265,3 +265,11 @@ __pycache__/
 
 appsettings.json
 /Cisco.Iq.Api.Test/appsettings.json
+
+# Local credentials, tooling and verification output
+NuGetKey.txt
+.config/dotnet-tools.json
+/artifacts/
+*.dmp
+core
+core.*

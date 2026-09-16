@@ -1,0 +1,22 @@
+{
+	"assetId": "example",
+	"serialNumber": "example",
+	"productId": "example",
+	"milestoneType": "example",
+	"currentMilestone": "example",
+	"nextMilestone": "example",
+	"currentMilestoneDate": 1700000000123,
+	"nextMilestoneDate": 1700000000123,
+	"lastDateOfSupport": 1700000000123,
+	"bulletinReference": "example",
+	"bulletinTitle": "example",
+	"bulletinUrl": "example",
+	"endOfLifeAnnouncementDate": 1700000000123,
+	"endOfSaleDate": 1700000000123,
+	"lastShipDate": 1700000000123,
+	"endOfRoutineFailureAnalysisDate": 1700000000123,
+	"endOfNewServiceAttachmentDate": 1700000000123,
+	"endOfServiceContractRenewalDate": 1700000000123,
+	"endOfSoftwareMaintenance": 1700000000123,
+	"endOfVulnerabilitySecuritySupport": 1700000000123
+}

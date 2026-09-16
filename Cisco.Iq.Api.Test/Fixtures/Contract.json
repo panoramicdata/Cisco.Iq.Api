@@ -1,0 +1,13 @@
+{
+	"customerId": "example",
+	"contractNumber": "example",
+	"contractStatus": "example",
+	"serviceLevel": "example",
+	"supportTier": "example",
+	"supportType": "example",
+	"serviceLevelAgreementDescription": "example",
+	"partnerName": "example",
+	"contractStartDate": 1700000000123,
+	"contractEndDate": 1700000000123,
+	"coveredAssetCount": 12
+}

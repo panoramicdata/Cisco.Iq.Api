@@ -2,6 +2,7 @@
 
 [![Nuget](https://img.shields.io/nuget/v/Cisco.Iq.Api)](https://www.nuget.org/packages/Cisco.Iq.Api/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![Codacy dashboard](https://img.shields.io/badge/Codacy-dashboard-blue)](https://app.codacy.com/gh/panoramicdata/Cisco.Iq.Api/dashboard)
 
 A .NET library for the **Cisco IQ** Assets and Assessments REST APIs — asset inventory,
 contracts and coverage, hardware and software lifecycle milestones, security advisory (PSIRT)
@@ -74,11 +75,14 @@ rotation possible.
 ```csharp
 using Cisco.Iq.Api;
 
+CancellationToken cancellationToken = default;
+
 using var client = new CiscoIqClient(new CiscoIqClientOptions
 {
     Token = "<your-PAT-or-SAT>",
     AccountRegion = CiscoIqAccountRegion.Emea,
-    AccountId = "<your-account-id>"  // required for a PAT, optional for a SAT
+    AccountId = "<your-account-id>",  // required for a PAT, optional for a SAT
+    UserAgent = "MyInventoryTool/1.0 MyCompany" // optional override
 });
 
 // Assets covered by a contract, most recently seen first
@@ -97,7 +101,7 @@ foreach (var asset in page.Items)
 
 // Every asset affected by a critical advisory, paging handled for you
 await foreach (var affected in client.Assessments
-    .GetAffectedAssetsForSecurityAdvisoryAsync(psirtId: 82456, cancellationToken))
+    .GetAffectedAssetsForSecurityAdvisoryAllAsync(psirtId: 82456, cancellationToken: cancellationToken))
 {
     Console.WriteLine(affected.Hostname);
 }
@@ -105,6 +109,68 @@ await foreach (var affected in client.Assessments
 
 The library handles the two-stage token exchange, the mandatory `account_region` cookie, access
 token caching and renewal, `Link`-header pagination, and rate-limit backoff.
+
+Every collection has a `Get…Async` method returning a `CiscoIqPage<T>` and a
+`Get…AllAsync` companion returning `IAsyncEnumerable<T>`. The companions follow the
+server's next Link until it is absent; `Meta.Count == null` means the total is unknown.
+Filter arrays become repeated query parameters, and date filters use `DateTimeOffset?`.
+
+`UserAgent` overrides the header on both token exchanges and product requests. When it
+is null or blank, the default is `Cisco.Iq.Api/<assembly-version>`. A User-Agent is
+needed to avoid the CloudFront HTML 403 observed during live verification.
+
+`LastRateLimitStatus` exposes the principal and account second/day limit, remaining and
+reset values. Requests retry 429 after the maximum advertised reset, and 502 with
+bounded exponential backoff and jitter. `MaxAttemptCount` includes the initial attempt;
+the default is three. Disable 429 retries with `RetryRateLimitedRequests = false`.
+The HTTP timeout defaults to 100 seconds; raise it if you intend to wait for longer windows.
+
+API errors throw `CiscoIqApiException`, with narrower authentication (401), authorization
+(403), not-found (404) and rate-limit (429) types. `BodyTrackingId` and `HeaderTrackingId`
+preserve both support identifiers; `TrackingId` prefers the body identifier.
+
+## Development and verification
+
+The solution targets .NET 10, uses central package management and xUnit v3 on
+Microsoft.Testing.Platform. Builds treat compiler and MSBuild warnings as errors.
+
+Store integration credentials outside the repository:
+
+```powershell
+dotnet user-secrets set "CiscoIq:Token" "<PAT-or-SAT>" --project Cisco.Iq.Api.Test
+dotnet user-secrets set "CiscoIq:AccountId" "<account-id>" --project Cisco.Iq.Api.Test
+dotnet user-secrets set "CiscoIq:AccountRegion" "EMEA" --project Cisco.Iq.Api.Test
+```
+
+Configuration loads user secrets then environment variables (`CiscoIq__Token`,
+`CiscoIq__AccountId`, `CiscoIq__AccountRegion`). Without a token, integration tests skip.
+The integration smoke test exchanges a token and reads at most one asset from production.
+The shared test assembly explicitly sets `failSkips: false` for that credential-free
+integration behavior. CI overrides this with `--fail-skips on` in the unit-only coverage run,
+so an accidentally skipped unit test still fails the build.
+
+```powershell
+dotnet build --configuration Release
+dotnet test --configuration Release --no-build
+dotnet test --configuration Release --no-build --filter "Category!=Integration" --coverage --coverage-output-format cobertura --coverage-settings coverage.config --coverage-output standard.cobertura.xml --results-directory artifacts/coverage
+dotnet test --configuration Release --no-build --filter "Category!=Integration" --coverage --coverage-output-format cobertura --coverage-settings coverage.settings.xml --coverage-output extended.cobertura.xml --results-directory artifacts/coverage
+pwsh -File tools/Assert-Coverage.ps1 -Path artifacts/coverage/standard.cobertura.xml -MinimumBranchCoverage 100
+pwsh -File tools/Assert-Coverage.ps1 -Path artifacts/coverage/extended.cobertura.xml -MinimumBranchCoverage 100
+```
+
+`coverage.config` follows Oscar's generated-code attribute exclusions. The extended
+configuration also measures handwritten async method bodies and lambdas, while excluding
+generated Refit, logging and regular expression implementations. CI requires 100% line
+and branch coverage in both reports.
+
+Fixtures cover all seven models, nullable fields and sparse selection. Sanitized live
+fixtures and their provenance are described in [Fixtures/README.md](Cisco.Iq.Api.Test/Fixtures/README.md).
+
+For the first release, version.json is set to `0.1`. Once approved, run `./Publish.ps1`
+from a clean main branch synchronized with origin/main. It resolves the package version
+using Nerdbank.GitVersioning's MSBuild target, pushes the version tag and checks the
+release run. Tagged CI uses NuGet Trusted Publishing; no publication is performed by
+ordinary builds or pull requests.
 
 ## Documentation
 

@@ -1,0 +1,22 @@
+{
+  "assetId": "redacted",
+  "serialNumber": "redacted",
+  "productId": "redacted",
+  "milestoneType": "redacted",
+  "currentMilestone": "redacted",
+  "currentMilestoneDate": 1767139200000,
+  "nextMilestone": "redacted",
+  "nextMilestoneDate": 1798675200000,
+  "lastDateOfSupport": 1924905600000,
+  "bulletinReference": "redacted",
+  "bulletinTitle": "redacted",
+  "bulletinUrl": "redacted",
+  "endOfLifeAnnouncementDate": 1754870400000,
+  "endOfSaleDate": 1767139200000,
+  "lastShipDate": 1774915200000,
+  "endOfRoutineFailureAnalysisDate": 1798675200000,
+  "endOfNewServiceAttachmentDate": 1798675200000,
+  "endOfServiceContractRenewalDate": 1901145600000,
+  "endOfSoftwareMaintenance": null,
+  "endOfVulnerabilitySecuritySupport": null
+}
