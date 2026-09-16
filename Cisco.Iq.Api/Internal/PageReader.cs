@@ -7,14 +7,15 @@ namespace Cisco.Iq.Api.Internal;
 
 internal sealed partial class PageReader(HttpClient http)
 {
-	internal static async Task<T> ReadAsync<T>(Task<ApiResponse<T>> task)
+	internal static async Task<IResponse<T>> ReadAsync<T>(Task<ApiResponse<T>> task)
 	{
 		using var response = await task.ConfigureAwait(false);
 		if (!response.IsSuccessful)
 		{
 			throw response.Error!;
 		}
-		return response.Content ?? throw new JsonSerializationException("Cisco IQ returned an empty response.");
+		var content = response.Content ?? throw new JsonSerializationException("Cisco IQ returned an empty response.");
+		return new CiscoIqResponse<T>(content, response.StatusCode!.Value);
 	}
 
 	internal async IAsyncEnumerable<T> EnumerateAsync<T>(Func<Task<ApiResponse<CiscoIqPage<T>>>> firstPage, [EnumeratorCancellation] CancellationToken cancellationToken)

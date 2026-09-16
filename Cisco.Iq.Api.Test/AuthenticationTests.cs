@@ -33,8 +33,8 @@ public class AuthenticationTests
 				await Task.Delay(10, cancellationToken);
 				return TestTransport.Json("{\"accessToken\":\"access\",\"expiresInSeconds\":3600}");
 			}));
-		await Task.WhenAll(Enumerable.Range(0, 20).Select(_ => client.Assets.GetAssetsAsync()));
-		await client.Assets.GetAssetsAsync();
+		await Task.WhenAll(Enumerable.Range(0, 20).Select(_ => client.Assets.GetAssetsAsync(new GetAssetsRequest(), CancellationToken.None)));
+		await client.Assets.GetAssetsAsync(new GetAssetsRequest(), CancellationToken.None);
 		exchanges.Should().Be(1);
 	}
 
@@ -53,7 +53,7 @@ public class AuthenticationTests
 				exchanges++;
 				return Task.FromResult(TestTransport.Json("{\"accessToken\":\"access\",\"expiresInSeconds\":3600}"));
 			}));
-		Func<Task> act = () => client.Assets.GetAssetsAsync();
+		Func<Task> act = () => client.Assets.GetAssetsAsync(new GetAssetsRequest(), CancellationToken.None);
 		await act.Should().ThrowAsync<CiscoIqAuthenticationException>();
 		exchanges.Should().Be(2);
 		calls.Should().Be(2);
@@ -84,7 +84,7 @@ public class AuthenticationTests
 			return TestTransport.Json($"{{\"accessToken\":\"{(exchange == 1 ? "first" : "second")}\",\"expiresInSeconds\":3600}}");
 		}));
 		using var cancellation = new CancellationTokenSource(TimeSpan.FromSeconds(10));
-		await Task.WhenAll(Enumerable.Range(0, 5).Select(_ => client.Assets.GetAssetsAsync(cancellationToken: cancellation.Token)));
+		await Task.WhenAll(Enumerable.Range(0, 5).Select(_ => client.Assets.GetAssetsAsync(new GetAssetsRequest(), cancellation.Token)));
 		exchanges.Should().Be(2);
 		rejected.Should().Be(5);
 		succeeded.Should().Be(5);
@@ -107,12 +107,12 @@ public class AuthenticationTests
 				return TestTransport.Json("{\"accessToken\":\"access\",\"expiresInSeconds\":3600}");
 			}));
 		using var cancellation = new CancellationTokenSource(TimeSpan.FromSeconds(10));
-		var pending = client.Assets.GetAssetsAsync(cancellationToken: cancellation.Token);
+		var pending = client.Assets.GetAssetsAsync(new GetAssetsRequest(), cancellation.Token);
 		await started.Task.WaitAsync(cancellation.Token);
 		cancellation.Cancel();
 		Func<Task> act = () => pending;
 		await act.Should().ThrowAsync<OperationCanceledException>();
-		await client.Assets.GetAssetsAsync();
+		await client.Assets.GetAssetsAsync(new GetAssetsRequest(), CancellationToken.None);
 		exchanges.Should().Be(2);
 	}
 }

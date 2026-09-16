@@ -78,7 +78,7 @@ internal sealed class CiscoIqAuthenticationHandler(CiscoIqClientOptions options,
 			var payload = JsonConvert.DeserializeObject<TokenResponse>(await response.Content.ReadAsStringAsync(cancellationToken).ConfigureAwait(false));
 			if (string.IsNullOrWhiteSpace(payload?.AccessToken) || payload.ExpiresInSeconds <= 0)
 			{
-				throw new CiscoIqAuthenticationException("Token exchange returned an invalid access token or expiry.");
+				throw new CiscoIqAuthenticationException("Token exchange returned an invalid access token or expiry.", null, null);
 			}
 			token = new(payload.AccessToken, timeProvider.GetUtcNow().AddSeconds(payload.ExpiresInSeconds) - options.TokenRefreshMargin);
 			Volatile.Write(ref _token, token);

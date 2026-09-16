@@ -1,6 +1,3 @@
-// Optional parameters preserve the published API and conventional cancellation-token usage.
-#pragma warning disable S2360
-
 using System.Net;
 using Cisco.Iq.Api.Data;
 using Newtonsoft.Json;
@@ -11,7 +8,7 @@ namespace Cisco.Iq.Api;
 public class CiscoIqApiException : Exception
 {
 	/// <summary>Creates an API error.</summary>
-	public CiscoIqApiException(HttpStatusCode statusCode, string? message, string? bodyTrackingId = null, string? headerTrackingId = null)
+	public CiscoIqApiException(HttpStatusCode statusCode, string? message, string? bodyTrackingId, string? headerTrackingId)
 		: base(message ?? $"Cisco IQ returned HTTP {(int)statusCode}.")
 	{
 		StatusCode = statusCode;
@@ -64,22 +61,22 @@ public class CiscoIqApiException : Exception
 }
 
 /// <summary>The identity could not be authenticated.</summary>
-public sealed class CiscoIqAuthenticationException(string? message, string? bodyTrackingId = null, string? headerTrackingId = null)
+public sealed class CiscoIqAuthenticationException(string? message, string? bodyTrackingId, string? headerTrackingId)
 	: CiscoIqApiException(HttpStatusCode.Unauthorized, message, bodyTrackingId, headerTrackingId);
 
 /// <summary>The identity does not have access to the resource.</summary>
-public sealed class CiscoIqAuthorizationException(string? message, string? bodyTrackingId = null, string? headerTrackingId = null)
+public sealed class CiscoIqAuthorizationException(string? message, string? bodyTrackingId, string? headerTrackingId)
 	: CiscoIqApiException(HttpStatusCode.Forbidden, message, bodyTrackingId, headerTrackingId);
 
 /// <summary>The requested resource was not found.</summary>
-public sealed class CiscoIqNotFoundException(string? message, string? bodyTrackingId = null, string? headerTrackingId = null)
+public sealed class CiscoIqNotFoundException(string? message, string? bodyTrackingId, string? headerTrackingId)
 	: CiscoIqApiException(HttpStatusCode.NotFound, message, bodyTrackingId, headerTrackingId);
 
 /// <summary>A rate-limit window has been exhausted.</summary>
 public sealed class CiscoIqRateLimitException : CiscoIqApiException
 {
 	/// <summary>Creates a rate-limit error.</summary>
-	public CiscoIqRateLimitException(string? message, long? resetSeconds = null, string? bodyTrackingId = null, string? headerTrackingId = null)
+	public CiscoIqRateLimitException(string? message, long? resetSeconds, string? bodyTrackingId, string? headerTrackingId)
 		: base(HttpStatusCode.TooManyRequests, message, bodyTrackingId, headerTrackingId)
 	{
 		ResetSeconds = resetSeconds;

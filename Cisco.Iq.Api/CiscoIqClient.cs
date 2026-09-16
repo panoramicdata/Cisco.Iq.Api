@@ -1,6 +1,3 @@
-// Optional parameters preserve the published API and conventional cancellation-token usage.
-#pragma warning disable S2360
-
 using Cisco.Iq.Api.Internal;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
@@ -16,13 +13,33 @@ public sealed partial class CiscoIqClient : IDisposable
 	private CiscoIqRateLimitStatus? _lastRateLimitStatus;
 
 	/// <summary>Creates a client with the supplied credentials and settings.</summary>
-	public CiscoIqClient(CiscoIqClientOptions options, ILogger? logger = null)
-		: this(options, CreateTransport(), CreateTransport(), logger: logger)
+	public CiscoIqClient(CiscoIqClientOptions options) : this(options, null)
+	{
+	}
+
+	/// <summary>Creates a client with the supplied credentials and settings.</summary>
+	public CiscoIqClient(CiscoIqClientOptions options, ILogger? logger)
+		: this(options, CreateTransport(), CreateTransport(), null, null, logger)
+	{
+	}
+
+	internal CiscoIqClient(CiscoIqClientOptions options, HttpMessageHandler productTransport, HttpMessageHandler exchangeTransport)
+		: this(options, productTransport, exchangeTransport, null, null, null)
+	{
+	}
+
+	internal CiscoIqClient(CiscoIqClientOptions options, HttpMessageHandler productTransport, HttpMessageHandler exchangeTransport, TimeProvider timeProvider)
+		: this(options, productTransport, exchangeTransport, timeProvider, null, null)
+	{
+	}
+
+	internal CiscoIqClient(CiscoIqClientOptions options, HttpMessageHandler productTransport, HttpMessageHandler exchangeTransport, Func<TimeSpan, CancellationToken, Task> delay)
+		: this(options, productTransport, exchangeTransport, null, delay, null)
 	{
 	}
 
 	internal CiscoIqClient(CiscoIqClientOptions options, HttpMessageHandler productTransport, HttpMessageHandler exchangeTransport,
-		TimeProvider? timeProvider = null, Func<TimeSpan, CancellationToken, Task>? delay = null, ILogger? logger = null)
+		TimeProvider? timeProvider, Func<TimeSpan, CancellationToken, Task>? delay, ILogger? logger)
 	{
 		ArgumentNullException.ThrowIfNull(options);
 		options.Validate();

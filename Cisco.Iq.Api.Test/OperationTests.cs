@@ -30,22 +30,22 @@ public class OperationTests
 			request.RequestUri!.AbsolutePath.Should().Be("/ciq-rest/api/v0" + route.Path);
 			return Task.FromResult(TestTransport.Json(route.Collection ? "{\"items\":[{}],\"meta\":{\"count\":null}}" : "{}"));
 		}), PagingAndRetryTests.Exchange);
-		(await client.Assets.GetAssetsAsync()).Should().NotBeNull();
-		(await client.Assets.GetAssetAsync("asset/one")).Should().NotBeNull();
-		(await client.Assets.GetAssetLifecycleAsync("asset/one", CiscoIqMilestoneType.Software)).Should().NotBeNull();
-		(await client.Assets.GetAssetRelationshipsAsync("asset/one")).Should().NotBeNull();
-		(await client.Assets.GetContractsAsync()).Should().NotBeNull();
-		(await client.Assets.GetContractAsync("contract/one")).Should().NotBeNull();
-		(await client.Assessments.GetSecurityAdvisoriesAsync()).Should().NotBeNull();
-		(await client.Assessments.GetSecurityAdvisoryAsync(123)).Should().NotBeNull();
-		(await client.Assessments.GetAffectedAssetsForSecurityAdvisoryAsync(123)).Should().NotBeNull();
-		(await client.Assessments.GetAffectedAssetForSecurityAdvisoryAsync(123, "asset/one")).Should().NotBeNull();
-		(await client.Assessments.GetSecurityAdvisoriesForAssetAsync("asset/one")).Should().NotBeNull();
-		(await client.Assessments.GetFieldNoticesAsync()).Should().NotBeNull();
-		(await client.Assessments.GetFieldNoticeAsync(123)).Should().NotBeNull();
-		(await client.Assessments.GetAffectedAssetsForFieldNoticeAsync(123)).Should().NotBeNull();
-		(await client.Assessments.GetAffectedAssetForFieldNoticeAsync(123, "asset/one")).Should().NotBeNull();
-		(await client.Assessments.GetFieldNoticesForAssetAsync("asset/one")).Should().NotBeNull();
+		VerifyResponse(await client.Assets.GetAssetsAsync(new GetAssetsRequest(), CancellationToken.None));
+		VerifyResponse(await client.Assets.GetAssetAsync(new GetAssetRequest {AssetId = "asset/one"}, CancellationToken.None));
+		VerifyResponse(await client.Assets.GetAssetLifecycleAsync(new GetAssetLifecycleRequest {AssetId = "asset/one", MilestoneType = CiscoIqMilestoneType.Software}, CancellationToken.None));
+		VerifyResponse(await client.Assets.GetAssetRelationshipsAsync(new GetAssetRelationshipsRequest {AssetId = "asset/one"}, CancellationToken.None));
+		VerifyResponse(await client.Assets.GetContractsAsync(new GetContractsRequest(), CancellationToken.None));
+		VerifyResponse(await client.Assets.GetContractAsync(new GetContractRequest {ContractNumber = "contract/one"}, CancellationToken.None));
+		VerifyResponse(await client.Assessments.GetSecurityAdvisoriesAsync(new GetSecurityAdvisoriesRequest(), CancellationToken.None));
+		VerifyResponse(await client.Assessments.GetSecurityAdvisoryAsync(new GetSecurityAdvisoryRequest {PsirtId = 123}, CancellationToken.None));
+		VerifyResponse(await client.Assessments.GetAffectedAssetsForSecurityAdvisoryAsync(new GetAffectedAssetsForSecurityAdvisoryRequest {PsirtId = 123}, CancellationToken.None));
+		VerifyResponse(await client.Assessments.GetAffectedAssetForSecurityAdvisoryAsync(new GetAffectedAssetForSecurityAdvisoryRequest {PsirtId = 123, AssetId = "asset/one"}, CancellationToken.None));
+		VerifyResponse(await client.Assessments.GetSecurityAdvisoriesForAssetAsync(new GetSecurityAdvisoriesForAssetRequest {AssetId = "asset/one"}, CancellationToken.None));
+		VerifyResponse(await client.Assessments.GetFieldNoticesAsync(new GetFieldNoticesRequest(), CancellationToken.None));
+		VerifyResponse(await client.Assessments.GetFieldNoticeAsync(new GetFieldNoticeRequest {FieldNoticeId = 123}, CancellationToken.None));
+		VerifyResponse(await client.Assessments.GetAffectedAssetsForFieldNoticeAsync(new GetAffectedAssetsForFieldNoticeRequest {FieldNoticeId = 123}, CancellationToken.None));
+		VerifyResponse(await client.Assessments.GetAffectedAssetForFieldNoticeAsync(new GetAffectedAssetForFieldNoticeRequest {FieldNoticeId = 123, AssetId = "asset/one"}, CancellationToken.None));
+		VerifyResponse(await client.Assessments.GetFieldNoticesForAssetAsync(new GetFieldNoticesForAssetRequest {AssetId = "asset/one"}, CancellationToken.None));
 		routes.Should().BeEmpty();
 	}
 
@@ -61,16 +61,22 @@ public class OperationTests
 			else { request.RequestUri!.Query.Should().Be("?cursor=next"); }
 			return Task.FromResult(response);
 		}), PagingAndRetryTests.Exchange);
-		await CountAsync(client.Assets.GetAssetsAllAsync());
-		await CountAsync(client.Assets.GetAssetRelationshipsAllAsync("asset"));
-		await CountAsync(client.Assets.GetContractsAllAsync());
-		await CountAsync(client.Assessments.GetSecurityAdvisoriesAllAsync());
-		await CountAsync(client.Assessments.GetAffectedAssetsForSecurityAdvisoryAllAsync(123));
-		await CountAsync(client.Assessments.GetSecurityAdvisoriesForAssetAllAsync("asset"));
-		await CountAsync(client.Assessments.GetFieldNoticesAllAsync());
-		await CountAsync(client.Assessments.GetAffectedAssetsForFieldNoticeAllAsync(123));
-		await CountAsync(client.Assessments.GetFieldNoticesForAssetAllAsync("asset"));
+		await CountAsync(client.Assets.GetAssetsAllAsync(new GetAssetsRequest(), CancellationToken.None));
+		await CountAsync(client.Assets.GetAssetRelationshipsAllAsync(new GetAssetRelationshipsRequest {AssetId = "asset"}, CancellationToken.None));
+		await CountAsync(client.Assets.GetContractsAllAsync(new GetContractsRequest(), CancellationToken.None));
+		await CountAsync(client.Assessments.GetSecurityAdvisoriesAllAsync(new GetSecurityAdvisoriesRequest(), CancellationToken.None));
+		await CountAsync(client.Assessments.GetAffectedAssetsForSecurityAdvisoryAllAsync(new GetAffectedAssetsForSecurityAdvisoryRequest {PsirtId = 123}, CancellationToken.None));
+		await CountAsync(client.Assessments.GetSecurityAdvisoriesForAssetAllAsync(new GetSecurityAdvisoriesForAssetRequest {AssetId = "asset"}, CancellationToken.None));
+		await CountAsync(client.Assessments.GetFieldNoticesAllAsync(new GetFieldNoticesRequest(), CancellationToken.None));
+		await CountAsync(client.Assessments.GetAffectedAssetsForFieldNoticeAllAsync(new GetAffectedAssetsForFieldNoticeRequest {FieldNoticeId = 123}, CancellationToken.None));
+		await CountAsync(client.Assessments.GetFieldNoticesForAssetAllAsync(new GetFieldNoticesForAssetRequest {AssetId = "asset"}, CancellationToken.None));
 		calls.Should().Be(18);
+	}
+
+	private static void VerifyResponse<T>(IResponse<T> response)
+	{
+		response.Content.Should().NotBeNull();
+		response.StatusCode.Should().Be(System.Net.HttpStatusCode.OK);
 	}
 
 	private static async Task CountAsync<T>(IAsyncEnumerable<T> source)

@@ -24,7 +24,7 @@ public class PagingAndRetryTests
 			return Task.FromResult(TestTransport.Json("{\"items\":[{\"assetId\":\"a\"}],\"meta\":{\"count\":null}}"));
 		}), Exchange);
 		var items = new List<string?>();
-		await foreach (var asset in client.Assets.GetAssetsAllAsync())
+		await foreach (var asset in client.Assets.GetAssetsAllAsync(new GetAssetsRequest(), CancellationToken.None))
 		{
 			items.Add(asset.AssetId);
 		}
@@ -43,7 +43,7 @@ public class PagingAndRetryTests
 			response.Headers.Add("Link", "<https://example.com/assets>; rel=next");
 			return Task.FromResult(response);
 		}), Exchange);
-		Func<Task> act = async () => { await foreach (var item in client.Assets.GetAssetsAllAsync()) { item.Should().NotBeNull(); } };
+		Func<Task> act = async () => { await foreach (var item in client.Assets.GetAssetsAllAsync(new GetAssetsRequest(), CancellationToken.None)) { item.Should().NotBeNull(); } };
 		await act.Should().ThrowAsync<InvalidDataException>();
 		calls.Should().Be(1);
 	}
@@ -72,7 +72,7 @@ public class PagingAndRetryTests
 			response.Headers.Add("x-account-day-ratelimit-reset", "7");
 			return Task.FromResult(response);
 		}), Exchange, delay: (duration, _) => { delays.Add(duration); return Task.CompletedTask; });
-		Func<Task> act = () => client.Assets.GetAssetsAsync();
+		Func<Task> act = () => client.Assets.GetAssetsAsync(new GetAssetsRequest(), CancellationToken.None);
 		var error = (await act.Should().ThrowAsync<CiscoIqApiException>()).Which;
 		error.StatusCode.Should().Be(status);
 		error.BodyTrackingId.Should().Be("body-id");
@@ -127,7 +127,7 @@ public class PagingAndRetryTests
 			await Task.Delay(Timeout.InfiniteTimeSpan, cancellationToken);
 		});
 		using var cancellation = new CancellationTokenSource(TimeSpan.FromSeconds(10));
-		var pending = client.Assets.GetAssetsAsync(cancellationToken: cancellation.Token);
+		var pending = client.Assets.GetAssetsAsync(new GetAssetsRequest(), cancellation.Token);
 		await waiting.Task.WaitAsync(cancellation.Token);
 		cancellation.Cancel();
 		Func<Task> act = () => pending;

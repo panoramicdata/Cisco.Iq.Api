@@ -86,22 +86,26 @@ using var client = new CiscoIqClient(new CiscoIqClientOptions
 });
 
 // Assets covered by a contract, most recently seen first
-var page = await client.Assets.GetAssetsAsync(new AssetFilter
+var page = await client.Assets.GetAssetsAsync(new GetAssetsRequest
 {
-    CoverageStatus = ["COVERED"],
-    Sort = "lastSignalDate",
-    Order = CiscoIqSortOrder.Descending,
-    Max = 200
+    Filter = new AssetFilter
+    {
+        CoverageStatus = ["COVERED"],
+        Sort = "lastSignalDate",
+        Order = CiscoIqSortOrder.Descending,
+        Max = 200
+    }
 }, cancellationToken);
 
-foreach (var asset in page.Items)
+foreach (var asset in page.Content.Items)
 {
     Console.WriteLine($"{asset.SerialNumber} {asset.ProductId} {asset.HardwareLastDateOfSupport:d}");
 }
 
 // Every asset affected by a critical advisory, paging handled for you
 await foreach (var affected in client.Assessments
-    .GetAffectedAssetsForSecurityAdvisoryAllAsync(psirtId: 82456, cancellationToken: cancellationToken))
+    .GetAffectedAssetsForSecurityAdvisoryAllAsync(
+        new GetAffectedAssetsForSecurityAdvisoryRequest { PsirtId = 82456 }, cancellationToken))
 {
     Console.WriteLine(affected.Hostname);
 }
@@ -187,3 +191,5 @@ MIT — see [LICENSE](LICENSE).
 Use of the Cisco IQ API itself is governed by the
 [Cisco API License](https://developer.cisco.com/site/license/cisco-api-license/). This library
 is an independent client and is not affiliated with or endorsed by Cisco Systems, Inc.
+
+Each operation accepts a typed request object and an explicit `CancellationToken`. Requests implement `IRequest<T>` for their payload type. Page and item calls return `IResponse<T>` with `Content` and `StatusCode`; paging helpers return `IAsyncEnumerable<T>`. Add new parameters to the request object without changing the operation signature.

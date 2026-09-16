@@ -21,10 +21,10 @@ public class FilterTests
 		AssetOptions.Sort = "lastSignalDate";
 		AssetOptions.Order = CiscoIqSortOrder.Descending;
 		AssetOptions.Fields = "assetId,productId";
-		await client.Assets.GetAssetsAsync(AssetOptions);
+		await client.Assets.GetAssetsAsync(new GetAssetsRequest {Filter = AssetOptions}, CancellationToken.None);
 		await VerifyContractAndAssessmentFiltersAsync(client, expected);
 		expected.Enqueue([]);
-		await client.Assets.GetAssetsAsync(new AssetFilter());
+		await client.Assets.GetAssetsAsync(new GetAssetsRequest {Filter = new AssetFilter()}, CancellationToken.None);
 		expected.Should().BeEmpty();
 	}
 
@@ -39,7 +39,7 @@ public class FilterTests
 			["contractEndBefore"] = ["1700000000123"],
 			["contractEndAfter"] = ["1700000000123"]
 		});
-		await client.Assets.GetContractsAsync(new ContractFilter
+		await client.Assets.GetContractsAsync(new GetContractsRequest {Filter = new ContractFilter
 		{
 			ContractNumber = ["a value", "b&two"],
 			ContractStatus = ["a value", "b&two"],
@@ -48,25 +48,25 @@ public class FilterTests
 			PartnerName = ["a value", "b&two"],
 			ContractEndBefore = DateTimeOffset.FromUnixTimeMilliseconds(1700000000123),
 			ContractEndAfter = DateTimeOffset.FromUnixTimeMilliseconds(1700000000123)
-		});
+		}}, CancellationToken.None);
 		expected.Enqueue(new Dictionary<string, string[]> {
 			["impact"] = ["a value", "b&two"],
 			["vulnerabilityStatus"] = ["a value", "b&two"]
 		});
-		await client.Assessments.GetSecurityAdvisoriesForAssetAsync("asset", new SecurityAdvisoryFilter
+		await client.Assessments.GetSecurityAdvisoriesForAssetAsync(new GetSecurityAdvisoriesForAssetRequest {AssetId = "asset", Filter = new SecurityAdvisoryFilter
 		{
 			Impact = ["a value", "b&two"],
 			VulnerabilityStatus = ["a value", "b&two"]
-		});
+		}}, CancellationToken.None);
 		expected.Enqueue(new Dictionary<string, string[]> {
 			["impact"] = ["a value", "b&two"],
 			["vulnerabilityStatus"] = ["a value", "b&two"]
 		});
-		await client.Assessments.GetFieldNoticesForAssetAsync("asset", new FieldNoticeFilter
+		await client.Assessments.GetFieldNoticesForAssetAsync(new GetFieldNoticesForAssetRequest {AssetId = "asset", Filter = new FieldNoticeFilter
 		{
 			Impact = ["a value", "b&two"],
 			VulnerabilityStatus = ["a value", "b&two"]
-		});
+		}}, CancellationToken.None);
 	}
 
 	private static readonly Dictionary<string, string[]> AssetSpecificQuery = new() {
