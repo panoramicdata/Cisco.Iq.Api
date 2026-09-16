@@ -2,7 +2,7 @@
 
 [![Nuget](https://img.shields.io/nuget/v/Cisco.Iq.Api)](https://www.nuget.org/packages/Cisco.Iq.Api/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
-[![Codacy dashboard](https://img.shields.io/badge/Codacy-dashboard-blue)](https://app.codacy.com/gh/panoramicdata/Cisco.Iq.Api/dashboard)
+[![Codacy Badge](https://app.codacy.com/project/badge/Grade/e07981fba4b949c68a2dc6420f21234d)](https://app.codacy.com/gh/panoramicdata/Cisco.Iq.Api/dashboard?utm_source=gh&utm_medium=referral&utm_content=&utm_campaign=Badge_grade)
 
 A .NET library for the **Cisco IQ** Assets and Assessments REST APIs — asset inventory,
 contracts and coverage, hardware and software lifecycle milestones, security advisory (PSIRT)
@@ -86,22 +86,26 @@ using var client = new CiscoIqClient(new CiscoIqClientOptions
 });
 
 // Assets covered by a contract, most recently seen first
-var page = await client.Assets.GetAssetsAsync(new AssetFilter
+var page = await client.Assets.GetAssetsAsync(new GetAssetsRequest
 {
-    CoverageStatus = ["COVERED"],
-    Sort = "lastSignalDate",
-    Order = CiscoIqSortOrder.Descending,
-    Max = 200
+    Filter = new AssetFilter
+    {
+        CoverageStatus = ["COVERED"],
+        Sort = "lastSignalDate",
+        Order = CiscoIqSortOrder.Descending,
+        Max = 200
+    }
 }, cancellationToken);
 
-foreach (var asset in page.Items)
+foreach (var asset in page.Content.Items)
 {
     Console.WriteLine($"{asset.SerialNumber} {asset.ProductId} {asset.HardwareLastDateOfSupport:d}");
 }
 
 // Every asset affected by a critical advisory, paging handled for you
 await foreach (var affected in client.Assessments
-    .GetAffectedAssetsForSecurityAdvisoryAllAsync(psirtId: 82456, cancellationToken: cancellationToken))
+    .GetAffectedAssetsForSecurityAdvisoryAllAsync(
+        new GetAffectedAssetsForSecurityAdvisoryRequest { PsirtId = 82456 }, cancellationToken))
 {
     Console.WriteLine(affected.Hostname);
 }
@@ -147,7 +151,11 @@ Configuration loads user secrets then environment variables (`CiscoIq__Token`,
 The integration smoke test exchanges a token and reads at most one asset from production.
 The shared test assembly explicitly sets `failSkips: false` for that credential-free
 integration behavior. CI overrides this with `--fail-skips on` in the unit-only coverage run,
-so an accidentally skipped unit test still fails the build.
+so an accidentally skipped unit test still fails the build. Both CI coverage runs use
+unit tests only. Pushes to main and release tags also run the live integration test with
+`--fail-skips on`, using `CISCO_IQ_TOKEN`, `CISCO_IQ_ACCOUNT_ID` and
+`CISCO_IQ_ACCOUNT_REGION` repository secrets. Those credentials are scoped to that step
+and are not supplied to pull request builds.
 
 ```powershell
 dotnet build --configuration Release
@@ -187,3 +195,5 @@ MIT — see [LICENSE](LICENSE).
 Use of the Cisco IQ API itself is governed by the
 [Cisco API License](https://developer.cisco.com/site/license/cisco-api-license/). This library
 is an independent client and is not affiliated with or endorsed by Cisco Systems, Inc.
+
+Each operation accepts a typed request object and an explicit `CancellationToken`. Requests implement `IRequest<T>` for their payload type. Page and item calls return `IResponse<T>` with `Content` and `StatusCode`; paging helpers return `IAsyncEnumerable<T>`. Add new parameters to the request object without changing the operation signature.

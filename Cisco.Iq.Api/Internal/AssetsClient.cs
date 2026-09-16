@@ -4,30 +4,30 @@ namespace Cisco.Iq.Api.Internal;
 
 internal sealed class AssetsClient(IAssetsApi api, PageReader reader) : IAssets
 {
-	public Task<CiscoIqPage<Asset>> GetAssetsAsync(AssetFilter? filter = null, CancellationToken cancellationToken = default)
-		=> PageReader.ReadAsync(api.GetAssetsAsync(filter, cancellationToken));
+	public Task<IResponse<CiscoIqPage<Asset>>> GetAssetsAsync(GetAssetsRequest request, CancellationToken cancellationToken)
+		=> PageReader.ReadAsync(api.GetAssetsAsync(request.Filter, cancellationToken));
 
-	public IAsyncEnumerable<Asset> GetAssetsAllAsync(AssetFilter? filter = null, CancellationToken cancellationToken = default)
-		=> reader.EnumerateAsync(() => api.GetAssetsAsync(filter, cancellationToken), cancellationToken);
+	public IAsyncEnumerable<Asset> GetAssetsAllAsync(GetAssetsRequest request, CancellationToken cancellationToken)
+		=> reader.EnumerateAsync(() => api.GetAssetsAsync(request.Filter, cancellationToken), cancellationToken);
 
-	public Task<Asset> GetAssetAsync(string assetId, CancellationToken cancellationToken = default)
-		=> PageReader.ReadAsync(api.GetAssetAsync(assetId, cancellationToken));
+	public Task<IResponse<Asset>> GetAssetAsync(GetAssetRequest request, CancellationToken cancellationToken)
+		=> PageReader.ReadAsync(api.GetAssetAsync(request.AssetId, cancellationToken));
 
-	public Task<AssetLifecycle> GetAssetLifecycleAsync(string assetId, CiscoIqMilestoneType milestoneType = CiscoIqMilestoneType.Hardware, CancellationToken cancellationToken = default)
-		=> PageReader.ReadAsync(api.GetAssetLifecycleAsync(assetId, milestoneType, cancellationToken));
+	public Task<IResponse<AssetLifecycle>> GetAssetLifecycleAsync(GetAssetLifecycleRequest request, CancellationToken cancellationToken)
+		=> PageReader.ReadAsync(api.GetAssetLifecycleAsync(request.AssetId, request.MilestoneType, cancellationToken));
 
-	public Task<CiscoIqPage<AssetRelationship>> GetAssetRelationshipsAsync(string assetId, CiscoIqFilter? filter = null, CancellationToken cancellationToken = default)
-		=> PageReader.ReadAsync(api.GetAssetRelationshipsAsync(assetId, filter, cancellationToken));
+	public Task<IResponse<CiscoIqPage<AssetRelationship>>> GetAssetRelationshipsAsync(GetAssetRelationshipsRequest request, CancellationToken cancellationToken)
+		=> PageReader.ReadAsync(api.GetAssetRelationshipsAsync(request.AssetId, request.Filter, cancellationToken));
 
-	public IAsyncEnumerable<AssetRelationship> GetAssetRelationshipsAllAsync(string assetId, CiscoIqFilter? filter = null, CancellationToken cancellationToken = default)
-		=> reader.EnumerateAsync(() => api.GetAssetRelationshipsAsync(assetId, filter, cancellationToken), cancellationToken);
+	public IAsyncEnumerable<AssetRelationship> GetAssetRelationshipsAllAsync(GetAssetRelationshipsRequest request, CancellationToken cancellationToken)
+		=> reader.EnumerateAsync(() => api.GetAssetRelationshipsAsync(request.AssetId, request.Filter, cancellationToken), cancellationToken);
 
-	public Task<CiscoIqPage<Contract>> GetContractsAsync(ContractFilter? filter = null, CancellationToken cancellationToken = default)
-		=> PageReader.ReadAsync(api.GetContractsAsync(filter, cancellationToken));
+	public Task<IResponse<CiscoIqPage<Contract>>> GetContractsAsync(GetContractsRequest request, CancellationToken cancellationToken)
+		=> PageReader.ReadAsync(api.GetContractsAsync(request.Filter, cancellationToken));
 
-	public IAsyncEnumerable<Contract> GetContractsAllAsync(ContractFilter? filter = null, CancellationToken cancellationToken = default)
-		=> reader.EnumerateAsync(() => api.GetContractsAsync(filter, cancellationToken), cancellationToken);
+	public IAsyncEnumerable<Contract> GetContractsAllAsync(GetContractsRequest request, CancellationToken cancellationToken)
+		=> reader.EnumerateAsync(() => api.GetContractsAsync(request.Filter, cancellationToken), cancellationToken);
 
-	public Task<Contract> GetContractAsync(string contractNumber, CancellationToken cancellationToken = default)
-		=> PageReader.ReadAsync(api.GetContractAsync(contractNumber, cancellationToken));
+	public Task<IResponse<Contract>> GetContractAsync(GetContractRequest request, CancellationToken cancellationToken)
+		=> PageReader.ReadAsync(api.GetContractAsync(request.ContractNumber, cancellationToken));
 }

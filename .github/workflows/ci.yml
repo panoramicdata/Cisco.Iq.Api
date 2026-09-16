@@ -31,7 +31,7 @@ jobs:
         run: dotnet build --no-restore --configuration Release
 
       - name: Test and collect standard coverage
-        run: dotnet test --configuration Release --no-build --coverage --coverage-output-format cobertura --coverage-settings coverage.config --coverage-output standard.cobertura.xml --results-directory artifacts/coverage
+        run: dotnet test --configuration Release --no-build --filter "Category!=Integration" --fail-skips on --coverage --coverage-output-format cobertura --coverage-settings coverage.config --coverage-output standard.cobertura.xml --results-directory artifacts/coverage
 
       - name: Collect coverage including async method bodies
         run: dotnet test --configuration Release --no-build --filter "Category!=Integration" --fail-skips on --coverage --coverage-output-format cobertura --coverage-settings coverage.settings.xml --coverage-output extended.cobertura.xml --results-directory artifacts/coverage
@@ -41,6 +41,14 @@ jobs:
         run: |
           ./tools/Assert-Coverage.ps1 -Path artifacts/coverage/standard.cobertura.xml -MinimumBranchCoverage 100
           ./tools/Assert-Coverage.ps1 -Path artifacts/coverage/extended.cobertura.xml -MinimumBranchCoverage 100
+
+      - name: Test live authentication and assets
+        if: github.event_name == 'push'
+        env:
+          CiscoIq__Token: ${{ secrets.CISCO_IQ_TOKEN }}
+          CiscoIq__AccountId: ${{ secrets.CISCO_IQ_ACCOUNT_ID }}
+          CiscoIq__AccountRegion: ${{ secrets.CISCO_IQ_ACCOUNT_REGION }}
+        run: dotnet test --configuration Release --no-build --filter "Category=Integration" --fail-skips on
 
       - name: Upload coverage
         if: always()

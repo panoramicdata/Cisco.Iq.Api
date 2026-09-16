@@ -21,9 +21,9 @@ public sealed record CiscoIqRateLimitStatus(
 			=> response.Headers.TryGetValues(name, out var values)
 				&& long.TryParse(values.FirstOrDefault(), NumberStyles.Integer, CultureInfo.InvariantCulture, out var value)
 				&& value >= 0 ? value : null;
-		CiscoIqRateLimitWindow Window(string scope, string window)
+		CiscoIqRateLimitWindow Window(string scope, string interval)
 		{
-			var prefix = $"x-{scope}-{window}-ratelimit-";
+			var prefix = $"x-{scope}-{interval}-ratelimit-";
 			return new(ReadHeader(prefix + "limit"), ReadHeader(prefix + "remaining"), ReadHeader(prefix + "reset"));
 		}
 		var status = new CiscoIqRateLimitStatus(Window("principal", "second"), Window("principal", "day"), Window("account", "second"), Window("account", "day"));

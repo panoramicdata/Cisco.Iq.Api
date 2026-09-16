@@ -4,51 +4,51 @@ namespace Cisco.Iq.Api.Internal;
 
 internal sealed class AssessmentsClient(IAssessmentsApi api, PageReader reader) : IAssessments
 {
-	public Task<CiscoIqPage<SecurityAdvisory>> GetSecurityAdvisoriesAsync(SecurityAdvisoryFilter? filter = null, CancellationToken cancellationToken = default)
-		=> PageReader.ReadAsync(api.GetSecurityAdvisoriesAsync(filter, cancellationToken));
+	public Task<IResponse<CiscoIqPage<SecurityAdvisory>>> GetSecurityAdvisoriesAsync(GetSecurityAdvisoriesRequest request, CancellationToken cancellationToken)
+		=> PageReader.ReadAsync(api.GetSecurityAdvisoriesAsync(request.Filter, cancellationToken));
 
-	public IAsyncEnumerable<SecurityAdvisory> GetSecurityAdvisoriesAllAsync(SecurityAdvisoryFilter? filter = null, CancellationToken cancellationToken = default)
-		=> reader.EnumerateAsync(() => api.GetSecurityAdvisoriesAsync(filter, cancellationToken), cancellationToken);
+	public IAsyncEnumerable<SecurityAdvisory> GetSecurityAdvisoriesAllAsync(GetSecurityAdvisoriesRequest request, CancellationToken cancellationToken)
+		=> reader.EnumerateAsync(() => api.GetSecurityAdvisoriesAsync(request.Filter, cancellationToken), cancellationToken);
 
-	public Task<SecurityAdvisory> GetSecurityAdvisoryAsync(int psirtId, CancellationToken cancellationToken = default)
-		=> PageReader.ReadAsync(api.GetSecurityAdvisoryAsync(psirtId, cancellationToken));
+	public Task<IResponse<SecurityAdvisory>> GetSecurityAdvisoryAsync(GetSecurityAdvisoryRequest request, CancellationToken cancellationToken)
+		=> PageReader.ReadAsync(api.GetSecurityAdvisoryAsync(request.PsirtId, cancellationToken));
 
-	public Task<CiscoIqPage<AffectedAsset>> GetAffectedAssetsForSecurityAdvisoryAsync(int psirtId, CiscoIqFilter? filter = null, CancellationToken cancellationToken = default)
-		=> PageReader.ReadAsync(api.GetAffectedAssetsForSecurityAdvisoryAsync(psirtId, filter, cancellationToken));
+	public Task<IResponse<CiscoIqPage<AffectedAsset>>> GetAffectedAssetsForSecurityAdvisoryAsync(GetAffectedAssetsForSecurityAdvisoryRequest request, CancellationToken cancellationToken)
+		=> PageReader.ReadAsync(api.GetAffectedAssetsForSecurityAdvisoryAsync(request.PsirtId, request.Filter, cancellationToken));
 
-	public IAsyncEnumerable<AffectedAsset> GetAffectedAssetsForSecurityAdvisoryAllAsync(int psirtId, CiscoIqFilter? filter = null, CancellationToken cancellationToken = default)
-		=> reader.EnumerateAsync(() => api.GetAffectedAssetsForSecurityAdvisoryAsync(psirtId, filter, cancellationToken), cancellationToken);
+	public IAsyncEnumerable<AffectedAsset> GetAffectedAssetsForSecurityAdvisoryAllAsync(GetAffectedAssetsForSecurityAdvisoryRequest request, CancellationToken cancellationToken)
+		=> reader.EnumerateAsync(() => api.GetAffectedAssetsForSecurityAdvisoryAsync(request.PsirtId, request.Filter, cancellationToken), cancellationToken);
 
-	public Task<AffectedAsset> GetAffectedAssetForSecurityAdvisoryAsync(int psirtId, string assetId, CancellationToken cancellationToken = default)
-		=> PageReader.ReadAsync(api.GetAffectedAssetForSecurityAdvisoryAsync(psirtId, assetId, cancellationToken));
+	public Task<IResponse<AffectedAsset>> GetAffectedAssetForSecurityAdvisoryAsync(GetAffectedAssetForSecurityAdvisoryRequest request, CancellationToken cancellationToken)
+		=> PageReader.ReadAsync(api.GetAffectedAssetForSecurityAdvisoryAsync(request.PsirtId, request.AssetId, cancellationToken));
 
-	public Task<CiscoIqPage<SecurityAdvisory>> GetSecurityAdvisoriesForAssetAsync(string assetId, SecurityAdvisoryFilter? filter = null, CancellationToken cancellationToken = default)
-		=> PageReader.ReadAsync(api.GetSecurityAdvisoriesForAssetAsync(assetId, filter, cancellationToken));
+	public Task<IResponse<CiscoIqPage<SecurityAdvisory>>> GetSecurityAdvisoriesForAssetAsync(GetSecurityAdvisoriesForAssetRequest request, CancellationToken cancellationToken)
+		=> PageReader.ReadAsync(api.GetSecurityAdvisoriesForAssetAsync(request.AssetId, request.Filter, cancellationToken));
 
-	public IAsyncEnumerable<SecurityAdvisory> GetSecurityAdvisoriesForAssetAllAsync(string assetId, SecurityAdvisoryFilter? filter = null, CancellationToken cancellationToken = default)
-		=> reader.EnumerateAsync(() => api.GetSecurityAdvisoriesForAssetAsync(assetId, filter, cancellationToken), cancellationToken);
+	public IAsyncEnumerable<SecurityAdvisory> GetSecurityAdvisoriesForAssetAllAsync(GetSecurityAdvisoriesForAssetRequest request, CancellationToken cancellationToken)
+		=> reader.EnumerateAsync(() => api.GetSecurityAdvisoriesForAssetAsync(request.AssetId, request.Filter, cancellationToken), cancellationToken);
 
-	public Task<CiscoIqPage<FieldNotice>> GetFieldNoticesAsync(FieldNoticeFilter? filter = null, CancellationToken cancellationToken = default)
-		=> PageReader.ReadAsync(api.GetFieldNoticesAsync(filter, cancellationToken));
+	public Task<IResponse<CiscoIqPage<FieldNotice>>> GetFieldNoticesAsync(GetFieldNoticesRequest request, CancellationToken cancellationToken)
+		=> PageReader.ReadAsync(api.GetFieldNoticesAsync(request.Filter, cancellationToken));
 
-	public IAsyncEnumerable<FieldNotice> GetFieldNoticesAllAsync(FieldNoticeFilter? filter = null, CancellationToken cancellationToken = default)
-		=> reader.EnumerateAsync(() => api.GetFieldNoticesAsync(filter, cancellationToken), cancellationToken);
+	public IAsyncEnumerable<FieldNotice> GetFieldNoticesAllAsync(GetFieldNoticesRequest request, CancellationToken cancellationToken)
+		=> reader.EnumerateAsync(() => api.GetFieldNoticesAsync(request.Filter, cancellationToken), cancellationToken);
 
-	public Task<FieldNotice> GetFieldNoticeAsync(int fieldNoticeId, CancellationToken cancellationToken = default)
-		=> PageReader.ReadAsync(api.GetFieldNoticeAsync(fieldNoticeId, cancellationToken));
+	public Task<IResponse<FieldNotice>> GetFieldNoticeAsync(GetFieldNoticeRequest request, CancellationToken cancellationToken)
+		=> PageReader.ReadAsync(api.GetFieldNoticeAsync(request.FieldNoticeId, cancellationToken));
 
-	public Task<CiscoIqPage<AffectedAsset>> GetAffectedAssetsForFieldNoticeAsync(int fieldNoticeId, CiscoIqFilter? filter = null, CancellationToken cancellationToken = default)
-		=> PageReader.ReadAsync(api.GetAffectedAssetsForFieldNoticeAsync(fieldNoticeId, filter, cancellationToken));
+	public Task<IResponse<CiscoIqPage<AffectedAsset>>> GetAffectedAssetsForFieldNoticeAsync(GetAffectedAssetsForFieldNoticeRequest request, CancellationToken cancellationToken)
+		=> PageReader.ReadAsync(api.GetAffectedAssetsForFieldNoticeAsync(request.FieldNoticeId, request.Filter, cancellationToken));
 
-	public IAsyncEnumerable<AffectedAsset> GetAffectedAssetsForFieldNoticeAllAsync(int fieldNoticeId, CiscoIqFilter? filter = null, CancellationToken cancellationToken = default)
-		=> reader.EnumerateAsync(() => api.GetAffectedAssetsForFieldNoticeAsync(fieldNoticeId, filter, cancellationToken), cancellationToken);
+	public IAsyncEnumerable<AffectedAsset> GetAffectedAssetsForFieldNoticeAllAsync(GetAffectedAssetsForFieldNoticeRequest request, CancellationToken cancellationToken)
+		=> reader.EnumerateAsync(() => api.GetAffectedAssetsForFieldNoticeAsync(request.FieldNoticeId, request.Filter, cancellationToken), cancellationToken);
 
-	public Task<AffectedAsset> GetAffectedAssetForFieldNoticeAsync(int fieldNoticeId, string assetId, CancellationToken cancellationToken = default)
-		=> PageReader.ReadAsync(api.GetAffectedAssetForFieldNoticeAsync(fieldNoticeId, assetId, cancellationToken));
+	public Task<IResponse<AffectedAsset>> GetAffectedAssetForFieldNoticeAsync(GetAffectedAssetForFieldNoticeRequest request, CancellationToken cancellationToken)
+		=> PageReader.ReadAsync(api.GetAffectedAssetForFieldNoticeAsync(request.FieldNoticeId, request.AssetId, cancellationToken));
 
-	public Task<CiscoIqPage<FieldNotice>> GetFieldNoticesForAssetAsync(string assetId, FieldNoticeFilter? filter = null, CancellationToken cancellationToken = default)
-		=> PageReader.ReadAsync(api.GetFieldNoticesForAssetAsync(assetId, filter, cancellationToken));
+	public Task<IResponse<CiscoIqPage<FieldNotice>>> GetFieldNoticesForAssetAsync(GetFieldNoticesForAssetRequest request, CancellationToken cancellationToken)
+		=> PageReader.ReadAsync(api.GetFieldNoticesForAssetAsync(request.AssetId, request.Filter, cancellationToken));
 
-	public IAsyncEnumerable<FieldNotice> GetFieldNoticesForAssetAllAsync(string assetId, FieldNoticeFilter? filter = null, CancellationToken cancellationToken = default)
-		=> reader.EnumerateAsync(() => api.GetFieldNoticesForAssetAsync(assetId, filter, cancellationToken), cancellationToken);
+	public IAsyncEnumerable<FieldNotice> GetFieldNoticesForAssetAllAsync(GetFieldNoticesForAssetRequest request, CancellationToken cancellationToken)
+		=> reader.EnumerateAsync(() => api.GetFieldNoticesForAssetAsync(request.AssetId, request.Filter, cancellationToken), cancellationToken);
 }

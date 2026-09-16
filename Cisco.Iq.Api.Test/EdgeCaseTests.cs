@@ -8,10 +8,14 @@ namespace Cisco.Iq.Api.Test;
 
 public class EdgeCaseTests
 {
-	[Fact]
-	public void PublicConstructor_CreatesAndDisposesDefaultPipeline_WithOptionalLogger()
+	[Theory]
+	[InlineData(false)]
+	[InlineData(true)]
+	public void PublicConstructor_CreatesAndDisposesDefaultPipeline_WithLoggerOverloads(bool includeLogger)
 	{
-		using var client = new CiscoIqClient(AuthenticationTests.Options, NullLogger.Instance);
+		using var client = includeLogger
+			? new CiscoIqClient(AuthenticationTests.Options, NullLogger.Instance)
+			: new CiscoIqClient(AuthenticationTests.Options);
 		client.LastRateLimitStatus.Should().BeNull();
 	}
 
@@ -40,7 +44,7 @@ public class EdgeCaseTests
 			}));
 		options.UserAgent = "Changed/3.0";
 		options.AccountRegion = (CiscoIqAccountRegion)99;
-		await client.Assets.GetAssetsAsync();
+		await client.Assets.GetAssetsAsync(new GetAssetsRequest(), CancellationToken.None);
 	}
 
 	[Theory]
@@ -52,7 +56,7 @@ public class EdgeCaseTests
 	{
 		using var client = new CiscoIqClient(AuthenticationTests.Options, new TestTransport((_, _) => throw new InvalidOperationException("Product call must not run.")),
 			new TestTransport((_, _) => Task.FromResult(TestTransport.Json(payload))));
-		Func<Task> act = () => client.Assets.GetAssetsAsync();
+		Func<Task> act = () => client.Assets.GetAssetsAsync(new GetAssetsRequest(), CancellationToken.None);
 		await act.Should().ThrowAsync<CiscoIqAuthenticationException>();
 	}
 
@@ -68,7 +72,7 @@ public class EdgeCaseTests
 				response.Headers.Add("TrackingID", "header-only");
 				return Task.FromResult(response);
 			}));
-		Func<Task> act = () => client.Assets.GetAssetsAsync();
+		Func<Task> act = () => client.Assets.GetAssetsAsync(new GetAssetsRequest(), CancellationToken.None);
 		var error = (await act.Should().ThrowAsync<CiscoIqAuthorizationException>()).Which;
 		error.Message.Should().Be("Cisco IQ returned HTTP 403.");
 		error.TrackingId.Should().Be("header-only");
@@ -85,12 +89,12 @@ public class EdgeCaseTests
 		options.TokenRefreshMargin = TimeSpan.FromSeconds(2);
 		using var client = new CiscoIqClient(options, new TestTransport((_, _) => Task.FromResult(TestTransport.Json("{\"items\":[],\"meta\":{}}"))),
 			new TestTransport((_, _) => { exchanges++; return Task.FromResult(TestTransport.Json("{\"accessToken\":\"access\",\"expiresInSeconds\":10}")); }), clock);
-		await client.Assets.GetAssetsAsync();
+		await client.Assets.GetAssetsAsync(new GetAssetsRequest(), CancellationToken.None);
 		clock.Now += TimeSpan.FromSeconds(7);
-		await client.Assets.GetAssetsAsync();
+		await client.Assets.GetAssetsAsync(new GetAssetsRequest(), CancellationToken.None);
 		exchanges.Should().Be(1);
 		clock.Now += TimeSpan.FromSeconds(1);
-		await client.Assets.GetAssetsAsync();
+		await client.Assets.GetAssetsAsync(new GetAssetsRequest(), CancellationToken.None);
 		exchanges.Should().Be(2);
 	}
 
@@ -102,8 +106,8 @@ public class EdgeCaseTests
 		using var client = new CiscoIqClient(AuthenticationTests.Options,
 			new TestTransport((_, _) => Task.FromResult(TestTransport.Json("invalid-json"))), PagingAndRetryTests.Exchange);
 		Func<Task> act = enumerate
-			? async () => { await foreach (var _ in client.Assets.GetAssetsAllAsync()) { } }
-			: () => client.Assets.GetAssetsAsync();
+			? async () => { await foreach (var item in client.Assets.GetAssetsAllAsync(new GetAssetsRequest(), CancellationToken.None)) { item.Should().NotBeNull(); } }
+			: () => client.Assets.GetAssetsAsync(new GetAssetsRequest(), CancellationToken.None);
 		await act.Should().ThrowAsync<Refit.ApiException>();
 	}
 

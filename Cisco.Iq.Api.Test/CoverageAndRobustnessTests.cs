@@ -53,7 +53,7 @@ public class CoverageAndRobustnessTests
 			if (partial) { response.Headers.Add("x-principal-second-ratelimit-remaining", "0"); }
 			return Task.FromResult(response);
 		}), PagingAndRetryTests.Exchange, delay: (duration, _) => { delays.Add(duration); return Task.CompletedTask; });
-		await client.Assets.GetAssetsAsync();
+		await client.Assets.GetAssetsAsync(new GetAssetsRequest(), CancellationToken.None);
 		delays.Should().Equal(TimeSpan.FromSeconds(1));
 	}
 
@@ -65,8 +65,8 @@ public class CoverageAndRobustnessTests
 		using var client = new CiscoIqClient(AuthenticationTests.Options,
 			new TestTransport((_, _) => Task.FromResult(TestTransport.Json("null"))), PagingAndRetryTests.Exchange);
 		Func<Task> act = enumerate
-			? async () => { await foreach (var _ in client.Assets.GetAssetsAllAsync()) { } }
-			: () => client.Assets.GetAssetsAsync();
+			? async () => { await foreach (var item in client.Assets.GetAssetsAllAsync(new GetAssetsRequest(), CancellationToken.None)) { item.Should().NotBeNull(); } }
+			: () => client.Assets.GetAssetsAsync(new GetAssetsRequest(), CancellationToken.None);
 		await act.Should().ThrowAsync<JsonSerializationException>();
 	}
 
@@ -84,7 +84,7 @@ public class CoverageAndRobustnessTests
 			response.Headers.Add("Link", "<?cursor=next>; rel=next");
 			return Task.FromResult(response);
 		}), PagingAndRetryTests.Exchange);
-		Func<Task> act = async () => { await foreach (var _ in client.Assets.GetAssetsAllAsync()) { } };
+		Func<Task> act = async () => { await foreach (var item in client.Assets.GetAssetsAllAsync(new GetAssetsRequest(), CancellationToken.None)) { item.Should().NotBeNull(); } };
 		if (invalid) { await act.Should().ThrowAsync<JsonSerializationException>(); }
 		else { await act(); }
 		calls.Should().Be(2);
@@ -118,7 +118,7 @@ public class CoverageAndRobustnessTests
 			if (calls == 3) { response.StatusCode = HttpStatusCode.Forbidden; }
 			return response;
 		}), PagingAndRetryTests.Exchange);
-		Func<Task> act = async () => { await foreach (var _ in client.Assets.GetAssetsAllAsync()) { } };
+		Func<Task> act = async () => { await foreach (var item in client.Assets.GetAssetsAllAsync(new GetAssetsRequest(), CancellationToken.None)) { item.Should().NotBeNull(); } };
 		await act.Should().ThrowAsync<CiscoIqAuthorizationException>();
 		calls.Should().Be(3);
 	}
@@ -136,8 +136,12 @@ public class CoverageAndRobustnessTests
 			await using var stream = socket.GetStream();
 			using var reader = new StreamReader(stream, Encoding.ASCII, leaveOpen: true);
 			var headers = new List<string>();
-			string? line;
-			while (!string.IsNullOrEmpty(line = await reader.ReadLineAsync(cancellation.Token))) { headers.Add(line); }
+			var line = await reader.ReadLineAsync(cancellation.Token);
+			while (!string.IsNullOrEmpty(line))
+			{
+				headers.Add(line);
+				line = await reader.ReadLineAsync(cancellation.Token);
+			}
 			headers.Should().Contain("Cookie: account_region=EMEA");
 			await stream.WriteAsync(Encoding.ASCII.GetBytes("HTTP/1.1 200 OK\r\nContent-Length: 2\r\nConnection: close\r\n\r\n{}"), cancellation.Token);
 		}, cancellation.Token);
@@ -160,7 +164,7 @@ public class CoverageAndRobustnessTests
 			response.Headers.Add("Link", "<?cursor=next>; rel=next");
 			return Task.FromResult(response);
 		}), PagingAndRetryTests.Exchange);
-		await using var enumerator = client.Assets.GetAssetsAllAsync().GetAsyncEnumerator();
+		await using var enumerator = client.Assets.GetAssetsAllAsync(new GetAssetsRequest(), CancellationToken.None).GetAsyncEnumerator();
 		(await enumerator.MoveNextAsync()).Should().BeTrue();
 		calls.Should().Be(2);
 	}
@@ -174,7 +178,7 @@ public class CoverageAndRobustnessTests
 		using var enumeratorCancellation = new CancellationTokenSource();
 		using var client = new CiscoIqClient(AuthenticationTests.Options,
 			new TestTransport((_, _) => Task.FromResult(TestTransport.Json("{\"items\":[{},{}],\"meta\":{}}"))), PagingAndRetryTests.Exchange);
-		await using var enumerator = client.Assets.GetAssetsAllAsync(cancellationToken: methodCancellation.Token)
+		await using var enumerator = client.Assets.GetAssetsAllAsync(new GetAssetsRequest(), methodCancellation.Token)
 			.GetAsyncEnumerator(enumeratorCancellation.Token);
 		(await enumerator.MoveNextAsync()).Should().BeTrue();
 		if (cancelMethod) { methodCancellation.Cancel(); }
@@ -190,7 +194,7 @@ public class CoverageAndRobustnessTests
 		using var enumeratorCancellation = new CancellationTokenSource();
 		using var client = new CiscoIqClient(AuthenticationTests.Options,
 			new TestTransport((_, _) => Task.FromResult(TestTransport.Json("{\"items\":[],\"meta\":{}}"))), PagingAndRetryTests.Exchange);
-		await using var enumerator = client.Assets.GetAssetsAllAsync(cancellationToken: methodCancellation.Token)
+		await using var enumerator = client.Assets.GetAssetsAllAsync(new GetAssetsRequest(), methodCancellation.Token)
 			.GetAsyncEnumerator(enumeratorCancellation.Token);
 		(await enumerator.MoveNextAsync()).Should().BeFalse();
 	}

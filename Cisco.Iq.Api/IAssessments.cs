@@ -6,50 +6,50 @@ namespace Cisco.Iq.Api;
 public interface IAssessments
 {
 	/// <summary>Gets one page of SecurityAdvisories.</summary>
-	Task<CiscoIqPage<SecurityAdvisory>> GetSecurityAdvisoriesAsync(SecurityAdvisoryFilter? filter = null, CancellationToken cancellationToken = default);
+	Task<IResponse<CiscoIqPage<SecurityAdvisory>>> GetSecurityAdvisoriesAsync(GetSecurityAdvisoriesRequest request, CancellationToken cancellationToken);
 
 	/// <summary>Enumerates SecurityAdvisories, following each next Link until absent.</summary>
-	IAsyncEnumerable<SecurityAdvisory> GetSecurityAdvisoriesAllAsync(SecurityAdvisoryFilter? filter = null, CancellationToken cancellationToken = default);
+	IAsyncEnumerable<SecurityAdvisory> GetSecurityAdvisoriesAllAsync(GetSecurityAdvisoriesRequest request, CancellationToken cancellationToken);
 
 	/// <summary>Gets SecurityAdvisory.</summary>
-	Task<SecurityAdvisory> GetSecurityAdvisoryAsync(int psirtId, CancellationToken cancellationToken = default);
+	Task<IResponse<SecurityAdvisory>> GetSecurityAdvisoryAsync(GetSecurityAdvisoryRequest request, CancellationToken cancellationToken);
 
 	/// <summary>Gets one page of AffectedAssetsForSecurityAdvisory.</summary>
-	Task<CiscoIqPage<AffectedAsset>> GetAffectedAssetsForSecurityAdvisoryAsync(int psirtId, CiscoIqFilter? filter = null, CancellationToken cancellationToken = default);
+	Task<IResponse<CiscoIqPage<AffectedAsset>>> GetAffectedAssetsForSecurityAdvisoryAsync(GetAffectedAssetsForSecurityAdvisoryRequest request, CancellationToken cancellationToken);
 
 	/// <summary>Enumerates AffectedAssetsForSecurityAdvisory, following each next Link until absent.</summary>
-	IAsyncEnumerable<AffectedAsset> GetAffectedAssetsForSecurityAdvisoryAllAsync(int psirtId, CiscoIqFilter? filter = null, CancellationToken cancellationToken = default);
+	IAsyncEnumerable<AffectedAsset> GetAffectedAssetsForSecurityAdvisoryAllAsync(GetAffectedAssetsForSecurityAdvisoryRequest request, CancellationToken cancellationToken);
 
 	/// <summary>Gets AffectedAssetForSecurityAdvisory.</summary>
-	Task<AffectedAsset> GetAffectedAssetForSecurityAdvisoryAsync(int psirtId, string assetId, CancellationToken cancellationToken = default);
+	Task<IResponse<AffectedAsset>> GetAffectedAssetForSecurityAdvisoryAsync(GetAffectedAssetForSecurityAdvisoryRequest request, CancellationToken cancellationToken);
 
 	/// <summary>Gets one page of SecurityAdvisoriesForAsset.</summary>
-	Task<CiscoIqPage<SecurityAdvisory>> GetSecurityAdvisoriesForAssetAsync(string assetId, SecurityAdvisoryFilter? filter = null, CancellationToken cancellationToken = default);
+	Task<IResponse<CiscoIqPage<SecurityAdvisory>>> GetSecurityAdvisoriesForAssetAsync(GetSecurityAdvisoriesForAssetRequest request, CancellationToken cancellationToken);
 
 	/// <summary>Enumerates SecurityAdvisoriesForAsset, following each next Link until absent.</summary>
-	IAsyncEnumerable<SecurityAdvisory> GetSecurityAdvisoriesForAssetAllAsync(string assetId, SecurityAdvisoryFilter? filter = null, CancellationToken cancellationToken = default);
+	IAsyncEnumerable<SecurityAdvisory> GetSecurityAdvisoriesForAssetAllAsync(GetSecurityAdvisoriesForAssetRequest request, CancellationToken cancellationToken);
 
 	/// <summary>Gets one page of FieldNotices.</summary>
-	Task<CiscoIqPage<FieldNotice>> GetFieldNoticesAsync(FieldNoticeFilter? filter = null, CancellationToken cancellationToken = default);
+	Task<IResponse<CiscoIqPage<FieldNotice>>> GetFieldNoticesAsync(GetFieldNoticesRequest request, CancellationToken cancellationToken);
 
 	/// <summary>Enumerates FieldNotices, following each next Link until absent.</summary>
-	IAsyncEnumerable<FieldNotice> GetFieldNoticesAllAsync(FieldNoticeFilter? filter = null, CancellationToken cancellationToken = default);
+	IAsyncEnumerable<FieldNotice> GetFieldNoticesAllAsync(GetFieldNoticesRequest request, CancellationToken cancellationToken);
 
 	/// <summary>Gets FieldNotice.</summary>
-	Task<FieldNotice> GetFieldNoticeAsync(int fieldNoticeId, CancellationToken cancellationToken = default);
+	Task<IResponse<FieldNotice>> GetFieldNoticeAsync(GetFieldNoticeRequest request, CancellationToken cancellationToken);
 
 	/// <summary>Gets one page of AffectedAssetsForFieldNotice.</summary>
-	Task<CiscoIqPage<AffectedAsset>> GetAffectedAssetsForFieldNoticeAsync(int fieldNoticeId, CiscoIqFilter? filter = null, CancellationToken cancellationToken = default);
+	Task<IResponse<CiscoIqPage<AffectedAsset>>> GetAffectedAssetsForFieldNoticeAsync(GetAffectedAssetsForFieldNoticeRequest request, CancellationToken cancellationToken);
 
 	/// <summary>Enumerates AffectedAssetsForFieldNotice, following each next Link until absent.</summary>
-	IAsyncEnumerable<AffectedAsset> GetAffectedAssetsForFieldNoticeAllAsync(int fieldNoticeId, CiscoIqFilter? filter = null, CancellationToken cancellationToken = default);
+	IAsyncEnumerable<AffectedAsset> GetAffectedAssetsForFieldNoticeAllAsync(GetAffectedAssetsForFieldNoticeRequest request, CancellationToken cancellationToken);
 
 	/// <summary>Gets AffectedAssetForFieldNotice.</summary>
-	Task<AffectedAsset> GetAffectedAssetForFieldNoticeAsync(int fieldNoticeId, string assetId, CancellationToken cancellationToken = default);
+	Task<IResponse<AffectedAsset>> GetAffectedAssetForFieldNoticeAsync(GetAffectedAssetForFieldNoticeRequest request, CancellationToken cancellationToken);
 
 	/// <summary>Gets one page of FieldNoticesForAsset.</summary>
-	Task<CiscoIqPage<FieldNotice>> GetFieldNoticesForAssetAsync(string assetId, FieldNoticeFilter? filter = null, CancellationToken cancellationToken = default);
+	Task<IResponse<CiscoIqPage<FieldNotice>>> GetFieldNoticesForAssetAsync(GetFieldNoticesForAssetRequest request, CancellationToken cancellationToken);
 
 	/// <summary>Enumerates FieldNoticesForAsset, following each next Link until absent.</summary>
-	IAsyncEnumerable<FieldNotice> GetFieldNoticesForAssetAllAsync(string assetId, FieldNoticeFilter? filter = null, CancellationToken cancellationToken = default);
+	IAsyncEnumerable<FieldNotice> GetFieldNoticesForAssetAllAsync(GetFieldNoticesForAssetRequest request, CancellationToken cancellationToken);
 }

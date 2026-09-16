@@ -18,8 +18,8 @@ public class IntegrationTests
 			AccountId = configuration["CiscoIq:AccountId"],
 			AccountRegion = region
 		});
-		var page = await client.Assets.GetAssetsAsync(new AssetFilter { Max = 1 }, TestContext.Current.CancellationToken);
-		page.Items.Should().HaveCountLessThanOrEqualTo(1);
-		page.Meta.Max.Should().Be(1);
+		var page = await client.Assets.GetAssetsAsync(new GetAssetsRequest {Filter = new AssetFilter { Max = 1 }}, TestContext.Current.CancellationToken);
+		page.Content.Items.Should().HaveCountLessThanOrEqualTo(1);
+		page.Content.Meta.Max.Should().Be(1);
 	}
 }

@@ -8,7 +8,7 @@ namespace Cisco.Iq.Api;
 public class CiscoIqApiException : Exception
 {
 	/// <summary>Creates an API error.</summary>
-	public CiscoIqApiException(HttpStatusCode statusCode, string? message, string? bodyTrackingId = null, string? headerTrackingId = null)
+	public CiscoIqApiException(HttpStatusCode statusCode, string? message, string? bodyTrackingId, string? headerTrackingId)
 		: base(message ?? $"Cisco IQ returned HTTP {(int)statusCode}.")
 	{
 		StatusCode = statusCode;
@@ -27,44 +27,56 @@ public class CiscoIqApiException : Exception
 
 	internal static async Task<CiscoIqApiException> FromResponseAsync(HttpResponseMessage response, CancellationToken cancellationToken)
 	{
-		ErrorBody? error = null;
+		var error = await ReadErrorBodyAsync(response, cancellationToken).ConfigureAwait(false);
+		var header = response.Headers.TryGetValues("TrackingID", out var values) ? values.FirstOrDefault() : null;
+		return Create(response.StatusCode, error, header, CiscoIqRateLimitStatus.Read(response)?.ResetSeconds);
+	}
+
+	private static async Task<ErrorBody?> ReadErrorBodyAsync(HttpResponseMessage response, CancellationToken cancellationToken)
+	{
 		try
 		{
-			error = JsonConvert.DeserializeObject<ErrorBody>(await response.Content.ReadAsStringAsync(cancellationToken).ConfigureAwait(false));
+			return JsonConvert.DeserializeObject<ErrorBody>(await response.Content.ReadAsStringAsync(cancellationToken).ConfigureAwait(false));
 		}
 		catch (JsonException)
 		{
 			// Gateways may return HTML. Do not include arbitrary response text in exceptions.
+			return null;
 		}
-		var header = response.Headers.TryGetValues("TrackingID", out var values) ? values.FirstOrDefault() : null;
-		return response.StatusCode switch
+	}
+
+	private static CiscoIqApiException Create(HttpStatusCode statusCode, ErrorBody? error, string? header, long? resetSeconds)
+	{
+		var message = error?.Message;
+		var trackingId = error?.TrackingId;
+		return statusCode switch
 		{
-			HttpStatusCode.Unauthorized => new CiscoIqAuthenticationException(error?.Message, error?.TrackingId, header),
-			HttpStatusCode.Forbidden => new CiscoIqAuthorizationException(error?.Message, error?.TrackingId, header),
-			HttpStatusCode.NotFound => new CiscoIqNotFoundException(error?.Message, error?.TrackingId, header),
-			HttpStatusCode.TooManyRequests => new CiscoIqRateLimitException(error?.Message, CiscoIqRateLimitStatus.Read(response)?.ResetSeconds, error?.TrackingId, header),
-			_ => new CiscoIqApiException(response.StatusCode, error?.Message, error?.TrackingId, header)
+			HttpStatusCode.Unauthorized => new CiscoIqAuthenticationException(message, trackingId, header),
+			HttpStatusCode.Forbidden => new CiscoIqAuthorizationException(message, trackingId, header),
+			HttpStatusCode.NotFound => new CiscoIqNotFoundException(message, trackingId, header),
+			HttpStatusCode.TooManyRequests => new CiscoIqRateLimitException(message, resetSeconds, trackingId, header),
+			_ => new CiscoIqApiException(statusCode, message, trackingId, header)
 		};
 	}
 }
 
 /// <summary>The identity could not be authenticated.</summary>
-public sealed class CiscoIqAuthenticationException(string? message, string? bodyTrackingId = null, string? headerTrackingId = null)
+public sealed class CiscoIqAuthenticationException(string? message, string? bodyTrackingId, string? headerTrackingId)
 	: CiscoIqApiException(HttpStatusCode.Unauthorized, message, bodyTrackingId, headerTrackingId);
 
 /// <summary>The identity does not have access to the resource.</summary>
-public sealed class CiscoIqAuthorizationException(string? message, string? bodyTrackingId = null, string? headerTrackingId = null)
+public sealed class CiscoIqAuthorizationException(string? message, string? bodyTrackingId, string? headerTrackingId)
 	: CiscoIqApiException(HttpStatusCode.Forbidden, message, bodyTrackingId, headerTrackingId);
 
 /// <summary>The requested resource was not found.</summary>
-public sealed class CiscoIqNotFoundException(string? message, string? bodyTrackingId = null, string? headerTrackingId = null)
+public sealed class CiscoIqNotFoundException(string? message, string? bodyTrackingId, string? headerTrackingId)
 	: CiscoIqApiException(HttpStatusCode.NotFound, message, bodyTrackingId, headerTrackingId);
 
 /// <summary>A rate-limit window has been exhausted.</summary>
 public sealed class CiscoIqRateLimitException : CiscoIqApiException
 {
 	/// <summary>Creates a rate-limit error.</summary>
-	public CiscoIqRateLimitException(string? message, long? resetSeconds = null, string? bodyTrackingId = null, string? headerTrackingId = null)
+	public CiscoIqRateLimitException(string? message, long? resetSeconds, string? bodyTrackingId, string? headerTrackingId)
 		: base(HttpStatusCode.TooManyRequests, message, bodyTrackingId, headerTrackingId)
 	{
 		ResetSeconds = resetSeconds;

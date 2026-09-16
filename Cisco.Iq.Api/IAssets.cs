@@ -6,29 +6,29 @@ namespace Cisco.Iq.Api;
 public interface IAssets
 {
 	/// <summary>Gets one page of Assets.</summary>
-	Task<CiscoIqPage<Asset>> GetAssetsAsync(AssetFilter? filter = null, CancellationToken cancellationToken = default);
+	Task<IResponse<CiscoIqPage<Asset>>> GetAssetsAsync(GetAssetsRequest request, CancellationToken cancellationToken);
 
 	/// <summary>Enumerates Assets, following each next Link until absent.</summary>
-	IAsyncEnumerable<Asset> GetAssetsAllAsync(AssetFilter? filter = null, CancellationToken cancellationToken = default);
+	IAsyncEnumerable<Asset> GetAssetsAllAsync(GetAssetsRequest request, CancellationToken cancellationToken);
 
 	/// <summary>Gets Asset.</summary>
-	Task<Asset> GetAssetAsync(string assetId, CancellationToken cancellationToken = default);
+	Task<IResponse<Asset>> GetAssetAsync(GetAssetRequest request, CancellationToken cancellationToken);
 
 	/// <summary>Gets AssetLifecycle.</summary>
-	Task<AssetLifecycle> GetAssetLifecycleAsync(string assetId, CiscoIqMilestoneType milestoneType = CiscoIqMilestoneType.Hardware, CancellationToken cancellationToken = default);
+	Task<IResponse<AssetLifecycle>> GetAssetLifecycleAsync(GetAssetLifecycleRequest request, CancellationToken cancellationToken);
 
 	/// <summary>Gets one page of AssetRelationships.</summary>
-	Task<CiscoIqPage<AssetRelationship>> GetAssetRelationshipsAsync(string assetId, CiscoIqFilter? filter = null, CancellationToken cancellationToken = default);
+	Task<IResponse<CiscoIqPage<AssetRelationship>>> GetAssetRelationshipsAsync(GetAssetRelationshipsRequest request, CancellationToken cancellationToken);
 
 	/// <summary>Enumerates AssetRelationships, following each next Link until absent.</summary>
-	IAsyncEnumerable<AssetRelationship> GetAssetRelationshipsAllAsync(string assetId, CiscoIqFilter? filter = null, CancellationToken cancellationToken = default);
+	IAsyncEnumerable<AssetRelationship> GetAssetRelationshipsAllAsync(GetAssetRelationshipsRequest request, CancellationToken cancellationToken);
 
 	/// <summary>Gets one page of Contracts.</summary>
-	Task<CiscoIqPage<Contract>> GetContractsAsync(ContractFilter? filter = null, CancellationToken cancellationToken = default);
+	Task<IResponse<CiscoIqPage<Contract>>> GetContractsAsync(GetContractsRequest request, CancellationToken cancellationToken);
 
 	/// <summary>Enumerates Contracts, following each next Link until absent.</summary>
-	IAsyncEnumerable<Contract> GetContractsAllAsync(ContractFilter? filter = null, CancellationToken cancellationToken = default);
+	IAsyncEnumerable<Contract> GetContractsAllAsync(GetContractsRequest request, CancellationToken cancellationToken);
 
 	/// <summary>Gets Contract.</summary>
-	Task<Contract> GetContractAsync(string contractNumber, CancellationToken cancellationToken = default);
+	Task<IResponse<Contract>> GetContractAsync(GetContractRequest request, CancellationToken cancellationToken);
 }
