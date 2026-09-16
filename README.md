@@ -151,13 +151,19 @@ dotnet user-secrets set "CiscoIq:AccountRegion" "EMEA" --project Cisco.Iq.Api.Te
 Configuration loads user secrets then environment variables (`CiscoIq__Token`,
 `CiscoIq__AccountId`, `CiscoIq__AccountRegion`). Without a token, integration tests skip.
 The integration smoke test exchanges a token and reads at most one asset from production.
-The shared test assembly explicitly sets `failSkips: false` for that credential-free
-integration behavior. CI overrides this with `--fail-skips on` in the unit-only coverage run,
+The shared test assembly sets `failSkips: true`, so missing integration credentials fail
+a full test run. Use `--filter "Category!=Integration"` for credential-free unit runs.
+CI also sets `--fail-skips on` in the unit-only coverage run,
 so an accidentally skipped unit test still fails the build. Both CI coverage runs use
 unit tests only. Pushes to main and release tags also run the live integration test with
 `--fail-skips on`, using `CISCO_IQ_TOKEN`, `CISCO_IQ_ACCOUNT_ID` and
 `CISCO_IQ_ACCOUNT_REGION` repository secrets. Those credentials are scoped to that step
 and are not supplied to pull request builds.
+
+The live check runs in a separate CI job. Its failure remains visible but does not block
+publication: Cisco IQ has returned HTTP 403 for GitHub-hosted runners while the same
+credentials pass locally. Unit tests and both 100% coverage checks remain release gates.
+CI uploads coverage to Codacy with repository-relative source paths.
 
 ```powershell
 dotnet build --configuration Release
@@ -183,6 +189,31 @@ release run. Tagged CI uses NuGet Trusted Publishing; no publication is performe
 ordinary builds or pull requests.
 
 ## Documentation
+
+### Cisco DevNet sandboxes
+
+The [Cisco DevNet Sandbox catalog](https://devnetsandbox.cisco.com/DevNet) provides
+environments for developing and testing Cisco product integrations. Always-On entries
+can often be accessed without a reservation; other entries require launching or reserving
+an environment. Consult each entry's current instructions for availability and access.
+
+- [SD-WAN 20.18 AlwaysOn](https://devnetsandbox.cisco.com/DevNet/catalog/SD-WAN-Always-On_sd-wan-always-on)
+  provides browser and API access to a shared Catalyst SD-WAN Manager.
+- The catalog also includes Catalyst Center Always-On and reservable SD-WAN environments.
+
+During verification on 16 September 2026, launching SD-WAN AlwaysOn under a DevNet
+account returned the same shared `https://sandbox-sdwan-2.cisco.com` endpoint and
+`devnetuser` login described in the catalog. The launch did not grant additional
+administrator access: Cloud Services was off and disabled for that user, and Cisco IQ
+reported **No organizations found**.
+
+Sandbox access alone does not establish a Cisco IQ data connector. Cisco's
+[SD-WAN telemetry prerequisites](https://iq.cisco.com/docs/saas/saas-getting-started.html#prerequisites-for-data-collection-for-cisco-catalyst-sd-wan-telemetry)
+require an associated Smart Account and unique organization name, Smart Account or
+Virtual Account administrator access, Cisco IQ Account Administrator access, and enabled
+telemetry collection. Obtain a suitably authorized sandbox organization from Cisco before
+using it to test ingestion into IQ. Read credentials from the catalog rather than storing
+them in this repository.
 
 Reference notes on the underlying API — authentication, collection conventions, every
 operation and every response schema — are in [documentation/cisco-iq/](documentation/cisco-iq/).

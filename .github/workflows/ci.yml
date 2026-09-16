@@ -60,14 +60,6 @@ jobs:
           project-token: ${{ secrets.CODACY_PROJECT_TOKEN }}
           coverage-reports: artifacts/coverage/codacy.cobertura.xml
 
-      - name: Test live authentication and assets
-        if: github.event_name == 'push'
-        env:
-          CiscoIq__Token: ${{ secrets.CISCO_IQ_TOKEN }}
-          CiscoIq__AccountId: ${{ secrets.CISCO_IQ_ACCOUNT_ID }}
-          CiscoIq__AccountRegion: ${{ secrets.CISCO_IQ_ACCOUNT_REGION }}
-        run: dotnet test --configuration Release --no-build --filter "Category=Integration" --fail-skips on
-
       - name: Upload coverage
         if: always()
         uses: actions/upload-artifact@v7
@@ -85,6 +77,28 @@ jobs:
           path: |
             ./artifacts/*.nupkg
             ./artifacts/*.snupkg
+
+  integration:
+    name: Live Cisco IQ integration
+    if: github.event_name == 'push'
+    runs-on: ubuntu-latest
+    # Cisco may refuse authentication from hosted runners. Keep the failure visible
+    # without making availability of the external service a package release gate.
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-dotnet@v6
+        with:
+          dotnet-version: '10.0.x'
+      - name: Build
+        run: dotnet build --configuration Release
+      - name: Test live authentication and assets
+        env:
+          CiscoIq__Token: ${{ secrets.CISCO_IQ_TOKEN }}
+          CiscoIq__AccountId: ${{ secrets.CISCO_IQ_ACCOUNT_ID }}
+          CiscoIq__AccountRegion: ${{ secrets.CISCO_IQ_ACCOUNT_REGION }}
+        run: dotnet test --configuration Release --no-build --filter "Category=Integration" --fail-skips on
 
   publish:
     needs: build

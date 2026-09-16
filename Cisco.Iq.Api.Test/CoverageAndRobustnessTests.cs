@@ -58,19 +58,6 @@ public class CoverageAndRobustnessTests
 	}
 
 	[Theory]
-	[InlineData(false)]
-	[InlineData(true)]
-	public async Task NullResponse_IsRejectedForBothPageAndEnumeration(bool enumerate)
-	{
-		using var client = new CiscoIqClient(AuthenticationTests.Options,
-			new TestTransport((_, _) => Task.FromResult(TestTransport.Json("null"))), PagingAndRetryTests.Exchange);
-		Func<Task> act = enumerate
-			? async () => { await foreach (var item in client.Assets.GetAssetsAllAsync(new GetAssetsRequest(), CancellationToken.None)) { item.Should().NotBeNull(); } }
-			: () => client.Assets.GetAssetsAsync(new GetAssetsRequest(), CancellationToken.None);
-		await act.Should().ThrowAsync<JsonSerializationException>();
-	}
-
-	[Theory]
 	[InlineData("null", true)]
 	[InlineData("{\"items\":[],\"meta\":{}}", false)]
 	public async Task NextPage_CanBeEmpty_ButCannotBeNull(string payload, bool invalid)

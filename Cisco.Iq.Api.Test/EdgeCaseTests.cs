@@ -99,16 +99,19 @@ public class EdgeCaseTests
 	}
 
 	[Theory]
-	[InlineData(false)]
-	[InlineData(true)]
-	public async Task InvalidJson_IsSurfacedForPageAndEnumeration(bool enumerate)
+	[InlineData(false, "invalid-json")]
+	[InlineData(true, "invalid-json")]
+	[InlineData(false, "null")]
+	[InlineData(true, "null")]
+	public async Task InvalidResponse_IsSurfacedForPageAndEnumeration(bool enumerate, string payload)
 	{
 		using var client = new CiscoIqClient(AuthenticationTests.Options,
-			new TestTransport((_, _) => Task.FromResult(TestTransport.Json("invalid-json"))), PagingAndRetryTests.Exchange);
+			new TestTransport((_, _) => Task.FromResult(TestTransport.Json(payload))), PagingAndRetryTests.Exchange);
 		Func<Task> act = enumerate
 			? async () => { await foreach (var item in client.Assets.GetAssetsAllAsync(new GetAssetsRequest(), CancellationToken.None)) { item.Should().NotBeNull(); } }
 			: () => client.Assets.GetAssetsAsync(new GetAssetsRequest(), CancellationToken.None);
-		await act.Should().ThrowAsync<Refit.ApiException>();
+		if (payload == "null") { await act.Should().ThrowAsync<JsonSerializationException>(); }
+		else { await act.Should().ThrowAsync<Refit.ApiException>(); }
 	}
 
 	[Fact]

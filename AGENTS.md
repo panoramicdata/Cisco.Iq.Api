@@ -1,5 +1,7 @@
 # Agent Instructions
 
+Last updated: 2026-09-16
+
 Read `.github/copilot-instructions.md` for repository-specific conventions.
 
 ## Shared Panoramic Data conventions (optional)
