@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project>
+  <PropertyGroup>
+    <ManagePackageVersionsCentrally>true</ManagePackageVersionsCentrally>
+  </PropertyGroup>
+  <ItemGroup>
+    <!-- Cisco.Iq.Api -->
+    <PackageVersion Include="Microsoft.Extensions.Logging" Version="10.0.11" />
+    <PackageVersion Include="Microsoft.SourceLink.GitHub" Version="10.0.400" />
+    <PackageVersion Include="Nerdbank.GitVersioning" Version="3.10.94" />
+    <PackageVersion Include="refit" Version="15.2.0" />
+    <PackageVersion Include="Refit.Newtonsoft.Json" Version="15.2.0" />
+    <PackageVersion Include="SecurityCodeScan.VS2019" Version="5.6.7" />
+    <!-- Cisco.Iq.Api.Test -->
+    <PackageVersion Include="AwesomeAssertions" Version="9.6.0" />
+    <PackageVersion Include="AwesomeAssertions.Analyzers" Version="9.0.8" />
+    <PackageVersion Include="Microsoft.Extensions.Configuration.Json" Version="10.0.11" />
+    <PackageVersion Include="Microsoft.Extensions.Configuration.UserSecrets" Version="10.0.11" />
+    <PackageVersion Include="Microsoft.NET.Test.Sdk" Version="18.9.0" />
+    <PackageVersion Include="Neovolve.Logging.Xunit.v3" Version="7.2.0" />
+    <PackageVersion Include="xunit.v3" Version="4.0.0" />
+    <PackageVersion Include="Microsoft.Testing.Extensions.CodeCoverage" Version="18.10.0" />
+  </ItemGroup>
+</Project>

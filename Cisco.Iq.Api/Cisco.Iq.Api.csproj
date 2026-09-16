@@ -1,0 +1,51 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+	<PropertyGroup>
+		<TargetFramework>net10.0</TargetFramework>
+		<GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+		<Description>Provides access to the Cisco IQ Assets and Assessments REST APIs - asset inventory, contracts, hardware and software lifecycle milestones, security advisory exposure and field notice impact. Requires a Cisco IQ Personal Access Token or Service Account Token. The Cisco IQ API is in beta; see the README.</Description>
+		<PackageProjectUrl>https://github.com/panoramicdata/Cisco.Iq.Api</PackageProjectUrl>
+		<PackageTags>cisco;cisco-iq;assets;inventory;psirt;field-notice;lifecycle;eox;contracts</PackageTags>
+		<PackageIcon>Icon.png</PackageIcon>
+		<PackageReadmeFile>README.md</PackageReadmeFile>
+		<RepositoryUrl>https://github.com/panoramicdata/Cisco.Iq.Api</RepositoryUrl>
+		<RepositoryType>git</RepositoryType>
+		<PackageLicenseExpression>MIT</PackageLicenseExpression>
+		<ApplicationIcon>Icon.ico</ApplicationIcon>
+		<LangVersion>latest</LangVersion>
+		<AnalysisLevel>latest-recommended</AnalysisLevel>
+
+		<!-- Modern symbol package configuration -->
+		<IncludeSymbols>true</IncludeSymbols>
+		<SymbolPackageFormat>snupkg</SymbolPackageFormat>
+		<PublishRepositoryUrl>true</PublishRepositoryUrl>
+		<EmbedUntrackedSources>true</EmbedUntrackedSources>
+		<DebugType>portable</DebugType>
+		<EmbedAllSources>true</EmbedAllSources>
+	</PropertyGroup>
+
+	<ItemGroup>
+		<PackageReference Include="Microsoft.Extensions.Logging" />
+		<PackageReference Include="Microsoft.SourceLink.GitHub">
+			<PrivateAssets>all</PrivateAssets>
+			<IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+		</PackageReference>
+		<PackageReference Include="Nerdbank.GitVersioning">
+			<PrivateAssets>all</PrivateAssets>
+			<IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+		</PackageReference>
+		<PackageReference Include="refit" />
+		<PackageReference Include="Refit.Newtonsoft.Json" />
+		<PackageReference Include="SecurityCodeScan.VS2019">
+			<PrivateAssets>all</PrivateAssets>
+			<IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+		</PackageReference>
+	</ItemGroup>
+
+	<ItemGroup>
+		<None Remove="Icon.png" />
+		<None Include="Icon.png" Pack="true" PackagePath="" />
+		<None Include="..\README.md" Pack="true" PackagePath="\" />
+	</ItemGroup>
+
+</Project>
