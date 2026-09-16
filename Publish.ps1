@@ -1,20 +1,20 @@
 ﻿param(
 	# Skips waiting for the release run. The tag is still pushed, but nothing confirms a package
-	# reached nuget.org â€” use it only if you are checking the run yourself.
+	# reached nuget.org , use it only if you are checking the run yourself.
 	[switch]$SkipPublishVerification
 )
 
 # Ensure we are on the main branch
 $branch = git rev-parse --abbrev-ref HEAD
 if ($branch -ne 'main') {
-	Write-Error "Not on main branch. Current branch: $branch"
+	Write-Error -Message "Not on main branch. Current branch: $branch"
 	exit 1
 }
 
 # Ensure working tree is clean
 $status = git status --porcelain
 if ($status) {
-	Write-Error "Working tree is not clean."
+	Write-Error -Message "Working tree is not clean."
 	exit 1
 }
 
@@ -22,7 +22,7 @@ if ($status) {
 git fetch origin main --quiet
 $behind = git rev-list --count HEAD..origin/main
 if ($behind -gt 0) {
-	Write-Error "Local branch is behind origin/main by $behind commit(s)."
+	Write-Error -Message "Local branch is behind origin/main by $behind commit(s)."
 	exit 1
 }
 
@@ -32,13 +32,13 @@ if ($behind -gt 0) {
 if (-not $SkipPublishVerification) {
 	$gh = Get-Command gh -ErrorAction SilentlyContinue
 	if (-not $gh) {
-		Write-Error "The GitHub CLI (gh) is required to verify that the package publishes. Install it from https://cli.github.com, or re-run with -SkipPublishVerification to publish without verification."
+		Write-Error -Message "The GitHub CLI (gh) is required to verify that the package publishes. Install it from https://cli.github.com, or re-run with -SkipPublishVerification to publish without verification."
 		exit 1
 	}
 
 	gh auth status 2>&1 | Out-Null
 	if ($LASTEXITCODE -ne 0) {
-		Write-Error "The GitHub CLI is not authenticated. Run 'gh auth login', or re-run with -SkipPublishVerification to publish without verification."
+		Write-Error -Message "The GitHub CLI is not authenticated. Run 'gh auth login', or re-run with -SkipPublishVerification to publish without verification."
 		exit 1
 	}
 }
@@ -50,12 +50,12 @@ $packableProject = Get-ChildItem -Recurse -Filter *.csproj |
 	Where-Object { $_.FullName -notmatch '[\\/]obj[\\/]' -and (Get-Content $_.FullName -Raw) -match 'Nerdbank\.GitVersioning' } |
 	Select-Object -First 1
 if (-not $packableProject) {
-	Write-Error "Could not find a packable project referencing Nerdbank.GitVersioning."
+	Write-Error -Message "Could not find a packable project referencing Nerdbank.GitVersioning."
 	exit 1
 }
 $buildOutput = dotnet build $packableProject.FullName -t:GetBuildVersion --getProperty:NuGetPackageVersion -nologo -v:quiet -p:TreatWarningsAsErrors=false
 if ($LASTEXITCODE -ne 0) {
-	Write-Error "Failed to determine version from Nerdbank.GitVersioning.`n$buildOutput"
+	Write-Error -Message "Failed to determine version from Nerdbank.GitVersioning.`n$buildOutput"
 	exit 1
 }
 $version = ($buildOutput | Select-Object -Last 1).ToString().Trim()
@@ -64,7 +64,7 @@ Write-Output "Version: $version"
 # Check if tag already exists
 $existingTag = git tag -l $version
 if ($existingTag) {
-	Write-Error "Tag $version already exists."
+	Write-Error -Message "Tag $version already exists."
 	exit 1
 }
 
@@ -96,7 +96,7 @@ for ($attempt = 1; $attempt -le 12 -and -not $runId; $attempt++) {
 }
 
 if (-not $runId) {
-	Write-Error "Tag $version was pushed but no run appeared for it. Check https://github.com/$repoFullName/actions â€” the workflow may not trigger on tags."
+	Write-Error -Message "Tag $version was pushed but no run appeared for it. Check https://github.com/$repoFullName/actions , the workflow may not trigger on tags."
 	exit 1
 }
 
@@ -108,7 +108,7 @@ if ($runExitCode -ne 0) {
 	Write-Output ""
 	Write-Output "The release run did not succeed: https://github.com/$repoFullName/actions/runs/$runId"
 
-	# A refused job â€” an exhausted Actions budget, for instance â€” fails before any step runs, so it
+	# A refused job , an exhausted Actions budget, for instance , fails before any step runs, so it
 	# has no failed step to report. The check-run annotation is the only place the reason appears.
 	$jobId = gh api "repos/$repoFullName/actions/runs/$runId/jobs" --jq '.jobs[0].id' 2>$null
 	if ($LASTEXITCODE -eq 0 -and $jobId) {

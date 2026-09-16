@@ -3,6 +3,13 @@ namespace Cisco.Iq.Api.Test;
 public class OperationTests
 {
 	[Fact]
+	public void Request_IdentifiesItsResponsePayloadType()
+	{
+		IRequest<CiscoIqPage<Cisco.Iq.Api.Data.Asset>> request = new GetAssetsRequest();
+		request.ResponseType.Should().Be<CiscoIqPage<Cisco.Iq.Api.Data.Asset>>();
+	}
+
+	[Fact]
 	public async Task AllOperations_UseDocumentedGetRoutes_AndDeserializeTheirResponseShape()
 	{
 		var routes = new Queue<(string Path, bool Collection)>([
