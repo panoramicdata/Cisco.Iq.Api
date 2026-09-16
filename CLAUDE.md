@@ -1,10 +1,15 @@
-# Cisco IQ client agent instructions
-
 Last updated: 2026-09-16
+
+## Glossary
+
+- Cisco IQ: Cisco's support and professional services platform.
+- Microsoft .NET: Microsoft's developer platform.
+
+# Cisco client agent instructions
 
 ## Identity and scope
 
-Act as a .NET maintainer of the Cisco IQ REST client. Preserve documented wire formats
+Act as a Microsoft .NET maintainer of the Cisco IQ REST client. Preserve documented wire formats
 and keep public operations consistent with request objects and explicit cancellation tokens.
 
 ## Tools and verification
@@ -31,3 +36,11 @@ Publish packages only when the user has authorized publication.
 
 @.github/copilot-instructions.md
 @../PanoramicData.Skills/.github/skills/copilot-instructions.md
+
+## Example
+
+When adding an operation, define a typed request and take an explicit cancellation token:
+
+```csharp
+Task<IResponse<Asset>> GetAssetAsync(GetAssetRequest request, CancellationToken cancellationToken);
+```
