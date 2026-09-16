@@ -42,6 +42,15 @@ jobs:
           ./tools/Assert-Coverage.ps1 -Path artifacts/coverage/standard.cobertura.xml -MinimumBranchCoverage 100
           ./tools/Assert-Coverage.ps1 -Path artifacts/coverage/extended.cobertura.xml -MinimumBranchCoverage 100
 
+      - name: Make Codacy coverage paths relative to the repository
+        shell: pwsh
+        run: |
+          [xml]$report = Get-Content artifacts/coverage/standard.cobertura.xml -Raw
+          foreach ($class in $report.SelectNodes('//class[@filename]')) {
+            $class.filename = [System.IO.Path]::GetRelativePath($env:GITHUB_WORKSPACE, $class.filename).Replace('\', '/')
+          }
+          $report.Save((Join-Path $env:GITHUB_WORKSPACE 'artifacts/coverage/codacy.cobertura.xml'))
+
       - name: Upload coverage to Codacy
         if: github.event_name == 'push'
         # A reporting service outage must not prevent package releases.
@@ -49,7 +58,7 @@ jobs:
         uses: codacy/codacy-coverage-reporter-action@v1
         with:
           project-token: ${{ secrets.CODACY_PROJECT_TOKEN }}
-          coverage-reports: artifacts/coverage/standard.cobertura.xml
+          coverage-reports: artifacts/coverage/codacy.cobertura.xml
 
       - name: Test live authentication and assets
         if: github.event_name == 'push'
