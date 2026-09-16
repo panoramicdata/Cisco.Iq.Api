@@ -1,3 +1,5 @@
+root = true
+
 [*]
 vsspell_section_id = 125582df39a149848d0e4f8457118528
 vsspell_ignored_words_125582df39a149848d0e4f8457118528 = File:Cisco.Api.slnx.dic
@@ -11,7 +13,7 @@ vsspell_ignored_words_125582df39a149848d0e4f8457118528 = File:Cisco.Api.slnx.dic
 
 #use hard tabs for indentation
 indent_style = tab
-csharp_style_namespace_declarations= file_scoped:silent
+csharp_style_namespace_declarations = file_scoped:error
 csharp_indent_labels = one_less_than_current
 csharp_using_directive_placement = outside_namespace:silent
 csharp_prefer_simple_using_statement = true:suggestion

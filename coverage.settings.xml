@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Configuration>
+  <CodeCoverage>
+    <ModulePaths>
+      <Include><ModulePath>.*[\\/]Cisco\.Iq\.Api\.dll$</ModulePath></Include>
+    </ModulePaths>
+    <Sources>
+      <Exclude>
+        <Source>.*[\\/]obj[\\/].*</Source>
+        <Source>.*Refit\.Generator.*</Source>
+        <Source>.*Microsoft\.Extensions\.Logging\.Generators.*</Source>
+        <Source>.*System\.Text\.RegularExpressions\.Generator.*</Source>
+      </Exclude>
+    </Sources>
+    <EnableStaticManagedInstrumentation>True</EnableStaticManagedInstrumentation>
+  </CodeCoverage>
+</Configuration>

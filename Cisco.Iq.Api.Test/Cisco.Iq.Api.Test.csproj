@@ -3,12 +3,15 @@
 
 	<PropertyGroup>
 		<TargetFramework>net10.0</TargetFramework>
+		<ImplicitUsings>enable</ImplicitUsings>
 		<OutputType>Exe</OutputType>
 		<IsPackable>false</IsPackable>
 		<LangVersion>latest</LangVersion>
 		<AnalysisLevel>latest-recommended</AnalysisLevel>
 		<NoWarn>xUnit1051</NoWarn>
 		<UserSecretsId>cisco-iq-api-tests</UserSecretsId>
+		<UseMicrosoftTestingPlatformRunner>true</UseMicrosoftTestingPlatformRunner>
+		<TestingPlatformDotnetTestSupport>true</TestingPlatformDotnetTestSupport>
 	</PropertyGroup>
 
 	<ItemGroup>
@@ -19,6 +22,7 @@
 		</PackageReference>
 		<PackageReference Include="Microsoft.Extensions.Configuration.Json" />
 		<PackageReference Include="Microsoft.Extensions.Configuration.UserSecrets" />
+		<PackageReference Include="Microsoft.Extensions.Configuration.EnvironmentVariables" />
 		<PackageReference Include="Microsoft.NET.Test.Sdk" />
 		<PackageReference Include="Neovolve.Logging.Xunit.v3" />
 		<PackageReference Include="xunit.v3" />
@@ -27,6 +31,8 @@
 
 	<ItemGroup>
 		<ProjectReference Include="..\Cisco.Iq.Api\Cisco.Iq.Api.csproj" />
+		<None Update="Fixtures\**\*.json" CopyToOutputDirectory="PreserveNewest" />
+		<None Update="xunit.runner.json" CopyToOutputDirectory="PreserveNewest" />
 	</ItemGroup>
 
 </Project>

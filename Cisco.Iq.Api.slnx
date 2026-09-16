@@ -1,11 +1,19 @@
 <Solution>
   <Folder Name="/Solution Items/">
     <File Path=".editorconfig" />
+	<File Path=".codacy.yml" />
     <File Path=".gitignore" />
     <File Path="global.json" />
     <File Path="LICENSE" />
     <File Path="README.md" />
     <File Path="version.json" />
+	<File Path="Directory.Build.props" />
+	<File Path="Directory.Packages.props" />
+	<File Path="Publish.ps1" />
+	<File Path="coverage.config" />
+	<File Path="coverage.settings.xml" />
+	<File Path="CONTRIBUTING.md" />
+	<File Path="SECURITY.md" />
   </Folder>
   <Project Path="Cisco.Iq.Api.Test/Cisco.Iq.Api.Test.csproj" />
   <Project Path="Cisco.Iq.Api/Cisco.Iq.Api.csproj" />

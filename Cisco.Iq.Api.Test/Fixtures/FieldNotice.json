@@ -1,0 +1,25 @@
+{
+	"fieldNoticeId": 12,
+	"title": "example",
+	"impact": "example",
+	"firstPublished": 1700000000123,
+	"fieldNoticeLastUpdateDate": 1700000000123,
+	"potentiallyAffectedAssetsCount": 8,
+	"url": "example",
+	"status": "example",
+	"problemDescription": "example",
+	"description": "example",
+	"additionalNotes": "example",
+	"workaround": "example",
+	"affectedAssetsCount": 8,
+	"lastPublished": 1700000000123,
+	"ciscoBugIds": [
+		"example-one",
+		"example-two"
+	],
+	"vulnerabilityStatus": "example",
+	"vulnerabilityReasons": [
+		"example-one",
+		"example-two"
+	]
+}

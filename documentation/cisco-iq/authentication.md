@@ -62,6 +62,25 @@ Find the Account ID and Data Storage Region at *Home > System Settings > Account
 
 ## Stage 2 — call a product API
 
+### Live verification: User-Agent
+
+On 2026-09-16, a bare .NET `HttpClient` token exchange without a `User-Agent`
+returned HTTP 403 with an HTML response served by CloudFront. The same credentials,
+account ID, EMEA cookie and JSON body succeeded with HTTP 200 after adding
+`User-Agent: Cisco.Iq.Api/1.0`. A subsequent `GET /assets?max=1` using that
+User-Agent also succeeded with HTTP 200.
+
+Send a nonempty default User-Agent on both the exchange and product clients, allowing
+callers to override it through `CiscoIqClientOptions.UserAgent`. An HTML 403 from
+CloudFront is distinct from the documented JSON authorization error; check the
+User-Agent before assuming the PAT or account permissions are wrong. The observations
+above do not establish the exact CloudFront rule.
+
+Live verification also confirmed the exchange's `expiresInSeconds` was 3600 and that
+Asset, AssetLifecycle and AssetRelationship payload fields matched the reference notes.
+The account's contract, security advisory and field notice collections were empty, so
+those item schemas and AffectedAsset have not yet been verified against live records.
+
 ```http
 GET https://iq.cisco.com/ciq-rest/api/v0/assets?max=10
 Authorization: Bearer <short-lived-access-token>
