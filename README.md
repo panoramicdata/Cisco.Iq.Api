@@ -8,6 +8,8 @@ A .NET library for the **Cisco IQ** Assets and Assessments REST APIs — asset i
 contracts and coverage, hardware and software lifecycle milestones, security advisory (PSIRT)
 exposure, and field notice impact.
 
+See the [Cisco IQ FAQ](https://iq.cisco.com/docs/faq.html) for Cisco's platform guidance.
+
 > ### ⚠️ The Cisco IQ API is in beta
 >
 > Cisco classifies the Cisco IQ APIs as **beta (public preview)** and states:
