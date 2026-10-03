@@ -10,7 +10,10 @@ public class IntegrationTests
 	{
 		var configuration = new ConfigurationBuilder().AddUserSecrets<IntegrationTests>().AddEnvironmentVariables().Build();
 		var token = configuration["CiscoIq:Token"];
-		Assert.SkipWhen(string.IsNullOrWhiteSpace(token), "CiscoIq:Token is not configured.");
+		if (string.IsNullOrWhiteSpace(token))
+		{
+			throw new InvalidOperationException("Set CiscoIq:Token in user secrets (dotnet user-secrets set \"CiscoIq:Token\" \"...\") or the CiscoIq__Token environment variable.");
+		}
 		Enum.TryParse<CiscoIqAccountRegion>(configuration["CiscoIq:AccountRegion"], true, out var region).Should().BeTrue();
 		using var client = new CiscoIqClient(new CiscoIqClientOptions
 		{
