@@ -44,3 +44,11 @@ When adding an operation, define a typed request and take an explicit cancellati
 ```csharp
 Task<IResponse<Asset>> GetAssetAsync(GetAssetRequest request, CancellationToken cancellationToken);
 ```
+## About Panoramic Data
+
+Panoramic Data Limited is a software company. This repository is a NuGet package that it
+publishes. Its build, CI, versioning, licensing and community files are governed by the open
+source PanoramicData.NugetManagement tool (https://github.com/panoramicdata/PanoramicData.NugetManagement),
+which assesses repositories against a shared set of rules and can apply fixes automatically.
+Files such as CLAUDE.md, AGENTS.md, SECURITY.md and CONTRIBUTING.md may be created or updated
+by that tool.
