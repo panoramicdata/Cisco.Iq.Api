@@ -155,14 +155,12 @@ The shared test assembly sets `failSkips: true`, so missing integration credenti
 a full test run. Use `--filter "Category!=Integration"` for credential-free unit runs.
 CI also sets `--fail-skips on` in the unit-only coverage run,
 so an accidentally skipped unit test still fails the build. Both CI coverage runs use
-unit tests only. Pushes to main and release tags also run the live integration test with
-`--fail-skips on`, using `CISCO_IQ_TOKEN`, `CISCO_IQ_ACCOUNT_ID` and
-`CISCO_IQ_ACCOUNT_REGION` repository secrets. Those credentials are scoped to that step
-and are not supplied to pull request builds.
-
-The live check runs in a separate CI job. Its failure remains visible but does not block
-publication: Cisco IQ has returned HTTP 403 for GitHub-hosted runners while the same
-credentials pass locally. Unit tests and both 100% coverage checks remain release gates.
+unit tests only. Integration tests never run on push or pull request. The live check is
+the manually triggered `Live Cisco IQ integration` workflow, which runs with
+`--fail-skips on` using `CISCO_IQ_TOKEN`, `CISCO_IQ_ACCOUNT_ID` and
+`CISCO_IQ_ACCOUNT_REGION` repository secrets. Cisco IQ has returned HTTP 403 for
+GitHub-hosted runners while the same credentials pass locally, so it is not a release
+gate. Unit tests and both 100% coverage checks remain release gates.
 CI uploads coverage to Codacy with repository-relative source paths.
 
 ```powershell
