@@ -1,17 +1,32 @@
 # Contributing
 
-Use .NET 10 and the SDK selection in global.json. Package versions are managed in
-Directory.Packages.props; use xUnit v3, AwesomeAssertions and the Microsoft.Testing.Platform
-coverage collector. Keep C# namespaces file scoped and indentation as tabs.
+Thank you for your interest in contributing to this project!
 
-Run `dotnet build --configuration Release` and `dotnet test --configuration Release`.
-Integration tests skip when CiscoIq:Token is absent. Store credentials in user secrets
-or environment variables, never in source or fixtures. Integration requests are read-only
-and hit production; keep page sizes and request counts small.
+## How to Contribute
 
-Run coverage using the commands in README.md. Changes should preserve 100% line coverage.
-Generated Refit clients, logging and regular expression implementations are excluded;
-the extended coverage configuration includes handwritten async method bodies.
+1. **Fork** the repository
+2. **Create a branch** for your feature or fix (`git checkout -b feature/my-feature`)
+3. **Make your changes** following the coding standards below
+4. **Write or update tests** as appropriate
+5. **Ensure the build passes** with zero errors, zero warnings, and zero messages
+6. **Submit a Pull Request** against the `main` branch
 
-Use a branch and submit a pull request against main. Publish.ps1 is the release workflow;
-run it only when the change is approved for publication.
+## Coding Standards
+
+- All public members must have XML documentation comments
+- Use `System.Text.Json` — do not introduce `Newtonsoft.Json`
+- Use Refit for HTTP client interfaces
+- Use file-scoped namespaces
+- Use the `required` keyword for DTO properties where appropriate
+- Ensure `TreatWarningsAsErrors` remains enabled
+- All code must compile with zero diagnostics
+
+## Testing
+
+- Use xUnit v3 for all tests
+- Use AwesomeAssertions for fluent assertions
+- Ensure all existing tests pass before submitting a PR
+
+## License
+
+By contributing, you agree that your contributions will be licensed under the MIT License.
