@@ -26,6 +26,7 @@ assertions and coverage thresholds; if a changed API contract requires an adjust
 explain the reason and obtain reviewer approval. Keep live integration tests separate
 from unit coverage runs unless the user explicitly requests a different test arrangement.
 Publish packages only when the user has authorized publication.
+Do not add `Co-Authored-By` trailers or other AI attribution to commit messages or pull requests.
 
 ## Glossary
 
