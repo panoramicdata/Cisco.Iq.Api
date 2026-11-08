@@ -3,7 +3,7 @@
 Working notes on the Cisco IQ REST API, written up for the `Cisco.Iq.Api` implementation.
 These are our own summaries of Cisco's developer documentation, not a copy of it.
 
-**Source of truth:** <https://iq.cisco.com/api/v1/apiregistry/docs/intro> (requires a Cisco IQ login).
+**Source of truth:** <https://iq.cisco.com/apidocs/introduction> (requires a Cisco IQ login).
 Cisco also publishes an `llms-full.txt` context artifact and downloadable `Assets.json` /
 `Assessments.json` OpenAPI 3.1 definitions from the API Registry's *API Specification Downloads*.
 Everything below was derived from those, as of the `2026-07-24` API release
