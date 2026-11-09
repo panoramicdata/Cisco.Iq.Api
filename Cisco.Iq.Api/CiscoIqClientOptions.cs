@@ -3,6 +3,7 @@ namespace Cisco.Iq.Api;
 /// <summary>
 /// Options for the Cisco IQ client.
 /// </summary>
+[Obsolete("The Cisco IQ beta API stops working on 30 November 2026. Use Cisco.Iq.Api.V1.CiscoIqV1Client with a Cisco IQ API key instead.")]
 public class CiscoIqClientOptions
 {
 	/// <summary>The long-lived Personal Access Token or Service Account Token.</summary>

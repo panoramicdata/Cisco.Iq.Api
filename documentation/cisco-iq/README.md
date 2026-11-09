@@ -1,9 +1,13 @@
-# Cisco IQ API — reference notes
+# Cisco IQ beta API (v0) reference notes
 
-Working notes on the Cisco IQ REST API, written up for the `Cisco.Iq.Api` implementation.
+> **These notes describe the beta `v0` API, which stops working on 30 November 2026.** The GA
+> contract is in [docs/ga-spec/](../../docs/ga-spec/) and Cisco's documentation at
+> <https://iq.cisco.com/apidocs/introduction>. They are kept for the migration period only.
+
+Working notes on the Cisco IQ beta REST API, written up for the beta `CiscoIqClient`.
 These are our own summaries of Cisco's developer documentation, not a copy of it.
 
-**Source of truth:** <https://iq.cisco.com/apidocs/introduction> (requires a Cisco IQ login).
+**Source of truth for the beta API:** the API Registry in the Cisco IQ console (requires a Cisco IQ login).
 Cisco also publishes an `llms-full.txt` context artifact and downloadable `Assets.json` /
 `Assessments.json` OpenAPI 3.1 definitions from the API Registry's *API Specification Downloads*.
 Everything below was derived from those, as of the `2026-07-24` API release

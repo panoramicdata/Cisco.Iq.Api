@@ -6,6 +6,7 @@ using Refit;
 namespace Cisco.Iq.Api;
 
 /// <summary>A client for the Cisco IQ Assets and Assessments REST APIs.</summary>
+[Obsolete("The Cisco IQ beta API stops working on 30 November 2026. Use Cisco.Iq.Api.V1.CiscoIqV1Client with a Cisco IQ API key instead.")]
 public sealed partial class CiscoIqClient : IDisposable
 {
 	private readonly HttpClient _http;

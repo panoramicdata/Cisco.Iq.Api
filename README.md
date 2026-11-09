@@ -4,28 +4,41 @@
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![Codacy Badge](https://app.codacy.com/project/badge/Grade/e07981fba4b949c68a2dc6420f21234d)](https://app.codacy.com/gh/panoramicdata/Cisco.Iq.Api/dashboard?utm_source=gh&utm_medium=referral&utm_content=&utm_campaign=Badge_grade)
 
-A .NET library for the **Cisco IQ** Assets and Assessments REST APIs — asset inventory,
-contracts and coverage, hardware and software lifecycle milestones, security advisory (PSIRT)
-exposure, and field notice impact.
-
-See the [Cisco IQ FAQ](https://iq.cisco.com/docs/faq.html) for Cisco's platform guidance.
+A .NET library for the **Cisco IQ** REST APIs: asset inventory, contracts and coverage,
+hardware and software end-of-life bulletins, security advisories (PSIRT), field notices and
+assessment findings.
 
 The official Cisco IQ API documentation, including the beta-to-GA API mapping guide, is at
-<https://iq.cisco.com/apidocs/introduction>.
+<https://iq.cisco.com/apidocs/introduction>. See also the
+[Cisco IQ FAQ](https://iq.cisco.com/docs/faq.html) for Cisco's platform guidance.
 
-> ### ⚠️ The Cisco IQ beta APIs sunset on 30 November 2026
+> ### The Cisco IQ beta APIs stop working on 30 November 2026
 >
-> Cisco has announced that the Cisco IQ APIs are now generally available (GA). The beta
-> (`v0`) APIs keep working until **30 November 2026**, after which they stop functioning.
+> Cisco has made the Cisco IQ APIs generally available (GA). The beta (`v0`) APIs keep working
+> until **30 November 2026**, after which they stop functioning.
 >
-> This library currently targets the beta `v0` API, so it will stop working on that date
-> unless it is migrated to the GA APIs. Pin your package version and watch for a release
-> that targets GA.
+> This package now contains a GA client, `Cisco.Iq.Api.V1.CiscoIqV1Client`. The beta client,
+> `CiscoIqClient`, is marked obsolete and will be removed after the sunset date. Move to the GA
+> client before then: see [Moving from the beta client](#moving-from-the-beta-client).
+
+## What is covered
+
+| API | Namespace | State |
+| --- | --- | --- |
+| Asset (physical and virtual assets, coverage, data sources, licensing) | `Cisco.Iq.Api.V1.Assets` | Read operations |
+| Assessment (assessments, findings, insights, recommendations) | `Cisco.Iq.Api.V1.Assessments` | Read operations |
+| Product (products, security advisories, field notices, end-of-life bulletins) | `Cisco.Iq.Api.V1.Products` | Read operations |
+| Asset writes (`PATCH` and `PUT`) | | Not yet generated |
+| IAM (accounts, users, API keys, roles) | | Not yet generated |
+| System (resource groups, preferences, query, bulk) | | Not yet generated |
+
+The client is generated from the OpenAPI files Cisco publishes, which are kept in
+[docs/ga-spec/](docs/ga-spec/). It has not yet been verified against a live Cisco IQ account.
 
 ## Relationship to `Cisco.Api`
 
-[`Cisco.Api`](https://github.com/panoramicdata/Cisco.Api) covers the Cisco Support APIs — EoX,
-PSIRT, PSS, Product Information, PX Cloud, Smart Accounts and Umbrella — which authenticate
+[`Cisco.Api`](https://github.com/panoramicdata/Cisco.Api) covers the Cisco Support APIs (EoX,
+PSIRT, PSS, Product Information, PX Cloud, Smart Accounts and Umbrella), which authenticate
 with OAuth2 client credentials from the [Cisco API Console](https://apiconsole.cisco.com/).
 
 Cisco IQ is a different product with a different host, a different credential type and a
@@ -41,101 +54,158 @@ dotnet add package Cisco.Iq.Api
 ## Prerequisites
 
 - A **Cisco IQ account** with permission to view the data you want to read
-- A long-lived **Personal Access Token (PAT)** or **Service Account Token (SAT)**, generated in
-  the Cisco IQ UI
-- Your **Account ID** and **Data Storage Region**, from *Home > System Settings > Account Details*
+- A long-lived **API key**. It acts as its owner, with the owner's current permissions, so the
+  key can read only what its owner can read
+- The **region** that holds your account: US, EMEA or APJC
 
-### Generating a Personal Access Token
-
-1. Log in to [Cisco IQ](https://iq.cisco.com/)
-2. Click your name (top right) > **User Settings**
-3. Click **Generate Token**, give it a name, and click **Generate Token**
-4. **Copy it immediately** — Cisco never shows the value again
-
-### Generating a Service Account Token
-
-For unattended automation, prefer a service account. Note that SATs are available only to
-**customer-type accounts with the Account Administrator role** — partner-type accounts and
-partner roles must use a PAT.
-
-1. Log in to Cisco IQ as an Administrator
-2. **Home > System Settings > Identity and Access > Add User**
-3. Select the **Service Account** user type, name it, and assign a role
-   (**Administrator**, or **Viewer** plus one or more resource groups)
-4. Click **Save**, then copy the generated token — again, shown only once
-
-A service account supports up to five concurrent tokens, which is what makes zero-downtime
-rotation possible.
+Cisco's [authentication documentation](https://iq.cisco.com/apidocs/introduction) describes how
+to create a key. A key is returned once, when it is created, so store it in a secret store and
+never in source control. Keys have a maximum lifetime and are never refreshed: create a
+replacement, switch over, then revoke the old one.
 
 ## Usage
 
 ```csharp
-using Cisco.Iq.Api;
+using Cisco.Iq.Api.V1;
+using Cisco.Iq.Api.V1.Assets;
+using Cisco.Iq.Api.V1.Products;
 
 CancellationToken cancellationToken = default;
 
-using var client = new CiscoIqClient(new CiscoIqClientOptions
+using var client = new CiscoIqV1Client(new CiscoIqV1ClientOptions
 {
-    Token = "<your-PAT-or-SAT>",
-    AccountRegion = CiscoIqAccountRegion.Emea,
-    AccountId = "<your-account-id>",  // required for a PAT, optional for a SAT
-    UserAgent = "MyInventoryTool/1.0 MyCompany" // optional override
+    ApiKey = "<your-api-key>",
+    Region = CiscoIqV1Region.Emea
 });
 
-// Assets covered by a contract, most recently seen first
-var page = await client.Assets.GetAssetsAsync(new GetAssetsRequest
+// One page of managed assets, ordered by model, with the total count
+using var page = await client.Assets.ListAssetPhysicalAssetsAsync(new ListAssetPhysicalAssetsRequest
 {
-    Filter = new AssetFilter
-    {
-        CoverageStatus = ["COVERED"],
-        Sort = "lastSignalDate",
-        Order = CiscoIqSortOrder.Descending,
-        Max = 200
-    }
-}, cancellationToken);
+    Filter = "isManaged == true",
+    OrderBy = "model",
+    Max = 100,
+    Count = true
+}, cancellationToken: cancellationToken);
 
-foreach (var asset in page.Content.Items)
+Console.WriteLine($"{page.Content!.Count} managed assets");
+foreach (var asset in page.Content.Items!)
 {
-    Console.WriteLine($"{asset.SerialNumber} {asset.ProductId} {asset.HardwareLastDateOfSupport:d}");
+    Console.WriteLine($"{asset.Serial} {asset.Model}");
 }
 
-// Every asset affected by a critical advisory, paging handled for you
-await foreach (var affected in client.Assessments
-    .GetAffectedAssetsForSecurityAdvisoryAllAsync(
-        new GetAffectedAssetsForSecurityAdvisoryRequest { PsirtId = 82456 }, cancellationToken))
+// Every critical security advisory, paging handled for you
+await foreach (var advisory in client.Products.ListProductSecurityAdvisoriesAllAsync(
+    new ListProductSecurityAdvisoriesRequest { Filter = "severity == \"CRITICAL\"" }, cancellationToken))
 {
-    Console.WriteLine(affected.Hostname);
+    Console.WriteLine($"{advisory.AdvisoryId} {advisory.Title}");
 }
 ```
 
-The library handles the two-stage token exchange, the mandatory `account_region` cookie, access
-token caching and renewal, `Link`-header pagination, and rate-limit backoff.
+### Collections
 
-Every collection has a `Get…Async` method returning a `CiscoIqPage<T>` and a
-`Get…AllAsync` companion returning `IAsyncEnumerable<T>`. The companions follow the
-server's next Link until it is absent; `Meta.Count == null` means the total is unknown.
-Filter arrays become repeated query parameters, and date filters use `DateTimeOffset?`.
+Every collection has a `List...Async` method that returns one page, and a `List...AllAsync`
+companion that returns `IAsyncEnumerable<T>` and follows the cursor in the `Link` header until
+there is no next page. The cursor is opaque: the client passes it back unchanged.
 
-`UserAgent` overrides the header on both token exchanges and product requests. When it
-is null or blank, the default is `Cisco.Iq.Api/<assembly-version>`. A User-Agent is
-needed to avoid the CloudFront HTML 403 observed during live verification.
+- `Max` sets the page size, `OrderBy` the sort, `Select` a sparse set of fields, and `Filter`
+  one filter expression. A filter is applied before paging.
+- `Count = true` adds the total to the first page. It is not sent while enumerating.
+- Enum-like values are string-backed structs such as `AssetOrigin.Cisco`. A value Cisco adds
+  later is kept as its string, instead of failing to parse.
+- Relations are reference strings such as `/product/v1/products/<id>`.
+- Single-resource reads accept `ifNoneMatch` and `ifModifiedSince` for conditional requests.
 
-`LastRateLimitStatus` exposes the principal and account second/day limit, remaining and
-reset values. Requests retry 429 after the maximum advertised reset, and 502 with
-bounded exponential backoff and jitter. `MaxAttemptCount` includes the initial attempt;
-the default is three. Disable 429 retries with `RetryRateLimitedRequests = false`.
-The HTTP timeout defaults to 100 seconds; raise it if you intend to wait for longer windows.
+A query string over **2,048 bytes** after encoding is refused by Cisco's edge before the API
+sees it. The client throws `CiscoIqV1QueryTooLongException` rather than send it. Use the System
+API's query endpoint for long filters once it is available in this package.
 
-API errors throw `CiscoIqApiException`, with narrower authentication (401), authorization
-(403), not-found (404) and rate-limit (429) types. `BodyTrackingId` and `HeaderTrackingId`
-preserve both support identifiers; `TrackingId` prefers the body identifier.
+### Regions and hosts
+
+By default the client calls `https://iq.cisco.com` and sends `X-IQ-Region` with the region you
+set. Cisco's documentation also names regional hosts (`us-west-2.iq.cisco.com`,
+`eu-central-1.iq.cisco.com`, `ap-southeast-2.iq.cisco.com`). To use one, set `BaseAddress`. The
+OpenAPI files name different regional hosts, so confirm the host for your account. A key for
+the wrong region is rejected with 401.
+
+### Errors, retries and rate limits
+
+API errors throw `CiscoIqV1ApiException`, with narrower types for 401
+(`CiscoIqV1AuthenticationException`), 403 (`CiscoIqV1AuthorizationException`), 404
+(`CiscoIqV1NotFoundException`) and 429 (`CiscoIqV1RateLimitException`). Cisco returns
+`application/problem+json`; the parsed document is on `Problem`, and `HasErrorCode("...")`
+checks its error codes. Branch on error codes, not on the status: the set of codes is open.
+`Traceparent` carries the trace identifier to quote in a Cisco support case.
+
+429 responses are retried after `Retry-After`, and 502 and 503 responses to reads are retried
+with bounded backoff. `MaxAttemptCount` includes the first attempt (default three), and
+`RetryRateLimitedRequests = false` turns 429 retries off. Cisco does not publish numeric rate
+limits; `LastRateLimit` exposes the raw `RateLimit` and `RateLimit-Policy` header values from
+the latest response.
+
+The API key is never written to logs or exception messages. Redirects are not followed, so the
+key cannot be sent to another host.
+
+## Moving from the beta client
+
+GA is a new contract, not a version bump. Every path, parameter and schema differs.
+
+| | Beta client (`CiscoIqClient`) | GA client (`CiscoIqV1Client`) |
+| --- | --- | --- |
+| Credential | PAT or SAT, exchanged for a short-lived token | API key, used directly as the bearer token |
+| Region | `account_region` cookie and account ID | Region header or regional host |
+| Paging | `offset` and `max`, `meta` in the body | `max` and an opaque cursor in the `Link` header |
+| Filtering | Typed filter objects and repeated parameters | One `Filter` expression string |
+| Errors | `CiscoIqApiException` | `CiscoIqV1ApiException` with an RFC 9457 `Problem` |
+
+Cisco's mapping guide, linked from the announcement email and the documentation site, is the
+authoritative source for how beta operations map to GA. From the OpenAPI files alone, these
+pairings look right; treat them as a guide and check them against Cisco's mapping guide:
+
+| Beta operation | GA operation | Confidence |
+| --- | --- | --- |
+| Assets list and get | `Assets.ListAssetPhysicalAssetsAsync`, `GetAssetPhysicalAssetAsync` | High |
+| Contracts list and get | `Assets.ListAssetCoveragesAsync`, `GetAssetCoverageAsync` | High |
+| Security advisories list and get | `Products.ListProductSecurityAdvisoriesAsync`, `GetProductSecurityAdvisoryAsync` | High |
+| Field notices list and get | `Products.ListProductFieldNoticesAsync`, `GetProductFieldNoticeAsync` | High |
+| Asset lifecycle | End-of-life bulletins and asset fields | Low, inferred |
+| Asset relationships | `Assets.ListAssetChildrenForPhysicalAssetAsync` and the `Parent` property | Low, inferred |
+| Advisories or field notices for an asset; affected assets | None documented | |
+
+For the last row, the closest routes are the Assessment API's findings filtered by asset, or
+matching an advisory's or field notice's affected products against an asset's `ProductId`.
+Neither is documented by Cisco, and findings exist only once an assessment has run, so this
+package does not wrap them.
 
 ## Development and verification
 
 The solution targets .NET 10, uses central package management and xUnit v3 on
 Microsoft.Testing.Platform. Builds treat compiler and MSBuild warnings as errors.
 
-Store integration credentials outside the repository:
+The GA client is generated. After changing a file in `docs/ga-spec/`, run the generator from
+the repository root and commit the result; a unit test fails if the committed code is stale.
+
+```powershell
+dotnet run --project tools/Cisco.Iq.Api.Generator
+dotnet run --project tools/Cisco.Iq.Api.Generator -- --check
+```
+
+Run the unit tests and the coverage gates exactly as CI does:
+
+```powershell
+dotnet build --configuration Release
+dotnet test --configuration Release --no-build --filter "Category!=Integration" --fail-skips on
+dotnet test --configuration Release --no-build --filter "Category!=Integration" --coverage --coverage-output-format cobertura --coverage-settings coverage.config --coverage-output standard.cobertura.xml --results-directory artifacts/coverage
+dotnet test --configuration Release --no-build --filter "Category!=Integration" --coverage --coverage-output-format cobertura --coverage-settings coverage.settings.xml --coverage-output extended.cobertura.xml --results-directory artifacts/coverage
+pwsh -File tools/Assert-Coverage.ps1 -Path artifacts/coverage/standard.cobertura.xml -MinimumBranchCoverage 100
+pwsh -File tools/Assert-Coverage.ps1 -Path artifacts/coverage/extended.cobertura.xml -MinimumBranchCoverage 100
+```
+
+CI requires 100% line and branch coverage of the hand-written code in both reports. Generated
+code under `Cisco.Iq.Api/V1/Generated` is excluded from both: it is covered instead by the
+generator drift test and by a test that every generated operation requests its documented path.
+
+Integration tests exercise the beta client against a live account. Store credentials outside
+the repository:
 
 ```powershell
 dotnet user-secrets set "CiscoIq:Token" "<PAT-or-SAT>" --project Cisco.Iq.Api.Test
@@ -144,82 +214,74 @@ dotnet user-secrets set "CiscoIq:AccountRegion" "EMEA" --project Cisco.Iq.Api.Te
 ```
 
 Configuration loads user secrets then environment variables (`CiscoIq__Token`,
-`CiscoIq__AccountId`, `CiscoIq__AccountRegion`). Without a token, integration tests skip.
-The integration smoke test exchanges a token and reads at most one asset from production.
-The shared test assembly sets `failSkips: true`, so missing integration credentials fail
-a full test run. Use `--filter "Category!=Integration"` for credential-free unit runs.
-CI also sets `--fail-skips on` in the unit-only coverage run,
-so an accidentally skipped unit test still fails the build. Both CI coverage runs use
-unit tests only. Integration tests never run on push or pull request. The live check is
-the manually triggered `Live Cisco IQ integration` workflow, which runs with
-`--fail-skips on` using `CISCO_IQ_TOKEN`, `CISCO_IQ_ACCOUNT_ID` and
-`CISCO_IQ_ACCOUNT_REGION` repository secrets. Cisco IQ has returned HTTP 403 for
-GitHub-hosted runners while the same credentials pass locally, so it is not a release
-gate. Unit tests and both 100% coverage checks remain release gates.
-CI uploads coverage to Codacy with repository-relative source paths.
+`CiscoIq__AccountId`, `CiscoIq__AccountRegion`). Without a token, integration tests skip, and
+the shared test assembly sets `failSkips: true`, so a full test run fails. Use
+`--filter "Category!=Integration"` for credential-free unit runs. Integration tests never run on
+push or pull request. The live check is the manually triggered `Live Cisco IQ integration`
+workflow. Cisco IQ has returned HTTP 403 for GitHub-hosted runners while the same credentials
+pass locally, so it is not a release gate.
 
-```powershell
-dotnet build --configuration Release
-dotnet test --configuration Release --no-build
-dotnet test --configuration Release --no-build --filter "Category!=Integration" --coverage --coverage-output-format cobertura --coverage-settings coverage.config --coverage-output standard.cobertura.xml --results-directory artifacts/coverage
-dotnet test --configuration Release --no-build --filter "Category!=Integration" --coverage --coverage-output-format cobertura --coverage-settings coverage.settings.xml --coverage-output extended.cobertura.xml --results-directory artifacts/coverage
-pwsh -File tools/Assert-Coverage.ps1 -Path artifacts/coverage/standard.cobertura.xml -MinimumBranchCoverage 100
-pwsh -File tools/Assert-Coverage.ps1 -Path artifacts/coverage/extended.cobertura.xml -MinimumBranchCoverage 100
+Version numbers come from `version.json` and Nerdbank.GitVersioning. Run `./Publish.ps1` from a
+clean main branch synchronised with origin/main: it resolves the version, pushes the tag and
+checks the release run. Tagged CI uses NuGet Trusted Publishing; ordinary builds and pull
+requests publish nothing.
+
+## Legacy beta client
+
+> Obsolete. The beta APIs stop working on 30 November 2026.
+
+`CiscoIqClient` targets the beta `v0` API. It signs in with a Personal Access Token or a
+Service Account Token, which it exchanges for a short-lived access token, and it sends the
+mandatory `account_region` cookie.
+
+```csharp
+using Cisco.Iq.Api;
+
+using var client = new CiscoIqClient(new CiscoIqClientOptions
+{
+    Token = "<your-PAT-or-SAT>",
+    AccountRegion = CiscoIqAccountRegion.Emea,
+    AccountId = "<your-account-id>"  // required for a PAT, optional for a SAT
+});
+
+var page = await client.Assets.GetAssetsAsync(new GetAssetsRequest
+{
+    Filter = new AssetFilter { CoverageStatus = ["COVERED"], Max = 200 }
+}, CancellationToken.None);
 ```
 
-`coverage.config` follows Oscar's generated-code attribute exclusions. The extended
-configuration also measures handwritten async method bodies and lambdas, while excluding
-generated Refit, logging and regular expression implementations. CI requires 100% line
-and branch coverage in both reports.
-
-Fixtures cover all seven models, nullable fields and sparse selection. Sanitized live
-fixtures and their provenance are described in [Fixtures/README.md](Cisco.Iq.Api.Test/Fixtures/README.md).
-
-For the first release, version.json is set to `0.1`. Once approved, run `./Publish.ps1`
-from a clean main branch synchronized with origin/main. It resolves the package version
-using Nerdbank.GitVersioning's MSBuild target, pushes the version tag and checks the
-release run. Tagged CI uses NuGet Trusted Publishing; no publication is performed by
-ordinary builds or pull requests.
+Every beta collection has a `Get...Async` method returning a `CiscoIqPage<T>` and a
+`Get...AllAsync` companion returning `IAsyncEnumerable<T>`. Errors throw `CiscoIqApiException`
+and its narrower types. Each operation accepts a typed request object and an explicit
+`CancellationToken`.
 
 ## Documentation
+
+Reference notes on the underlying beta API (authentication, collection conventions, every
+operation and every response schema) are in [documentation/cisco-iq/](documentation/cisco-iq/).
+They describe the beta contract and are kept for the migration period.
+
+Cisco's own documentation for the GA API is at <https://iq.cisco.com/apidocs/introduction>.
 
 ### Cisco DevNet sandboxes
 
 The [Cisco DevNet Sandbox catalog](https://devnetsandbox.cisco.com/DevNet) provides
-environments for developing and testing Cisco product integrations. Always-On entries
-can often be accessed without a reservation; other entries require launching or reserving
-an environment. Consult each entry's current instructions for availability and access.
-
-- [SD-WAN 20.18 AlwaysOn](https://devnetsandbox.cisco.com/DevNet/catalog/SD-WAN-Always-On_sd-wan-always-on)
-  provides browser and API access to a shared Catalyst SD-WAN Manager.
-- The catalog also includes Catalyst Center Always-On and reservable SD-WAN environments.
-
-During verification on 16 September 2026, launching SD-WAN AlwaysOn under a DevNet
-account returned the same shared `https://sandbox-sdwan-2.cisco.com` endpoint and
-`devnetuser` login described in the catalog. The launch did not grant additional
-administrator access: Cloud Services was off and disabled for that user, and Cisco IQ
-reported **No organizations found**.
+environments for developing and testing Cisco product integrations. Always-On entries can often
+be accessed without a reservation; other entries require launching or reserving an environment.
+Consult each entry's current instructions for availability and access.
 
 Sandbox access alone does not establish a Cisco IQ data connector. Cisco's
 [SD-WAN telemetry prerequisites](https://iq.cisco.com/docs/saas/saas-getting-started.html#prerequisites-for-data-collection-for-cisco-catalyst-sd-wan-telemetry)
-require an associated Smart Account and unique organization name, Smart Account or
-Virtual Account administrator access, Cisco IQ Account Administrator access, and enabled
-telemetry collection. Obtain a suitably authorized sandbox organization from Cisco before
-using it to test ingestion into IQ. Read credentials from the catalog rather than storing
-them in this repository.
-
-Reference notes on the underlying API — authentication, collection conventions, every
-operation and every response schema — are in [documentation/cisco-iq/](documentation/cisco-iq/).
-
-Cisco's own documentation is at <https://iq.cisco.com/apidocs/introduction>
-(the official GA API documentation).
+require an associated Smart Account and unique organization name, Smart Account or Virtual
+Account administrator access, Cisco IQ Account Administrator access, and enabled telemetry
+collection. Obtain a suitably authorized sandbox organization from Cisco before using it to
+test ingestion into IQ. Read credentials from the catalog rather than storing them in this
+repository.
 
 ## Licence
 
-MIT — see [LICENSE](LICENSE).
+MIT: see [LICENSE](LICENSE).
 
 Use of the Cisco IQ API itself is governed by the
 [Cisco API License](https://developer.cisco.com/site/license/cisco-api-license/). This library
 is an independent client and is not affiliated with or endorsed by Cisco Systems, Inc.
-
-Each operation accepts a typed request object and an explicit `CancellationToken`. Requests implement `IRequest<T>` for their payload type. Page and item calls return `IResponse<T>` with `Content` and `StatusCode`; paging helpers return `IAsyncEnumerable<T>`. Add new parameters to the request object without changing the operation signature.

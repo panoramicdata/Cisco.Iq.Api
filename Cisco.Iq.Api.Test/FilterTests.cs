@@ -1,3 +1,4 @@
+#pragma warning disable CS0618
 namespace Cisco.Iq.Api.Test;
 
 public class FilterTests
