@@ -77,6 +77,39 @@ public class PagingTests
 	}
 
 	[Fact]
+	public async Task Enumerate_LinksTwoDifferentTokensAndCompletesOrFails()
+	{
+		using var client = V1Support.Client(_ => V1Support.Json("{\"items\":[{\"id\":\"a\"}]}"));
+		using var sequenceSource = new CancellationTokenSource();
+		using var enumeratorSource = new CancellationTokenSource();
+		var items = new List<Cisco.Iq.Api.V1.Assets.PhysicalAsset>();
+		await foreach (var asset in client.Assets.ListAssetPhysicalAssetsAllAsync(cancellationToken: sequenceSource.Token).WithCancellation(enumeratorSource.Token))
+		{
+			items.Add(asset);
+		}
+
+		items.Should().ContainSingle();
+
+		using var failing = V1Support.Client(_ => V1Support.Json("null"));
+		Func<Task> act = async () =>
+		{
+			await foreach (var _ in failing.Assets.ListAssetPhysicalAssetsAllAsync(cancellationToken: sequenceSource.Token).WithCancellation(enumeratorSource.Token))
+			{
+			}
+		};
+		await act.Should().ThrowAsync<JsonSerializationException>();
+
+		await enumeratorSource.CancelAsync();
+		Func<Task> cancelled = async () =>
+		{
+			await foreach (var _ in client.Assets.ListAssetPhysicalAssetsAllAsync(cancellationToken: sequenceSource.Token).WithCancellation(enumeratorSource.Token))
+			{
+			}
+		};
+		await cancelled.Should().ThrowAsync<OperationCanceledException>();
+	}
+
+	[Fact]
 	public async Task Enumerate_CanBeDisposedBeforeItStartsOrAfterItFinishes()
 	{
 		var requests = 0;
