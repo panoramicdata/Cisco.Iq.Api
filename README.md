@@ -10,22 +10,17 @@ exposure, and field notice impact.
 
 See the [Cisco IQ FAQ](https://iq.cisco.com/docs/faq.html) for Cisco's platform guidance.
 
-> ### ⚠️ The Cisco IQ API is in beta
+The official Cisco IQ API documentation, including the beta-to-GA API mapping guide, is at
+<https://iq.cisco.com/apidocs/introduction>.
+
+> ### ⚠️ The Cisco IQ beta APIs sunset on 30 November 2026
 >
-> Cisco classifies the Cisco IQ APIs as **beta (public preview)** and states:
+> Cisco has announced that the Cisco IQ APIs are now generally available (GA). The beta
+> (`v0`) APIs keep working until **30 November 2026**, after which they stop functioning.
 >
-> > API behavior (including endpoint paths, request and response schemas, authentication,
-> > pagination, error handling, and other semantics) may change between releases without
-> > maintaining backward compatibility. **Do not build production integrations against the
-> > beta APIs.**
->
-> "Beta" describes the API's maturity, not its availability — it is open to anyone with a
-> Cisco IQ account. But there is no backward-compatibility guarantee, and the base path is
-> `v0`. This library tracks that API, so **it inherits the same caveat**: expect breaking
-> changes, and pin your package version.
->
-> This warning is Cisco's position on their API, not a statement about the quality of this
-> library.
+> This library currently targets the beta `v0` API, so it will stop working on that date
+> unless it is migrated to the GA APIs. Pin your package version and watch for a release
+> that targets GA.
 
 ## Relationship to `Cisco.Api`
 
@@ -216,8 +211,8 @@ them in this repository.
 Reference notes on the underlying API — authentication, collection conventions, every
 operation and every response schema — are in [documentation/cisco-iq/](documentation/cisco-iq/).
 
-Cisco's own documentation is at <https://iq.cisco.com/api/v1/apiregistry/docs/intro>
-(Cisco IQ login required).
+Cisco's own documentation is at <https://iq.cisco.com/apidocs/introduction>
+(the official GA API documentation).
 
 ## Licence
 
