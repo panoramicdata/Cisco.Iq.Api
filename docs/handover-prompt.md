@@ -109,7 +109,7 @@ user, 25/second and 25,000/day per account. Both apply. Do not hammer it in a lo
 
 ## Using your web access
 
-Cisco's own documentation is at <https://iq.cisco.com/api/v1/apiregistry/docs/intro> and is
+Cisco's own documentation is at <https://iq.cisco.com/apidocs/introduction> and is
 **login-gated** — an unauthenticated fetch 302s to a login page. If you need something from it
 beyond what `documentation/cisco-iq/` already records, ask the user to paste the section or to
 download the `Assets.json` / `Assessments.json` OpenAPI definitions and the `llms-full.txt`

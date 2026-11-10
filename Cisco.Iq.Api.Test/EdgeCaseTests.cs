@@ -1,3 +1,4 @@
+#pragma warning disable CS0618
 using System.Net;
 using Cisco.Iq.Api.Data;
 using Cisco.Iq.Api.Internal;

@@ -1,3 +1,4 @@
+#pragma warning disable CS0618
 using System.Net;
 using System.Net.Http.Headers;
 using System.Text;

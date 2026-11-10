@@ -5,7 +5,7 @@
 		<ImplicitUsings>enable</ImplicitUsings>
 		<PackageId>Cisco.Iq.Api</PackageId>
 		<GeneratePackageOnBuild>true</GeneratePackageOnBuild>
-		<Description>Provides access to the Cisco IQ Assets and Assessments REST APIs - asset inventory, contracts, hardware and software lifecycle milestones, security advisory exposure and field notice impact. Requires a Cisco IQ Personal Access Token or Service Account Token.</Description>
+		<Description>Provides access to the Cisco IQ GA REST APIs (Asset, Assessment and Product) - asset inventory, coverage, end-of-life bulletins, security advisories, field notices and assessment findings. Requires a Cisco IQ API key. The obsolete beta client remains until the beta APIs stop on 30 November 2026.</Description>
 		<NeutralResourcesLanguage>en</NeutralResourcesLanguage>
 		<GenerateDocumentationFile>true</GenerateDocumentationFile>
 		<PackageProjectUrl>https://github.com/panoramicdata/Cisco.Iq.Api</PackageProjectUrl>

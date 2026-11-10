@@ -1,3 +1,4 @@
+#pragma warning disable CS0618
 using Newtonsoft.Json;
 
 namespace Cisco.Iq.Api.Test;
