@@ -457,11 +457,11 @@ public partial class PipelineTests
 	{
 		internal List<string> Messages { get; } = [];
 
-		public IDisposable? BeginScope<TState>(TState state) where TState : notnull => null;
+		public IDisposable? BeginScope<TState>(TState _) where TState : notnull => null;
 
-		public bool IsEnabled(LogLevel logLevel) => true;
+		public bool IsEnabled(LogLevel _) => true;
 
-		public void Log<TState>(LogLevel logLevel, EventId eventId, TState state, Exception? exception, Func<TState, Exception?, string> formatter)
+		public void Log<TState>(LogLevel _, EventId __, TState state, Exception? exception, Func<TState, Exception?, string> formatter)
 			=> Messages.Add(formatter(state, exception));
 	}
 }

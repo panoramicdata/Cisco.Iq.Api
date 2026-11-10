@@ -25,7 +25,7 @@ public partial class GeneratedSurfaceTests
 			requests.Add(request.RequestUri!);
 			return V1Support.Json("{\"items\":[]}");
 		});
-		var instance = api == typeof(IAssetApi) ? (object)client.Assets : api == typeof(IAssessmentApi) ? client.Assessments : client.Products;
+		var instance = ApiInstance(client, api);
 		var methods = api.GetMethods().Where(m => m.GetCustomAttribute<GetAttribute>() is not null).ToList();
 
 		methods.Should().HaveCount(expected);
@@ -33,10 +33,7 @@ public partial class GeneratedSurfaceTests
 		{
 			requests.Clear();
 			var template = method.GetCustomAttribute<GetAttribute>()!.Path;
-			var arguments = method.GetParameters().Select(p => p.ParameterType == typeof(string) && template.Contains("{" + (p.GetCustomAttribute<AliasAsAttribute>()?.Name ?? p.Name) + "}", StringComparison.OrdinalIgnoreCase)
-				? "v-" + (p.GetCustomAttribute<AliasAsAttribute>()?.Name ?? p.Name)
-				: p.HasDefaultValue ? p.DefaultValue : null).ToArray();
-			using var response = (IDisposable)await Await(method.Invoke(instance, arguments)!);
+			using var response = (IDisposable)await Await(method.Invoke(instance, OperationArguments(method, template))!);
 
 			var expectedPath = PlaceholderPattern().Replace(template, match => "v-" + match.Groups[1].Value);
 			requests.Should().ContainSingle(method.Name).Which.AbsolutePath.Should().Be(expectedPath, method.Name);
@@ -55,7 +52,7 @@ public partial class GeneratedSurfaceTests
 			requests.Add(request.RequestUri!);
 			return V1Support.Json("{\"items\":[]}");
 		});
-		var instance = api == typeof(IAssetApi) ? (object)client.Assets : api == typeof(IAssessmentApi) ? client.Assessments : client.Products;
+		var instance = ApiInstance(client, api);
 		var helpers = extensions.GetMethods(BindingFlags.Public | BindingFlags.Static).ToList();
 
 		helpers.Should().NotBeEmpty();
@@ -96,6 +93,18 @@ public partial class GeneratedSurfaceTests
 		result.OperationCounts.Should().BeEquivalentTo(new Dictionary<string, int> { ["assessment"] = 16, ["asset"] = 28, ["product"] = 25 });
 		result.Report.Count(line => line.Contains("skipped", StringComparison.Ordinal)).Should().Be(4, "only the four asset write operations are not generated yet");
 	}
+
+	private static object ApiInstance(CiscoIqV1Client client, Type api)
+		=> api == typeof(IAssetApi) ? client.Assets : api == typeof(IAssessmentApi) ? client.Assessments : client.Products;
+
+	private static object?[] OperationArguments(MethodInfo method, string template)
+		=> method.GetParameters().Select(parameter =>
+		{
+			var name = parameter.GetCustomAttribute<AliasAsAttribute>()?.Name ?? parameter.Name;
+			return parameter.ParameterType == typeof(string) && template.Contains("{" + name + "}", StringComparison.OrdinalIgnoreCase)
+				? "v-" + name
+				: parameter.HasDefaultValue ? parameter.DefaultValue : null;
+		}).ToArray();
 
 	private static async Task<object> Await(object task)
 	{
