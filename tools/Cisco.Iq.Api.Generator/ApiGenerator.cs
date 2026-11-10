@@ -108,26 +108,39 @@ internal sealed partial class ApiGenerator
 		foreach (var parameter in (operation["parameters"]?.Items ?? []).Select(Resolve))
 		{
 			var wire = parameter["name"]!.Text!;
-			var schema = parameter["schema"]!;
-			switch (parameter["in"]!.Text)
+			var location = parameter["in"]!.Text;
+			if (location == "path")
 			{
-				case "path":
-					var argument = Naming.Camel(wire);
-					var alias = argument.TrimStart('@') == wire ? string.Empty : $"[AliasAs(\"{wire}\")] ";
-					path.Add((alias, MapType(schema, baseName + Naming.Pascal(wire)), argument));
-					break;
-				case "header" when !wire.Equals("traceparent", StringComparison.OrdinalIgnoreCase):
-					headers.Add($"[Header(\"{wire}\")] string? {Naming.Camel(wire)} = null");
-					break;
-				case "query":
-					query.Add((wire == "orderby" ? "OrderBy" : Naming.Pascal(wire), wire, MapType(schema, baseName + Naming.Pascal(wire)), TypeNames(schema).Contains("array"), parameter["summary"]?.Text ?? parameter["description"]?.Text));
-					break;
-				default:
-					break;
+				path.Add(PathParameter(wire, parameter["schema"]!, baseName));
+			}
+			else if (location == "query")
+			{
+				query.Add(QueryParameter(parameter, wire, baseName));
+			}
+			else if (location != "header")
+			{
+				throw new InvalidOperationException($"Unsupported parameter location '{location}' on {baseName}.");
+			}
+			else if (!wire.Equals("traceparent", StringComparison.OrdinalIgnoreCase))
+			{
+				headers.Add($"[Header(\"{wire}\")] string? {Naming.Camel(wire)} = null");
 			}
 		}
 
 		return (path, headers, query);
+	}
+
+	private (string Alias, string Type, string Name) PathParameter(string wire, Node schema, string baseName)
+	{
+		var argument = Naming.Camel(wire);
+		var alias = argument.TrimStart('@') == wire ? string.Empty : $"[AliasAs(\"{wire}\")] ";
+		return (alias, MapType(schema, baseName + Naming.Pascal(wire)), argument);
+	}
+
+	private (string Name, string Wire, string Type, bool Csv, string? Doc) QueryParameter(Node parameter, string wire, string baseName)
+	{
+		var schema = parameter["schema"]!;
+		return (wire == "orderby" ? "OrderBy" : Naming.Pascal(wire), wire, MapType(schema, baseName + Naming.Pascal(wire)), TypeNames(schema).Contains("array"), parameter["summary"]?.Text ?? parameter["description"]?.Text);
 	}
 
 	private void EmitPagingExtension(Node operation, string methodName, string baseName, List<(string Alias, string Type, string Name)> pathParameters, string requestName, bool hasCount, string itemType)

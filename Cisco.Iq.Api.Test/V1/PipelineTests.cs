@@ -417,6 +417,9 @@ public partial class PipelineTests
 		using var plain = new CiscoIqV1Client(V1Support.Options());
 
 		logger.Messages.Should().ContainSingle().Which.Should().Contain("Emea", Exactly.Once()).And.NotContain(V1Support.ApiKey);
+		logger.Levels.Should().Equal(LogLevel.Debug);
+		logger.EventIds.Should().HaveCount(1);
+		logger.Scopes.Should().BeEmpty();
 		client.Products.Should().NotBeNull();
 		client.Assessments.Should().NotBeNull();
 		client.Assets.Should().NotBeNull();
@@ -457,12 +460,26 @@ public partial class PipelineTests
 	{
 		internal List<string> Messages { get; } = [];
 
-		public IDisposable? BeginScope<TState>(TState _) where TState : notnull => null;
+		internal List<LogLevel> Levels { get; } = [];
 
-		public bool IsEnabled(LogLevel _) => true;
+		internal List<EventId> EventIds { get; } = [];
 
-		public void Log<TState>(LogLevel _, EventId __, TState state, Exception? exception, Func<TState, Exception?, string> formatter)
-			=> Messages.Add(formatter(state, exception));
+		internal List<object> Scopes { get; } = [];
+
+		public IDisposable? BeginScope<TState>(TState state) where TState : notnull
+		{
+			Scopes.Add(state);
+			return null;
+		}
+
+		public bool IsEnabled(LogLevel logLevel) => logLevel != LogLevel.None;
+
+		public void Log<TState>(LogLevel logLevel, EventId eventId, TState state, Exception? exception, Func<TState, Exception?, string> formatter)
+		{
+			Levels.Add(logLevel);
+			EventIds.Add(eventId);
+			Messages.Add(formatter(state, exception));
+		}
 	}
 }
 
