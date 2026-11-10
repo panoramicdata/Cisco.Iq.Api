@@ -25,11 +25,13 @@ internal sealed partial class ApiGenerator
 	private readonly StringBuilder _extensions = new();
 	private readonly HashSet<string> _methodNames = [];
 	private readonly HashSet<string> _bodies = [];
+	private readonly List<SpecOverride> _overrides;
 	private readonly HashSet<string> _patches = [];
 
-	internal ApiGenerator(ApiDefinition api, Node root)
+	internal ApiGenerator(ApiDefinition api, Node root, IReadOnlyList<SpecOverride> overrides)
 	{
 		_api = api;
+		_overrides = overrides.Where(o => o.Api == api.Key).ToList();
 		_root = root;
 		_schemas = Entries(root["components"]?["schemas"]);
 		_parameters = Entries(root["components"]?["parameters"]);
@@ -263,10 +265,26 @@ internal sealed partial class ApiGenerator
 		}
 
 		var name = reference[(reference.LastIndexOf('/') + 1)..];
+		if (OverrideFor(Naming.TypeName(name), "items") is { } replacement)
+		{
+			return replacement.CSharp[5..^1];
+		}
+
 		var items = _schemas[name]["properties"]?["items"];
 		return items is not null && TypeNames(items).Contains("array") && items["items"] is { } element
 			? MapType(element, Naming.TypeName(name) + "ItemsItem")
 			: null;
+	}
+
+	private SpecOverride? OverrideFor(string typeName, string property)
+	{
+		var found = _overrides.FirstOrDefault(o => o.Type == typeName && o.Property == property);
+		if (found is not null && _fallbacks.Add($"override:{typeName}.{property}"))
+		{
+			_report.Add($"{typeName}.{property}: overridden to {found.CSharp} (see docs/ga-spec/overrides.json)");
+		}
+
+		return found;
 	}
 
 	private void EmitRequest(string name, List<(string Name, string Wire, string Type, bool Csv, string? Doc)> query)
@@ -424,7 +442,7 @@ internal sealed partial class ApiGenerator
 		}
 
 		var name = UniqueName(used, property.Key);
-		var type = property.Key == "_type" ? "string" : MapType(property.Value, typeName + Naming.Pascal(property.Key));
+		var type = property.Key == "_type" ? "string" : OverrideFor(typeName, property.Key)?.CSharp ?? MapType(property.Value, typeName + Naming.Pascal(property.Key));
 		builder.Line($"\t{Summary(property.Value["description"]?.Text ?? property.Value["title"]?.Text)}");
 		builder.Line($"\t[JsonProperty(\"{property.Key}\")]");
 		if (readOnly)

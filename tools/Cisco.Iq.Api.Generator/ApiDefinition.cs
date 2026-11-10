@@ -23,3 +23,11 @@ public sealed record ApiDefinition(string Key, string FileName, string Namespace
 /// <param name="Report">One line per notable decision or omission.</param>
 /// <param name="OperationCounts">The number of operations in each spec, counted by method and path.</param>
 public sealed record GenerationResult(IReadOnlyDictionary<string, string> Files, IReadOnlyList<string> Report, IReadOnlyDictionary<string, int> OperationCounts);
+
+/// <summary>A documented place where Cisco's specification is wrong and the live service is followed instead.</summary>
+/// <param name="Api">The API key, such as assessment.</param>
+/// <param name="Type">The generated type name.</param>
+/// <param name="Property">The JSON property name.</param>
+/// <param name="CSharp">The C# type to use instead.</param>
+/// <param name="Reason">Why, with the evidence.</param>
+public sealed record SpecOverride(string Api, string Type, string Property, string CSharp, string Reason);
