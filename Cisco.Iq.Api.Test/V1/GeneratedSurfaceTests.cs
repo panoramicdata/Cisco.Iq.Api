@@ -126,14 +126,16 @@ public partial class GeneratedSurfaceTests
 		}).ToArray();
 
 	private static object? ArgumentFor(ParameterInfo parameter, string? text)
-	{
-		if (parameter.GetCustomAttribute<BodyAttribute>() is not null || (!parameter.HasDefaultValue && parameter.ParameterType.IsClass && parameter.ParameterType != typeof(string)))
-		{
-			return parameter.ParameterType == typeof(JToken) ? new JObject() : Activator.CreateInstance(parameter.ParameterType);
-		}
+		=> NeedsInstance(parameter) ? NewInstance(parameter.ParameterType) : ScalarArgument(parameter, text);
 
-		return parameter.ParameterType == typeof(string) && !parameter.HasDefaultValue ? text : parameter.HasDefaultValue ? parameter.DefaultValue : null;
-	}
+	private static bool NeedsInstance(ParameterInfo parameter)
+		=> parameter.GetCustomAttribute<BodyAttribute>() is not null || (!parameter.HasDefaultValue && parameter.ParameterType.IsClass && parameter.ParameterType != typeof(string));
+
+	private static object? NewInstance(Type type)
+		=> type == typeof(JToken) ? new JObject() : Activator.CreateInstance(type);
+
+	private static object? ScalarArgument(ParameterInfo parameter, string? text)
+		=> parameter.ParameterType == typeof(string) && !parameter.HasDefaultValue ? text : parameter.HasDefaultValue ? parameter.DefaultValue : null;
 
 	private static async Task<object> Await(object task)
 	{

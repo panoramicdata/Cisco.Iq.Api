@@ -115,11 +115,14 @@ internal sealed partial class ApiGenerator
 		{
 			EmitPagingExtension(operation, names.MethodName, names.BaseName, names.Path, names.RequestName, query.Any(q => q.Wire == "count"), itemType);
 		}
-		else if (verb == "post" && body?.SchemaName is { } bodySchema && _schemas[bodySchema]["properties"]?.Has("after") == true && ItemType(response) is { } bodyItemType)
+		else if (verb == "post" && BodyHasCursor(body) && ItemType(response) is { } bodyItemType)
 		{
-			EmitBodyPagingExtension(operation, names.MethodName, names.BaseName, body.Value.Type, bodyItemType);
+			EmitBodyPagingExtension(operation, names.MethodName, names.BaseName, body!.Value.Type, bodyItemType);
 		}
 	}
+
+	private bool BodyHasCursor((string Type, bool Required, bool MergePatch, string? SchemaName)? body)
+		=> body?.SchemaName is { } name && _schemas[name]["properties"]?.Has("after") == true;
 
 	private (string Type, bool Required, bool MergePatch, string? SchemaName)? ReadBody(Node operation, string baseName)
 	{
@@ -138,16 +141,22 @@ internal sealed partial class ApiGenerator
 
 		var schema = content.Value["schema"]!;
 		var schemaName = schema["$ref"]?.Text is { } reference ? reference[(reference.LastIndexOf('/') + 1)..] : null;
-		if (schemaName is not null)
+		RegisterBody(schemaName, mergePatch);
+		return (MapType(schema, baseName + "Body"), body["required"]?.Text == "true", mergePatch, schemaName);
+	}
+
+	private void RegisterBody(string? schemaName, bool mergePatch)
+	{
+		if (schemaName is null)
 		{
-			_bodies.Add(schemaName);
-			if (mergePatch)
-			{
-				_patches.Add(schemaName);
-			}
+			return;
 		}
 
-		return (MapType(schema, baseName + "Body"), body["required"]?.Text == "true", mergePatch, schemaName);
+		_bodies.Add(schemaName);
+		if (mergePatch)
+		{
+			_patches.Add(schemaName);
+		}
 	}
 
 	private void EmitBodyPagingExtension(Node operation, string methodName, string baseName, string bodyType, string itemType)
@@ -394,44 +403,54 @@ internal sealed partial class ApiGenerator
 		var used = new HashSet<string> { typeName };
 		foreach (var property in schema["properties"]!.Entries)
 		{
-			var readOnly = property.Value["readOnly"]?.Text == "true";
-			if (readOnly && isRequestBody)
-			{
-				continue;
-			}
-
-			var name = property.Key == "_type" ? "ResourceType" : Naming.Pascal(property.Key);
-			while (!used.Add(name))
-			{
-				name += "Value";
-			}
-
-			var type = property.Key == "_type" ? "string" : MapType(property.Value, typeName + Naming.Pascal(property.Key));
-			builder.Line($"\t{Summary(property.Value["description"]?.Text ?? property.Value["title"]?.Text)}");
-			builder.Line($"\t[JsonProperty(\"{property.Key}\")]");
-			if (readOnly)
-			{
-				builder.AppendLine("\t[CiscoIqV1ReadOnly]");
-			}
-
-			var propertyType = isPatch ? $"CiscoIqV1Optional<{type}>" : $"{type}?";
-			builder.Line($"\tpublic {propertyType} {name} {{ get; set; }}");
-			builder.AppendLine();
+			EmitProperty(builder, used, typeName, property, isRequestBody, isPatch);
 		}
 
 		if (schema["properties"]!.Has("after") && isRequestBody)
 		{
-			builder.AppendLine("\t/// <summary>Returns a copy with the paging cursor replaced.</summary>");
-			builder.Line($"\tpublic {typeName} WithAfter(string? after)");
-			builder.AppendLine("\t{");
-			builder.Line($"\t\tvar copy = ({typeName})MemberwiseClone();");
-			builder.AppendLine("\t\tcopy.After = after;");
-			builder.AppendLine("\t\treturn copy;");
-			builder.AppendLine("\t}");
+			EmitWithAfter(builder, typeName);
 		}
 
 		builder.AppendLine("}");
 		_types[typeName] = builder.ToString();
+	}
+
+	private void EmitProperty(StringBuilder builder, HashSet<string> used, string typeName, KeyValuePair<string, Node> property, bool isRequestBody, bool isPatch)
+	{
+		var readOnly = property.Value["readOnly"]?.Text == "true";
+		if (readOnly && isRequestBody)
+		{
+			return;
+		}
+
+		var name = property.Key == "_type" ? "ResourceType" : Naming.Pascal(property.Key);
+		while (!used.Add(name))
+		{
+			name += "Value";
+		}
+
+		var type = property.Key == "_type" ? "string" : MapType(property.Value, typeName + Naming.Pascal(property.Key));
+		builder.Line($"\t{Summary(property.Value["description"]?.Text ?? property.Value["title"]?.Text)}");
+		builder.Line($"\t[JsonProperty(\"{property.Key}\")]");
+		if (readOnly)
+		{
+			builder.AppendLine("\t[CiscoIqV1ReadOnly]");
+		}
+
+		var propertyType = isPatch ? $"CiscoIqV1Optional<{type}>" : $"{type}?";
+		builder.Line($"\tpublic {propertyType} {name} {{ get; set; }}");
+		builder.AppendLine();
+	}
+
+	private static void EmitWithAfter(StringBuilder builder, string typeName)
+	{
+		builder.AppendLine("\t/// <summary>Returns a copy with the paging cursor replaced.</summary>");
+		builder.Line($"\tpublic {typeName} WithAfter(string? after)");
+		builder.AppendLine("\t{");
+		builder.Line($"\t\tvar copy = ({typeName})MemberwiseClone();");
+		builder.AppendLine("\t\tcopy.After = after;");
+		builder.AppendLine("\t\treturn copy;");
+		builder.AppendLine("\t}");
 	}
 
 	private void EmitEnum(string typeName, Node schema)

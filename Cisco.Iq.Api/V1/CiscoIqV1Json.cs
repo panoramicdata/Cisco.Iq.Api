@@ -104,7 +104,8 @@ public sealed class CiscoIqV1ContractResolver : DefaultContractResolver
 		}
 		else if (property.PropertyType is { IsGenericType: true } type && type.GetGenericTypeDefinition() == typeof(CiscoIqV1Optional<>))
 		{
-			property.ShouldSerialize = instance => ((ICiscoIqV1Optional)property.ValueProvider!.GetValue(instance)!).IsSet;
+			var unset = Activator.CreateInstance(type);
+			property.ShouldSerialize = instance => !Equals(property.ValueProvider!.GetValue(instance), unset);
 		}
 
 		return property;
