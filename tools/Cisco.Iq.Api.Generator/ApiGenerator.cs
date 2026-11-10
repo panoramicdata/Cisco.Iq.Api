@@ -423,12 +423,7 @@ internal sealed partial class ApiGenerator
 			return;
 		}
 
-		var name = property.Key == "_type" ? "ResourceType" : Naming.Pascal(property.Key);
-		while (!used.Add(name))
-		{
-			name += "Value";
-		}
-
+		var name = UniqueName(used, property.Key);
 		var type = property.Key == "_type" ? "string" : MapType(property.Value, typeName + Naming.Pascal(property.Key));
 		builder.Line($"\t{Summary(property.Value["description"]?.Text ?? property.Value["title"]?.Text)}");
 		builder.Line($"\t[JsonProperty(\"{property.Key}\")]");
@@ -440,6 +435,17 @@ internal sealed partial class ApiGenerator
 		var propertyType = isPatch ? $"CiscoIqV1Optional<{type}>" : $"{type}?";
 		builder.Line($"\tpublic {propertyType} {name} {{ get; set; }}");
 		builder.AppendLine();
+	}
+
+	private static string UniqueName(HashSet<string> used, string key)
+	{
+		var name = key == "_type" ? "ResourceType" : Naming.Pascal(key);
+		while (!used.Add(name))
+		{
+			name += "Value";
+		}
+
+		return name;
 	}
 
 	private static void EmitWithAfter(StringBuilder builder, string typeName)
