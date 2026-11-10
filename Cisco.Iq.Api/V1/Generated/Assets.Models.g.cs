@@ -38,6 +38,7 @@ public class AssetCriticality
 {
 	/// <summary>Business-criticality classification of the item, in effect.</summary>
 	[JsonProperty("importance")]
+	[CiscoIqV1ReadOnly]
 	public AssetImportance? Importance { get; set; }
 
 	/// <summary>Business-criticality classification as manually overridden.</summary>
@@ -50,6 +51,7 @@ public class AssetCriticality
 
 	/// <summary>Operational function of the item, in effect.</summary>
 	[JsonProperty("role")]
+	[CiscoIqV1ReadOnly]
 	public string? Role { get; set; }
 
 }
@@ -171,118 +173,147 @@ public class Coverage
 {
 	/// <summary>Concrete type discriminator in namespace.typeName format.</summary>
 	[JsonProperty("_type")]
+	[CiscoIqV1ReadOnly]
 	public string? ResourceType { get; set; }
 
 	/// <summary>Opaque, immutable identifier for this entity.</summary>
 	[JsonProperty("id")]
+	[CiscoIqV1ReadOnly]
 	public string? Id { get; set; }
 
 	/// <summary>The account this entity belongs to.</summary>
 	[JsonProperty("account")]
+	[CiscoIqV1ReadOnly]
 	public string? Account { get; set; }
 
 	/// <summary>Configuration item this row covers.</summary>
 	[JsonProperty("asset")]
+	[CiscoIqV1ReadOnly]
 	public string? Asset { get; set; }
 
 	/// <summary>Ancillary key/value detail specific to one kind of coverage source, for values worth carrying but not worth a field of their own.</summary>
 	[JsonProperty("attributes")]
+	[CiscoIqV1ReadOnly]
 	public JToken? Attributes { get; set; }
 
 	/// <summary>Amount of the grant already in use.</summary>
 	[JsonProperty("consumedQuantity")]
+	[CiscoIqV1ReadOnly]
 	public int? ConsumedQuantity { get; set; }
 
 	/// <summary>Number of the covered line this row came from, as a person would read it.</summary>
 	[JsonProperty("coveredLineNumber")]
+	[CiscoIqV1ReadOnly]
 	public string? CoveredLineNumber { get; set; }
 
 	/// <summary>Date coverage for this specific target expires.</summary>
 	[JsonProperty("endDate")]
+	[CiscoIqV1ReadOnly]
 	public DateOnly? EndDate { get; set; }
 
 	/// <summary>Quantity granted by this row (seats, instances, or devices) and the purchased pool size at POOL grain.</summary>
 	[JsonProperty("entitledQuantity")]
+	[CiscoIqV1ReadOnly]
 	public int? EntitledQuantity { get; set; }
 
 	/// <summary>Entitlement tag assigned by the licensing system, when the source reports one.</summary>
 	[JsonProperty("entitlementTag")]
+	[CiscoIqV1ReadOnly]
 	public string? EntitlementTag { get; set; }
 
 	/// <summary>The entitlementTier granted by this coverage row.</summary>
 	[JsonProperty("entitlementTier")]
+	[CiscoIqV1ReadOnly]
 	public string? EntitlementTier { get; set; }
 
 	/// <summary>Right this row grants, such as support, software, a feature license, or replacement.</summary>
 	[JsonProperty("entitlementType")]
+	[CiscoIqV1ReadOnly]
 	public string? EntitlementType { get; set; }
 
 	/// <summary>When the source last changed this coverage row.</summary>
 	[JsonProperty("lastUpdatedDate")]
+	[CiscoIqV1ReadOnly]
 	public DateOnly? LastUpdatedDate { get; set; }
 
 	/// <summary>Virtual Account scoping this row.</summary>
 	[JsonProperty("licensingAccount")]
+	[CiscoIqV1ReadOnly]
 	public string? LicensingAccount { get; set; }
 
 	/// <summary>Service order this coverage was booked under.</summary>
 	[JsonProperty("maintenanceSalesOrder")]
+	[CiscoIqV1ReadOnly]
 	public string? MaintenanceSalesOrder { get; set; }
 
 	/// <summary>Program or offer governing the service level, carrying the program's name rather than its code, serviceLevelCode on the same row holds the corresponding code, so a row reading 'SNTC' here reads 'SNT' there.</summary>
 	[JsonProperty("program")]
+	[CiscoIqV1ReadOnly]
 	public string? Program { get; set; }
 
 	/// <summary>Serial number of the item this row targets, denormalised from that item so coverage can be filtered by serial without traversing to the asset.</summary>
 	[JsonProperty("serialNumber")]
+	[CiscoIqV1ReadOnly]
 	public string? SerialNumber { get; set; }
 
 	/// <summary>Service level this row delivers, as the code its own source states.</summary>
 	[JsonProperty("serviceLevelCode")]
+	[CiscoIqV1ReadOnly]
 	public string? ServiceLevelCode { get; set; }
 
 	/// <summary>Service level in readable form, stating the response terms that the coded serviceLevelCode and named program on the same row do not.</summary>
 	[JsonProperty("serviceLevelDescription")]
+	[CiscoIqV1ReadOnly]
 	public string? ServiceLevelDescription { get; set; }
 
 	/// <summary>Date the covered hardware shipped.</summary>
 	[JsonProperty("shipDate")]
+	[CiscoIqV1ReadOnly]
 	public DateOnly? ShipDate { get; set; }
 
 	/// <summary>The source this row belongs to and draws its term and baseline service tier from.</summary>
 	[JsonProperty("source")]
+	[CiscoIqV1ReadOnly]
 	public string? Source { get; set; }
 
 	/// <summary>Identity of this row, taken from the source's own row identifier and namespaced by coverage path so that two id spaces can share one column: CVL- followed by the covered line id for contract and subscription coverage,...</summary>
 	[JsonProperty("sourceRowKey")]
+	[CiscoIqV1ReadOnly]
 	public string? SourceRowKey { get; set; }
 
 	/// <summary>Date coverage for this specific target begins.</summary>
 	[JsonProperty("startDate")]
+	[CiscoIqV1ReadOnly]
 	public DateOnly? StartDate { get; set; }
 
 	/// <summary>Lifecycle state of this row as its source reports it, carried verbatim rather than interpreted.</summary>
 	[JsonProperty("status")]
+	[CiscoIqV1ReadOnly]
 	public CoverageStatus? Status { get; set; }
 
 	/// <summary>System metadata for soft-deletion and purge lifecycle state.</summary>
 	[JsonProperty("sys")]
+	[CiscoIqV1ReadOnly]
 	public StandardSys? Sys { get; set; }
 
 	/// <summary>Identifier of the thing this row targets, as reported, for INSTANCE the item's instance identifier, otherwise a serial number or a tenant identifier.</summary>
 	[JsonProperty("targetIdentifier")]
+	[CiscoIqV1ReadOnly]
 	public string? TargetIdentifier { get; set; }
 
 	/// <summary>Kind of thing this row targets.</summary>
 	[JsonProperty("targetType")]
+	[CiscoIqV1ReadOnly]
 	public CoverageTargetType? TargetType { get; set; }
 
 	/// <summary>Kind of coverage granted.</summary>
 	[JsonProperty("type")]
+	[CiscoIqV1ReadOnly]
 	public string? Type { get; set; }
 
 	/// <summary>Policy code classifying the warranty granted to the target, such as a 90-day limited hardware warranty.</summary>
 	[JsonProperty("warrantyType")]
+	[CiscoIqV1ReadOnly]
 	public string? WarrantyType { get; set; }
 
 }
@@ -385,99 +416,104 @@ public class CoverageSource
 {
 	/// <summary>Concrete type discriminator in namespace.typeName format.</summary>
 	[JsonProperty("_type")]
+	[CiscoIqV1ReadOnly]
 	public string? ResourceType { get; set; }
 
 	/// <summary>Opaque, immutable identifier for this entity.</summary>
 	[JsonProperty("id")]
+	[CiscoIqV1ReadOnly]
 	public string? Id { get; set; }
 
 	/// <summary>The account this entity belongs to.</summary>
 	[JsonProperty("account")]
+	[CiscoIqV1ReadOnly]
 	public string? Account { get; set; }
 
 	/// <summary>Location this source bills to.</summary>
 	[JsonProperty("billToLocation")]
+	[CiscoIqV1ReadOnly]
 	public string? BillToLocation { get; set; }
 
 	/// <summary>Name of the party responsible for payment.</summary>
 	[JsonProperty("billToName")]
+	[CiscoIqV1ReadOnly]
 	public string? BillToName { get; set; }
 
 	/// <summary>Whose brand this entitlement is delivered under, and therefore whose support organization is answerable to the customer for it.</summary>
 	[JsonProperty("coverageEntitlementOwner")]
+	[CiscoIqV1ReadOnly]
 	public CoverageEntitlementOwner? CoverageEntitlementOwner { get; set; }
 
 	/// <summary>Line number distinguishing this line from the others on the same agreement, a service line on a contract, and the equivalent subdivision on the source types that have one.</summary>
 	[JsonProperty("coverageLineNumber")]
+	[CiscoIqV1ReadOnly]
 	public string? CoverageLineNumber { get; set; }
 
 	/// <summary>Coarse validity state of this source's own line, and the field that governs whether the coverage it grants is in force.</summary>
 	[JsonProperty("coverageLineStatus")]
+	[CiscoIqV1ReadOnly]
 	public CoverageLineStatus? CoverageLineStatus { get; set; }
 
 	/// <summary>The source system's own fine-grained state for this line, carried verbatim alongside coverageLineStatus for the same reason its source-level counterpart is.</summary>
 	[JsonProperty("coverageLineStatusCode")]
+	[CiscoIqV1ReadOnly]
 	public CoverageLineStatusCode? CoverageLineStatusCode { get; set; }
 
 	/// <summary>Catalog offer cited by this service line, with its support tier and Global Service Program details.</summary>
 	[JsonProperty("coverageTemplate")]
+	[CiscoIqV1ReadOnly]
 	public string? CoverageTemplate { get; set; }
 
 	/// <summary>Rows specifying what this source grants and to which targets.</summary>
 	[JsonProperty("coverages")]
+	[CiscoIqV1ReadOnly]
 	public JToken? Coverages { get; set; }
 
 	/// <summary>Date the source's term expires.</summary>
 	[JsonProperty("endDate")]
+	[CiscoIqV1ReadOnly]
 	public DateOnly? EndDate { get; set; }
 
 	/// <summary>Virtual Account this source is booked under, the licensing consumption grain, rather than the Smart Account above it.</summary>
 	[JsonProperty("licensingAccount")]
+	[CiscoIqV1ReadOnly]
 	public string? LicensingAccount { get; set; }
 
 	/// <summary>Identifier used to match this source during ingestion.</summary>
 	[JsonProperty("sourceIdentifier")]
+	[CiscoIqV1ReadOnly]
 	public string? SourceIdentifier { get; set; }
 
 	/// <summary>Form this source takes.</summary>
 	[JsonProperty("sourceType")]
+	[CiscoIqV1ReadOnly]
 	public SourceType? SourceType { get; set; }
 
 	/// <summary>Date the source's term begins.</summary>
 	[JsonProperty("startDate")]
+	[CiscoIqV1ReadOnly]
 	public DateOnly? StartDate { get; set; }
 
 	/// <summary>Coarse validity state of the source as a whole.</summary>
 	[JsonProperty("status")]
+	[CiscoIqV1ReadOnly]
 	public CoverageSourceStatus? Status { get; set; }
 
 	/// <summary>The source system's own fine-grained state for the source as a whole, carried verbatim so the normalisation into status stays auditable and reversible.</summary>
 	[JsonProperty("statusCode")]
+	[CiscoIqV1ReadOnly]
 	public CoverageSourceStatusCode? StatusCode { get; set; }
 
 	/// <summary>System metadata for soft-deletion and purge lifecycle state.</summary>
 	[JsonProperty("sys")]
+	[CiscoIqV1ReadOnly]
 	public StandardSys? Sys { get; set; }
 
 	/// <summary>Web order identifier a subscription source was placed under.</summary>
 	[JsonProperty("webOrderId")]
+	[CiscoIqV1ReadOnly]
 	public string? WebOrderId { get; set; }
 
-}
-
-/// <summary>Generated from the Cisco IQ OpenAPI specification.</summary>
-[GeneratedCode("Cisco.Iq.Api.Generator", "1.0")]
-[JsonConverter(typeof(CiscoIqV1StringValueConverter<CoverageSourceInlineMember>))]
-public readonly record struct CoverageSourceInlineMember(string Value) : ICiscoIqV1StringValue<CoverageSourceInlineMember>
-{
-	/// <summary>The value coverages.</summary>
-	public static readonly CoverageSourceInlineMember Coverages = new("coverages");
-
-	/// <inheritdoc />
-	public static CoverageSourceInlineMember Create(string value) => new(value);
-
-	/// <inheritdoc />
-	public override string ToString() => Value;
 }
 
 /// <summary>Collection response containing one page of coverageSource resources.</summary>
@@ -611,50 +647,62 @@ public class DataSource
 {
 	/// <summary>Concrete type discriminator in namespace.typeName format.</summary>
 	[JsonProperty("_type")]
+	[CiscoIqV1ReadOnly]
 	public string? ResourceType { get; set; }
 
 	/// <summary>Opaque, immutable identifier for this entity.</summary>
 	[JsonProperty("id")]
+	[CiscoIqV1ReadOnly]
 	public string? Id { get; set; }
 
 	/// <summary>The account this entity belongs to.</summary>
 	[JsonProperty("account")]
+	[CiscoIqV1ReadOnly]
 	public string? Account { get; set; }
 
 	/// <summary>Identifier assigned to this source by the reporting system.</summary>
 	[JsonProperty("externalId")]
+	[CiscoIqV1ReadOnly]
 	public string? ExternalId { get; set; }
 
 	/// <summary>What kind of channel this is.</summary>
 	[JsonProperty("kind")]
+	[CiscoIqV1ReadOnly]
 	public DataSourceKind? Kind { get; set; }
 
 	/// <summary>Hostname or fully qualified domain name at which the management system is reached.</summary>
 	[JsonProperty("managementSystemHostname")]
+	[CiscoIqV1ReadOnly]
 	public string? ManagementSystemHostname { get; set; }
 
 	/// <summary>Identifier of the underlying management system this data source corresponds to, when applicable.</summary>
 	[JsonProperty("managementSystemId")]
+	[CiscoIqV1ReadOnly]
 	public string? ManagementSystemId { get; set; }
 
 	/// <summary>Management IP address of the system, IPv4 or IPv6.</summary>
 	[JsonProperty("managementSystemIpAddress")]
+	[CiscoIqV1ReadOnly]
 	public string? ManagementSystemIpAddress { get; set; }
 
 	/// <summary>IANA timezone the management system reports its timestamps in.</summary>
 	[JsonProperty("managementSystemTimezone")]
+	[CiscoIqV1ReadOnly]
 	public string? ManagementSystemTimezone { get; set; }
 
 	/// <summary>Classification of the system that reports the items.</summary>
 	[JsonProperty("managementSystemType")]
+	[CiscoIqV1ReadOnly]
 	public ManagementSystemType? ManagementSystemType { get; set; }
 
 	/// <summary>Human-readable name of the data source as reported by the system.</summary>
 	[JsonProperty("name")]
+	[CiscoIqV1ReadOnly]
 	public string? Name { get; set; }
 
 	/// <summary>System metadata for schema versioning, change-tracking timestamps, and optimistic-locking token.</summary>
 	[JsonProperty("sys")]
+	[CiscoIqV1ReadOnly]
 	public StandardSys? Sys { get; set; }
 
 }
@@ -706,34 +754,42 @@ public class DataSourceMapping
 {
 	/// <summary>Concrete type discriminator in namespace.typeName format.</summary>
 	[JsonProperty("_type")]
+	[CiscoIqV1ReadOnly]
 	public string? ResourceType { get; set; }
 
 	/// <summary>Opaque, immutable identifier for this entity.</summary>
 	[JsonProperty("id")]
+	[CiscoIqV1ReadOnly]
 	public string? Id { get; set; }
 
 	/// <summary>The account this entity belongs to.</summary>
 	[JsonProperty("account")]
+	[CiscoIqV1ReadOnly]
 	public string? Account { get; set; }
 
 	/// <summary>Type of collector that gathered this item's data for this data source.</summary>
 	[JsonProperty("collectorType")]
+	[CiscoIqV1ReadOnly]
 	public CollectorType? CollectorType { get; set; }
 
 	/// <summary>The data source that reports the item in this mapping.</summary>
 	[JsonProperty("dataSource")]
+	[CiscoIqV1ReadOnly]
 	public string? DataSource { get; set; }
 
 	/// <summary>The configuration item reported by this data source.</summary>
 	[JsonProperty("item")]
+	[CiscoIqV1ReadOnly]
 	public string? Item { get; set; }
 
 	/// <summary>System metadata for schema versioning, change-tracking timestamps, and optimistic-locking token.</summary>
 	[JsonProperty("sys")]
+	[CiscoIqV1ReadOnly]
 	public StandardSys? Sys { get; set; }
 
 	/// <summary>Identifier of the raw telemetry record reported for this item by this data source.</summary>
 	[JsonProperty("telemetryRecordId")]
+	[CiscoIqV1ReadOnly]
 	public string? TelemetryRecordId { get; set; }
 
 }
@@ -758,34 +814,42 @@ public class FunctionalRoleTaxonomy
 {
 	/// <summary>Concrete type discriminator in namespace.typeName format.</summary>
 	[JsonProperty("_type")]
+	[CiscoIqV1ReadOnly]
 	public string? ResourceType { get; set; }
 
 	/// <summary>Opaque, immutable identifier for this entity.</summary>
 	[JsonProperty("id")]
+	[CiscoIqV1ReadOnly]
 	public string? Id { get; set; }
 
 	/// <summary>Top-level category functionalRole is classified under.</summary>
 	[JsonProperty("architecture")]
+	[CiscoIqV1ReadOnly]
 	public string? Architecture { get; set; }
 
 	/// <summary>Operational function classified by this role option's architecture, technology, subTechnology, and softwareType categories.</summary>
 	[JsonProperty("functionalRole")]
+	[CiscoIqV1ReadOnly]
 	public string? FunctionalRole { get; set; }
 
 	/// <summary>Software type category that functionalRole is classified under, and the value a caller matches against the item's own softwareType to find applicable role options.</summary>
 	[JsonProperty("softwareType")]
+	[CiscoIqV1ReadOnly]
 	public string? SoftwareType { get; set; }
 
 	/// <summary>Sub-technology category under technology that functionalRole is classified under.</summary>
 	[JsonProperty("subTechnology")]
+	[CiscoIqV1ReadOnly]
 	public string? SubTechnology { get; set; }
 
 	/// <summary>System metadata for provisioning state.</summary>
 	[JsonProperty("sys")]
+	[CiscoIqV1ReadOnly]
 	public ProvisionedSys? Sys { get; set; }
 
 	/// <summary>Technology category under architecture that functionalRole is classified under.</summary>
 	[JsonProperty("technology")]
+	[CiscoIqV1ReadOnly]
 	public string? Technology { get; set; }
 
 }
@@ -866,10 +930,10 @@ public sealed record GetAssetCoverageSourceRequest
 	[AliasAs("select")]
 	public string? Select { get; init; }
 
-	/// <summary>Inline relationship references</summary>
+	/// <summary>Inline relationship references (known values: coverages)</summary>
 	[AliasAs("inline")]
 	[Query(CollectionFormat.Csv)]
-	public List<CoverageSourceInlineMember>? Inline { get; init; }
+	public List<string>? Inline { get; init; }
 
 	/// <summary>Inline relationship page size</summary>
 	[AliasAs("inline.max")]
@@ -919,10 +983,10 @@ public sealed record GetAssetLicensingAccountRequest
 	[AliasAs("select")]
 	public string? Select { get; init; }
 
-	/// <summary>Inline relationship references</summary>
+	/// <summary>Inline relationship references (known values: children)</summary>
 	[AliasAs("inline")]
 	[Query(CollectionFormat.Csv)]
-	public List<LicensingAccountInlineMember>? Inline { get; init; }
+	public List<string>? Inline { get; init; }
 
 	/// <summary>Inline relationship page size</summary>
 	[AliasAs("inline.max")]
@@ -942,10 +1006,10 @@ public sealed record GetAssetPhysicalAssetRequest
 	[AliasAs("select")]
 	public string? Select { get; init; }
 
-	/// <summary>Inline relationship references</summary>
+	/// <summary>Inline relationship references (known values: children, coverages, dataSourceMappings)</summary>
 	[AliasAs("inline")]
 	[Query(CollectionFormat.Csv)]
-	public List<PhysicalAssetInlineMember>? Inline { get; init; }
+	public List<string>? Inline { get; init; }
 
 	/// <summary>Inline relationship page size</summary>
 	[AliasAs("inline.max")]
@@ -965,10 +1029,10 @@ public sealed record GetAssetVirtualAssetRequest
 	[AliasAs("select")]
 	public string? Select { get; init; }
 
-	/// <summary>Inline relationship references</summary>
+	/// <summary>Inline relationship references (known values: children, coverages, dataSourceMappings)</summary>
 	[AliasAs("inline")]
 	[Query(CollectionFormat.Csv)]
-	public List<VirtualAssetInlineMember>? Inline { get; init; }
+	public List<string>? Inline { get; init; }
 
 	/// <summary>Inline relationship page size</summary>
 	[AliasAs("inline.max")]
@@ -986,30 +1050,37 @@ public class Item
 {
 	/// <summary>Concrete type discriminator in namespace.typeName format.</summary>
 	[JsonProperty("_type")]
+	[CiscoIqV1ReadOnly]
 	public string? ResourceType { get; set; }
 
 	/// <summary>Opaque, immutable identifier for this entity.</summary>
 	[JsonProperty("id")]
+	[CiscoIqV1ReadOnly]
 	public string? Id { get; set; }
 
 	/// <summary>Who produced this item, independent of where it runs.</summary>
 	[JsonProperty("assetOrigin")]
+	[CiscoIqV1ReadOnly]
 	public AssetOrigin? AssetOrigin { get; set; }
 
 	/// <summary>Whether this item is counted as installed base or exists only to reference it.</summary>
 	[JsonProperty("assetTier")]
+	[CiscoIqV1ReadOnly]
 	public AssetTier? AssetTier { get; set; }
 
 	/// <summary>Location billed for this item, where invoices go, not where the equipment sits.</summary>
 	[JsonProperty("billToLocation")]
+	[CiscoIqV1ReadOnly]
 	public string? BillToLocation { get; set; }
 
 	/// <summary>Items contained within this item (for example line cards, modules, power supplies).</summary>
 	[JsonProperty("children")]
+	[CiscoIqV1ReadOnly]
 	public JToken? Children { get; set; }
 
 	/// <summary>Coverage rows that cover this configuration item.</summary>
 	[JsonProperty("coverages")]
+	[CiscoIqV1ReadOnly]
 	public JToken? Coverages { get; set; }
 
 	/// <summary>Role and importance classification for this item.</summary>
@@ -1018,74 +1089,92 @@ public class Item
 
 	/// <summary>The mappings that identify each data source that reports this item.</summary>
 	[JsonProperty("dataSourceMappings")]
+	[CiscoIqV1ReadOnly]
 	public JToken? DataSourceMappings { get; set; }
 
 	/// <summary>Delivery and operation model of this item (for example on-prem, hosted, cloud-managed, saas).</summary>
 	[JsonProperty("deploymentModel")]
+	[CiscoIqV1ReadOnly]
 	public string? DeploymentModel { get; set; }
 
 	/// <summary>The entitlementTier this item's account coverage grants.</summary>
 	[JsonProperty("effectiveEntitlementTier")]
+	[CiscoIqV1ReadOnly]
 	public string? EffectiveEntitlementTier { get; set; }
 
 	/// <summary>Canonical URL or managed-object reference for this item in an external system.</summary>
 	[JsonProperty("externalRef")]
+	[CiscoIqV1ReadOnly]
 	public string? ExternalRef { get; set; }
 
 	/// <summary>Location where this item is installed.</summary>
 	[JsonProperty("installedAt")]
+	[CiscoIqV1ReadOnly]
 	public string? InstalledAt { get; set; }
 
 	/// <summary>Whether this item is actively managed and monitored.</summary>
 	[JsonProperty("isManaged")]
+	[CiscoIqV1ReadOnly]
 	public bool? IsManaged { get; set; }
 
 	/// <summary>When this item's identity and attributes were last confirmed.</summary>
 	[JsonProperty("lastReconciledAt")]
+	[CiscoIqV1ReadOnly]
 	public DateTimeOffset? LastReconciledAt { get; set; }
 
 	/// <summary>When this item last sent telemetry successfully.</summary>
 	[JsonProperty("lastTelemetryAt")]
+	[CiscoIqV1ReadOnly]
 	public DateTimeOffset? LastTelemetryAt { get; set; }
 
 	/// <summary>Parent item in a containment hierarchy.</summary>
 	[JsonProperty("parent")]
+	[CiscoIqV1ReadOnly]
 	public string? Parent { get; set; }
 
 	/// <summary>The product represented by this item.</summary>
 	[JsonProperty("product")]
+	[CiscoIqV1ReadOnly]
 	public string? Product { get; set; }
 
 	/// <summary>Orderable product identifier for the product represented by this item.</summary>
 	[JsonProperty("productId")]
+	[CiscoIqV1ReadOnly]
 	public string? ProductId { get; set; }
 
 	/// <summary>Reconciliation state for this item's identity and attributes.</summary>
 	[JsonProperty("reconciliationStatus")]
+	[CiscoIqV1ReadOnly]
 	public ReconciliationStatus? ReconciliationStatus { get; set; }
 
 	/// <summary>End-of-life announcement covering the software release this item runs.</summary>
 	[JsonProperty("softwareEndOfLifeBulletin")]
+	[CiscoIqV1ReadOnly]
 	public string? SoftwareEndOfLifeBulletin { get; set; }
 
 	/// <summary>Patch or maintenance level applied on top of the base version.</summary>
 	[JsonProperty("softwarePatchVersion")]
+	[CiscoIqV1ReadOnly]
 	public string? SoftwarePatchVersion { get; set; }
 
 	/// <summary>Operating system type this item runs.</summary>
 	[JsonProperty("softwareType")]
+	[CiscoIqV1ReadOnly]
 	public string? SoftwareType { get; set; }
 
 	/// <summary>Base software version currently running on this item.</summary>
 	[JsonProperty("softwareVersion")]
+	[CiscoIqV1ReadOnly]
 	public string? SoftwareVersion { get; set; }
 
 	/// <summary>Operational lifecycle state of this configuration item.</summary>
 	[JsonProperty("status")]
+	[CiscoIqV1ReadOnly]
 	public string? Status { get; set; }
 
 	/// <summary>System metadata for soft-deletion and purge lifecycle state.</summary>
 	[JsonProperty("sys")]
+	[CiscoIqV1ReadOnly]
 	public StandardSys? Sys { get; set; }
 
 	/// <summary>Key-value labels attached to this item.</summary>
@@ -1114,55 +1203,49 @@ public class LicensingAccount
 {
 	/// <summary>Concrete type discriminator in namespace.typeName format.</summary>
 	[JsonProperty("_type")]
+	[CiscoIqV1ReadOnly]
 	public string? ResourceType { get; set; }
 
 	/// <summary>Opaque, immutable identifier for this entity.</summary>
 	[JsonProperty("id")]
+	[CiscoIqV1ReadOnly]
 	public string? Id { get; set; }
 
 	/// <summary>The account this entity belongs to.</summary>
 	[JsonProperty("account")]
+	[CiscoIqV1ReadOnly]
 	public string? Account { get; set; }
 
 	/// <summary>Virtual Accounts beneath this Smart Account.</summary>
 	[JsonProperty("children")]
+	[CiscoIqV1ReadOnly]
 	public JToken? Children { get; set; }
 
 	/// <summary>Identifier the licensing spine assigns this account, a Smart Account domain identifier or a Virtual Account identifier.</summary>
 	[JsonProperty("licensingAccountId")]
+	[CiscoIqV1ReadOnly]
 	public string? LicensingAccountId { get; set; }
 
 	/// <summary>Display name of the account as the licensing spine publishes it.</summary>
 	[JsonProperty("name")]
+	[CiscoIqV1ReadOnly]
 	public string? Name { get; set; }
 
 	/// <summary>Smart Account this Virtual Account hangs beneath.</summary>
 	[JsonProperty("parent")]
+	[CiscoIqV1ReadOnly]
 	public string? Parent { get; set; }
 
 	/// <summary>System metadata for soft-deletion and purge lifecycle state.</summary>
 	[JsonProperty("sys")]
+	[CiscoIqV1ReadOnly]
 	public StandardSys? Sys { get; set; }
 
 	/// <summary>Which level of the spine this account occupies.</summary>
 	[JsonProperty("type")]
+	[CiscoIqV1ReadOnly]
 	public LicensingAccountType? Type { get; set; }
 
-}
-
-/// <summary>Generated from the Cisco IQ OpenAPI specification.</summary>
-[GeneratedCode("Cisco.Iq.Api.Generator", "1.0")]
-[JsonConverter(typeof(CiscoIqV1StringValueConverter<LicensingAccountInlineMember>))]
-public readonly record struct LicensingAccountInlineMember(string Value) : ICiscoIqV1StringValue<LicensingAccountInlineMember>
-{
-	/// <summary>The value children.</summary>
-	public static readonly LicensingAccountInlineMember Children = new("children");
-
-	/// <inheritdoc />
-	public static LicensingAccountInlineMember Create(string value) => new(value);
-
-	/// <inheritdoc />
-	public override string ToString() => Value;
 }
 
 /// <summary>Collection response containing one page of licensingAccount resources.</summary>
@@ -1291,10 +1374,10 @@ public sealed record ListAssetCoverageSourcesRequest
 	[AliasAs("count")]
 	public bool? Count { get; init; }
 
-	/// <summary>Inline relationship references</summary>
+	/// <summary>Inline relationship references (known values: coverages)</summary>
 	[AliasAs("inline")]
 	[Query(CollectionFormat.Csv)]
-	public List<CoverageSourceInlineMember>? Inline { get; init; }
+	public List<string>? Inline { get; init; }
 
 	/// <summary>Inline relationship page size</summary>
 	[AliasAs("inline.max")]
@@ -1564,10 +1647,10 @@ public sealed record ListAssetLicensingAccountsRequest
 	[AliasAs("count")]
 	public bool? Count { get; init; }
 
-	/// <summary>Inline relationship references</summary>
+	/// <summary>Inline relationship references (known values: children)</summary>
 	[AliasAs("inline")]
 	[Query(CollectionFormat.Csv)]
-	public List<LicensingAccountInlineMember>? Inline { get; init; }
+	public List<string>? Inline { get; init; }
 
 	/// <summary>Inline relationship page size</summary>
 	[AliasAs("inline.max")]
@@ -1607,10 +1690,10 @@ public sealed record ListAssetPhysicalAssetsRequest
 	[AliasAs("count")]
 	public bool? Count { get; init; }
 
-	/// <summary>Inline relationship references</summary>
+	/// <summary>Inline relationship references (known values: children, coverages, dataSourceMappings)</summary>
 	[AliasAs("inline")]
 	[Query(CollectionFormat.Csv)]
-	public List<PhysicalAssetInlineMember>? Inline { get; init; }
+	public List<string>? Inline { get; init; }
 
 	/// <summary>Inline relationship page size</summary>
 	[AliasAs("inline.max")]
@@ -1650,10 +1733,10 @@ public sealed record ListAssetVirtualAssetsRequest
 	[AliasAs("count")]
 	public bool? Count { get; init; }
 
-	/// <summary>Inline relationship references</summary>
+	/// <summary>Inline relationship references (known values: children, coverages, dataSourceMappings)</summary>
 	[AliasAs("inline")]
 	[Query(CollectionFormat.Csv)]
-	public List<VirtualAssetInlineMember>? Inline { get; init; }
+	public List<string>? Inline { get; init; }
 
 	/// <summary>Inline relationship page size</summary>
 	[AliasAs("inline.max")]
@@ -1768,34 +1851,42 @@ public class PhysicalAsset
 {
 	/// <summary>Concrete type discriminator in namespace.typeName format.</summary>
 	[JsonProperty("_type")]
+	[CiscoIqV1ReadOnly]
 	public string? ResourceType { get; set; }
 
 	/// <summary>Opaque, immutable identifier for this entity.</summary>
 	[JsonProperty("id")]
+	[CiscoIqV1ReadOnly]
 	public string? Id { get; set; }
 
 	/// <summary>The account this entity belongs to.</summary>
 	[JsonProperty("account")]
+	[CiscoIqV1ReadOnly]
 	public string? Account { get; set; }
 
 	/// <summary>Who produced this item, independent of where it runs.</summary>
 	[JsonProperty("assetOrigin")]
+	[CiscoIqV1ReadOnly]
 	public AssetOrigin? AssetOrigin { get; set; }
 
 	/// <summary>Whether this item is counted as installed base or exists only to reference it.</summary>
 	[JsonProperty("assetTier")]
+	[CiscoIqV1ReadOnly]
 	public AssetTier? AssetTier { get; set; }
 
 	/// <summary>Location billed for this item, where invoices go, not where the equipment sits.</summary>
 	[JsonProperty("billToLocation")]
+	[CiscoIqV1ReadOnly]
 	public string? BillToLocation { get; set; }
 
 	/// <summary>Items contained within this item (for example line cards, modules, power supplies).</summary>
 	[JsonProperty("children")]
+	[CiscoIqV1ReadOnly]
 	public JToken? Children { get; set; }
 
 	/// <summary>Coverage rows that cover this configuration item.</summary>
 	[JsonProperty("coverages")]
+	[CiscoIqV1ReadOnly]
 	public JToken? Coverages { get; set; }
 
 	/// <summary>Role and importance classification for this item.</summary>
@@ -1804,94 +1895,117 @@ public class PhysicalAsset
 
 	/// <summary>The mappings that identify each data source that reports this item.</summary>
 	[JsonProperty("dataSourceMappings")]
+	[CiscoIqV1ReadOnly]
 	public JToken? DataSourceMappings { get; set; }
 
 	/// <summary>Delivery and operation model of this item (for example on-prem, hosted, cloud-managed, saas).</summary>
 	[JsonProperty("deploymentModel")]
+	[CiscoIqV1ReadOnly]
 	public string? DeploymentModel { get; set; }
 
 	/// <summary>The entitlementTier this item's account coverage grants.</summary>
 	[JsonProperty("effectiveEntitlementTier")]
+	[CiscoIqV1ReadOnly]
 	public string? EffectiveEntitlementTier { get; set; }
 
 	/// <summary>Canonical URL or managed-object reference for this item in an external system.</summary>
 	[JsonProperty("externalRef")]
+	[CiscoIqV1ReadOnly]
 	public string? ExternalRef { get; set; }
 
 	/// <summary>Network hostname configured on the device.</summary>
 	[JsonProperty("hostname")]
+	[CiscoIqV1ReadOnly]
 	public string? Hostname { get; set; }
 
 	/// <summary>Location where this item is installed.</summary>
 	[JsonProperty("installedAt")]
+	[CiscoIqV1ReadOnly]
 	public string? InstalledAt { get; set; }
 
 	/// <summary>Whether this item is actively managed and monitored.</summary>
 	[JsonProperty("isManaged")]
+	[CiscoIqV1ReadOnly]
 	public bool? IsManaged { get; set; }
 
 	/// <summary>When this item's identity and attributes were last confirmed.</summary>
 	[JsonProperty("lastReconciledAt")]
+	[CiscoIqV1ReadOnly]
 	public DateTimeOffset? LastReconciledAt { get; set; }
 
 	/// <summary>When this item last sent telemetry successfully.</summary>
 	[JsonProperty("lastTelemetryAt")]
+	[CiscoIqV1ReadOnly]
 	public DateTimeOffset? LastTelemetryAt { get; set; }
 
 	/// <summary>Address at which this device is managed.</summary>
 	[JsonProperty("managementIp")]
+	[CiscoIqV1ReadOnly]
 	public string? ManagementIp { get; set; }
 
 	/// <summary>Hardware model identifier (for example 'C9300-48P').</summary>
 	[JsonProperty("model")]
+	[CiscoIqV1ReadOnly]
 	public string? Model { get; set; }
 
 	/// <summary>Parent item in a containment hierarchy.</summary>
 	[JsonProperty("parent")]
+	[CiscoIqV1ReadOnly]
 	public string? Parent { get; set; }
 
 	/// <summary>The product represented by this item.</summary>
 	[JsonProperty("product")]
+	[CiscoIqV1ReadOnly]
 	public string? Product { get; set; }
 
 	/// <summary>Orderable product identifier for the product represented by this item.</summary>
 	[JsonProperty("productId")]
+	[CiscoIqV1ReadOnly]
 	public string? ProductId { get; set; }
 
 	/// <summary>Hardware version or revision of this unit within its product, distinguishing manufacturing revisions of the same model.</summary>
 	[JsonProperty("productVersion")]
+	[CiscoIqV1ReadOnly]
 	public string? ProductVersion { get; set; }
 
 	/// <summary>Reconciliation state for this item's identity and attributes.</summary>
 	[JsonProperty("reconciliationStatus")]
+	[CiscoIqV1ReadOnly]
 	public ReconciliationStatus? ReconciliationStatus { get; set; }
 
 	/// <summary>Identifier assigned to the physical hardware during manufacturing.</summary>
 	[JsonProperty("serial")]
+	[CiscoIqV1ReadOnly]
 	public string? Serial { get; set; }
 
 	/// <summary>End-of-life announcement covering the software release this item runs.</summary>
 	[JsonProperty("softwareEndOfLifeBulletin")]
+	[CiscoIqV1ReadOnly]
 	public string? SoftwareEndOfLifeBulletin { get; set; }
 
 	/// <summary>Patch or maintenance level applied on top of the base version.</summary>
 	[JsonProperty("softwarePatchVersion")]
+	[CiscoIqV1ReadOnly]
 	public string? SoftwarePatchVersion { get; set; }
 
 	/// <summary>Operating system type this item runs.</summary>
 	[JsonProperty("softwareType")]
+	[CiscoIqV1ReadOnly]
 	public string? SoftwareType { get; set; }
 
 	/// <summary>Base software version currently running on this item.</summary>
 	[JsonProperty("softwareVersion")]
+	[CiscoIqV1ReadOnly]
 	public string? SoftwareVersion { get; set; }
 
 	/// <summary>Operational lifecycle state of this configuration item.</summary>
 	[JsonProperty("status")]
+	[CiscoIqV1ReadOnly]
 	public string? Status { get; set; }
 
 	/// <summary>System metadata for soft-deletion and purge lifecycle state.</summary>
 	[JsonProperty("sys")]
+	[CiscoIqV1ReadOnly]
 	public StandardSys? Sys { get; set; }
 
 	/// <summary>Key-value labels attached to this item.</summary>
@@ -1900,33 +2014,14 @@ public class PhysicalAsset
 
 	/// <summary>Physical location reported through telemetry, meaning operational data collected from the device or its management system.</summary>
 	[JsonProperty("telemetryLocation")]
+	[CiscoIqV1ReadOnly]
 	public Location? TelemetryLocation { get; set; }
 
 	/// <summary>Manufacturer of the hardware.</summary>
 	[JsonProperty("vendor")]
+	[CiscoIqV1ReadOnly]
 	public string? Vendor { get; set; }
 
-}
-
-/// <summary>Generated from the Cisco IQ OpenAPI specification.</summary>
-[GeneratedCode("Cisco.Iq.Api.Generator", "1.0")]
-[JsonConverter(typeof(CiscoIqV1StringValueConverter<PhysicalAssetInlineMember>))]
-public readonly record struct PhysicalAssetInlineMember(string Value) : ICiscoIqV1StringValue<PhysicalAssetInlineMember>
-{
-	/// <summary>The value children.</summary>
-	public static readonly PhysicalAssetInlineMember Children = new("children");
-
-	/// <summary>The value coverages.</summary>
-	public static readonly PhysicalAssetInlineMember Coverages = new("coverages");
-
-	/// <summary>The value dataSourceMappings.</summary>
-	public static readonly PhysicalAssetInlineMember DataSourceMappings = new("dataSourceMappings");
-
-	/// <inheritdoc />
-	public static PhysicalAssetInlineMember Create(string value) => new(value);
-
-	/// <inheritdoc />
-	public override string ToString() => Value;
 }
 
 /// <summary>Collection response containing one page of physicalAsset resources.</summary>
@@ -1975,6 +2070,7 @@ public class ProvisionedSys
 {
 	/// <summary>Who owns this instance.</summary>
 	[JsonProperty("ownership")]
+	[CiscoIqV1ReadOnly]
 	public Ownership? Ownership { get; set; }
 
 }
@@ -1998,6 +2094,34 @@ public readonly record struct ReconciliationStatus(string Value) : ICiscoIqV1Str
 
 	/// <inheritdoc />
 	public override string ToString() => Value;
+}
+
+/// <summary>Writable fields accepted for fully replacing a physicalAsset resource.</summary>
+[GeneratedCode("Cisco.Iq.Api.Generator", "1.0")]
+public class ReplacePhysicalAssetRequest
+{
+	/// <summary>Role and importance classification for this item.</summary>
+	[JsonProperty("criticality")]
+	public AssetCriticality? Criticality { get; set; }
+
+	/// <summary>Key-value labels attached to this item.</summary>
+	[JsonProperty("tags")]
+	public Dictionary<string, string>? Tags { get; set; }
+
+}
+
+/// <summary>Writable fields accepted for fully replacing a virtualAsset resource.</summary>
+[GeneratedCode("Cisco.Iq.Api.Generator", "1.0")]
+public class ReplaceVirtualAssetRequest
+{
+	/// <summary>Role and importance classification for this item.</summary>
+	[JsonProperty("criticality")]
+	public AssetCriticality? Criticality { get; set; }
+
+	/// <summary>Key-value labels attached to this item.</summary>
+	[JsonProperty("tags")]
+	public Dictionary<string, string>? Tags { get; set; }
+
 }
 
 /// <summary>Form a coverage source takes, how the rights were bought.</summary>
@@ -2036,11 +2160,41 @@ public class StandardSys
 {
 	/// <summary>When this entity was created.</summary>
 	[JsonProperty("createdAt")]
+	[CiscoIqV1ReadOnly]
 	public DateTimeOffset? CreatedAt { get; set; }
 
 	/// <summary>When this entity was last modified.</summary>
 	[JsonProperty("updatedAt")]
+	[CiscoIqV1ReadOnly]
 	public DateTimeOffset? UpdatedAt { get; set; }
+
+}
+
+/// <summary>Writable fields accepted when patching a physicalAsset resource with JSON Merge Patch semantics.</summary>
+[GeneratedCode("Cisco.Iq.Api.Generator", "1.0")]
+public class UpdatePhysicalAssetRequest
+{
+	/// <summary>Role and importance classification for this item.</summary>
+	[JsonProperty("criticality")]
+	public CiscoIqV1Optional<AssetCriticality> Criticality { get; set; }
+
+	/// <summary>Key-value labels attached to this item.</summary>
+	[JsonProperty("tags")]
+	public CiscoIqV1Optional<Dictionary<string, string>> Tags { get; set; }
+
+}
+
+/// <summary>Writable fields accepted when patching a virtualAsset resource with JSON Merge Patch semantics.</summary>
+[GeneratedCode("Cisco.Iq.Api.Generator", "1.0")]
+public class UpdateVirtualAssetRequest
+{
+	/// <summary>Role and importance classification for this item.</summary>
+	[JsonProperty("criticality")]
+	public CiscoIqV1Optional<AssetCriticality> Criticality { get; set; }
+
+	/// <summary>Key-value labels attached to this item.</summary>
+	[JsonProperty("tags")]
+	public CiscoIqV1Optional<Dictionary<string, string>> Tags { get; set; }
 
 }
 
@@ -2050,34 +2204,42 @@ public class VirtualAsset
 {
 	/// <summary>Concrete type discriminator in namespace.typeName format.</summary>
 	[JsonProperty("_type")]
+	[CiscoIqV1ReadOnly]
 	public string? ResourceType { get; set; }
 
 	/// <summary>Opaque, immutable identifier for this entity.</summary>
 	[JsonProperty("id")]
+	[CiscoIqV1ReadOnly]
 	public string? Id { get; set; }
 
 	/// <summary>The account this entity belongs to.</summary>
 	[JsonProperty("account")]
+	[CiscoIqV1ReadOnly]
 	public string? Account { get; set; }
 
 	/// <summary>Who produced this item, independent of where it runs.</summary>
 	[JsonProperty("assetOrigin")]
+	[CiscoIqV1ReadOnly]
 	public AssetOrigin? AssetOrigin { get; set; }
 
 	/// <summary>Whether this item is counted as installed base or exists only to reference it.</summary>
 	[JsonProperty("assetTier")]
+	[CiscoIqV1ReadOnly]
 	public AssetTier? AssetTier { get; set; }
 
 	/// <summary>Location billed for this item, where invoices go, not where the equipment sits.</summary>
 	[JsonProperty("billToLocation")]
+	[CiscoIqV1ReadOnly]
 	public string? BillToLocation { get; set; }
 
 	/// <summary>Items contained within this item (for example line cards, modules, power supplies).</summary>
 	[JsonProperty("children")]
+	[CiscoIqV1ReadOnly]
 	public JToken? Children { get; set; }
 
 	/// <summary>Coverage rows that cover this configuration item.</summary>
 	[JsonProperty("coverages")]
+	[CiscoIqV1ReadOnly]
 	public JToken? Coverages { get; set; }
 
 	/// <summary>Role and importance classification for this item.</summary>
@@ -2086,125 +2248,128 @@ public class VirtualAsset
 
 	/// <summary>The mappings that identify each data source that reports this item.</summary>
 	[JsonProperty("dataSourceMappings")]
+	[CiscoIqV1ReadOnly]
 	public JToken? DataSourceMappings { get; set; }
 
 	/// <summary>Delivery and operation model of this item (for example on-prem, hosted, cloud-managed, saas).</summary>
 	[JsonProperty("deploymentModel")]
+	[CiscoIqV1ReadOnly]
 	public string? DeploymentModel { get; set; }
 
 	/// <summary>Instance identifier assigned when this asset was deployed, a hypervisor UUID, a cloud instance identifier, or a virtual unique device identifier.</summary>
 	[JsonProperty("deviceIdentifier")]
+	[CiscoIqV1ReadOnly]
 	public string? DeviceIdentifier { get; set; }
 
 	/// <summary>The entitlementTier this item's account coverage grants.</summary>
 	[JsonProperty("effectiveEntitlementTier")]
+	[CiscoIqV1ReadOnly]
 	public string? EffectiveEntitlementTier { get; set; }
 
 	/// <summary>Canonical URL or managed-object reference for this item in an external system.</summary>
 	[JsonProperty("externalRef")]
+	[CiscoIqV1ReadOnly]
 	public string? ExternalRef { get; set; }
 
 	/// <summary>Hypervisor or cloud provider hosting this instance, who runs the substrate underneath it, as against saasAsset.provider, which names the vendor whose service a tenancy is of.</summary>
 	[JsonProperty("hostingProvider")]
+	[CiscoIqV1ReadOnly]
 	public string? HostingProvider { get; set; }
 
 	/// <summary>Network hostname configured on the instance.</summary>
 	[JsonProperty("hostname")]
+	[CiscoIqV1ReadOnly]
 	public string? Hostname { get; set; }
 
 	/// <summary>Location where this item is installed.</summary>
 	[JsonProperty("installedAt")]
+	[CiscoIqV1ReadOnly]
 	public string? InstalledAt { get; set; }
 
 	/// <summary>Whether this item is actively managed and monitored.</summary>
 	[JsonProperty("isManaged")]
+	[CiscoIqV1ReadOnly]
 	public bool? IsManaged { get; set; }
 
 	/// <summary>When this item's identity and attributes were last confirmed.</summary>
 	[JsonProperty("lastReconciledAt")]
+	[CiscoIqV1ReadOnly]
 	public DateTimeOffset? LastReconciledAt { get; set; }
 
 	/// <summary>When this item last sent telemetry successfully.</summary>
 	[JsonProperty("lastTelemetryAt")]
+	[CiscoIqV1ReadOnly]
 	public DateTimeOffset? LastTelemetryAt { get; set; }
 
 	/// <summary>Address at which this instance is managed.</summary>
 	[JsonProperty("managementIp")]
+	[CiscoIqV1ReadOnly]
 	public string? ManagementIp { get; set; }
 
 	/// <summary>Parent item in a containment hierarchy.</summary>
 	[JsonProperty("parent")]
+	[CiscoIqV1ReadOnly]
 	public string? Parent { get; set; }
 
 	/// <summary>The product represented by this item.</summary>
 	[JsonProperty("product")]
+	[CiscoIqV1ReadOnly]
 	public string? Product { get; set; }
 
 	/// <summary>Orderable product identifier for the product represented by this item.</summary>
 	[JsonProperty("productId")]
+	[CiscoIqV1ReadOnly]
 	public string? ProductId { get; set; }
 
 	/// <summary>Reconciliation state for this item's identity and attributes.</summary>
 	[JsonProperty("reconciliationStatus")]
+	[CiscoIqV1ReadOnly]
 	public ReconciliationStatus? ReconciliationStatus { get; set; }
 
 	/// <summary>Cloud region or data center the instance runs in.</summary>
 	[JsonProperty("region")]
+	[CiscoIqV1ReadOnly]
 	public string? Region { get; set; }
 
 	/// <summary>Serial number the instance reports for licensing and support entitlement.</summary>
 	[JsonProperty("serial")]
+	[CiscoIqV1ReadOnly]
 	public string? Serial { get; set; }
 
 	/// <summary>End-of-life announcement covering the software release this item runs.</summary>
 	[JsonProperty("softwareEndOfLifeBulletin")]
+	[CiscoIqV1ReadOnly]
 	public string? SoftwareEndOfLifeBulletin { get; set; }
 
 	/// <summary>Patch or maintenance level applied on top of the base version.</summary>
 	[JsonProperty("softwarePatchVersion")]
+	[CiscoIqV1ReadOnly]
 	public string? SoftwarePatchVersion { get; set; }
 
 	/// <summary>Operating system type this item runs.</summary>
 	[JsonProperty("softwareType")]
+	[CiscoIqV1ReadOnly]
 	public string? SoftwareType { get; set; }
 
 	/// <summary>Base software version currently running on this item.</summary>
 	[JsonProperty("softwareVersion")]
+	[CiscoIqV1ReadOnly]
 	public string? SoftwareVersion { get; set; }
 
 	/// <summary>Operational lifecycle state of this configuration item.</summary>
 	[JsonProperty("status")]
+	[CiscoIqV1ReadOnly]
 	public string? Status { get; set; }
 
 	/// <summary>System metadata for soft-deletion and purge lifecycle state.</summary>
 	[JsonProperty("sys")]
+	[CiscoIqV1ReadOnly]
 	public StandardSys? Sys { get; set; }
 
 	/// <summary>Key-value labels attached to this item.</summary>
 	[JsonProperty("tags")]
 	public Dictionary<string, string>? Tags { get; set; }
 
-}
-
-/// <summary>Generated from the Cisco IQ OpenAPI specification.</summary>
-[GeneratedCode("Cisco.Iq.Api.Generator", "1.0")]
-[JsonConverter(typeof(CiscoIqV1StringValueConverter<VirtualAssetInlineMember>))]
-public readonly record struct VirtualAssetInlineMember(string Value) : ICiscoIqV1StringValue<VirtualAssetInlineMember>
-{
-	/// <summary>The value children.</summary>
-	public static readonly VirtualAssetInlineMember Children = new("children");
-
-	/// <summary>The value coverages.</summary>
-	public static readonly VirtualAssetInlineMember Coverages = new("coverages");
-
-	/// <summary>The value dataSourceMappings.</summary>
-	public static readonly VirtualAssetInlineMember DataSourceMappings = new("dataSourceMappings");
-
-	/// <inheritdoc />
-	public static VirtualAssetInlineMember Create(string value) => new(value);
-
-	/// <inheritdoc />
-	public override string ToString() => Value;
 }
 
 /// <summary>Collection response containing one page of virtualAsset resources.</summary>

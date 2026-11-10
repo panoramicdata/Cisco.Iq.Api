@@ -79,6 +79,15 @@ public interface IAssetApi
 	[Get("/api/asset/v1/physicalAssets/{id}")]
 	Task<IApiResponse<PhysicalAsset>> GetAssetPhysicalAssetAsync(string id, [Query] GetAssetPhysicalAssetRequest? request = null, [Header("If-Modified-Since")] string? ifModifiedSince = null, [Header("If-None-Match")] string? ifNoneMatch = null, CancellationToken cancellationToken = default);
 
+	/// <summary>Update fields on a physical asset</summary>
+	[Patch("/api/asset/v1/physicalAssets/{id}")]
+	[Headers("Content-Type: application/merge-patch+json")]
+	Task<IApiResponse<PhysicalAsset>> UpdateAssetPhysicalAssetAsync(string id, [Body] UpdatePhysicalAssetRequest body, [Header("If-Match")] string? ifMatch = null, [Header("If-Unmodified-Since")] string? ifUnmodifiedSince = null, CancellationToken cancellationToken = default);
+
+	/// <summary>Replace Physical Asset</summary>
+	[Put("/api/asset/v1/physicalAssets/{id}")]
+	Task<IApiResponse<PhysicalAsset>> ReplaceAssetPhysicalAssetAsync(string id, [Body] ReplacePhysicalAssetRequest body, [Header("If-Match")] string? ifMatch = null, [Header("If-Unmodified-Since")] string? ifUnmodifiedSince = null, CancellationToken cancellationToken = default);
+
 	/// <summary>Items contained within this item</summary>
 	[Get("/api/asset/v1/physicalAssets/{id}/children")]
 	Task<IApiResponse<ItemListResponse>> ListAssetChildrenForPhysicalAssetAsync(string id, [Query] ListAssetChildrenForPhysicalAssetRequest? request = null, CancellationToken cancellationToken = default);
@@ -98,6 +107,15 @@ public interface IAssetApi
 	/// <summary>Get a virtual asset</summary>
 	[Get("/api/asset/v1/virtualAssets/{id}")]
 	Task<IApiResponse<VirtualAsset>> GetAssetVirtualAssetAsync(string id, [Query] GetAssetVirtualAssetRequest? request = null, [Header("If-Modified-Since")] string? ifModifiedSince = null, [Header("If-None-Match")] string? ifNoneMatch = null, CancellationToken cancellationToken = default);
+
+	/// <summary>Update a virtual asset</summary>
+	[Patch("/api/asset/v1/virtualAssets/{id}")]
+	[Headers("Content-Type: application/merge-patch+json")]
+	Task<IApiResponse<VirtualAsset>> UpdateAssetVirtualAssetAsync(string id, [Body] UpdateVirtualAssetRequest body, [Header("If-Match")] string? ifMatch = null, [Header("If-Unmodified-Since")] string? ifUnmodifiedSince = null, CancellationToken cancellationToken = default);
+
+	/// <summary>Replace Virtual Asset</summary>
+	[Put("/api/asset/v1/virtualAssets/{id}")]
+	Task<IApiResponse<VirtualAsset>> ReplaceAssetVirtualAssetAsync(string id, [Body] ReplaceVirtualAssetRequest body, [Header("If-Match")] string? ifMatch = null, [Header("If-Unmodified-Since")] string? ifUnmodifiedSince = null, CancellationToken cancellationToken = default);
 
 	/// <summary>Items contained within this item</summary>
 	[Get("/api/asset/v1/virtualAssets/{id}/children")]

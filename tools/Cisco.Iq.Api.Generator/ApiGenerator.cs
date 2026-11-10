@@ -24,6 +24,8 @@ internal sealed partial class ApiGenerator
 	private readonly StringBuilder _members = new();
 	private readonly StringBuilder _extensions = new();
 	private readonly HashSet<string> _methodNames = [];
+	private readonly HashSet<string> _bodies = [];
+	private readonly HashSet<string> _patches = [];
 
 	internal ApiGenerator(ApiDefinition api, Node root)
 	{
@@ -46,13 +48,7 @@ internal sealed partial class ApiGenerator
 			foreach (var method in path.Value.Entries.Where(entry => HttpMethods.Contains(entry.Key)))
 			{
 				operations++;
-				if (method.Key != "get")
-				{
-					_report.Add($"skipped {method.Key.ToUpperInvariant()} {path.Key} ({method.Value["operationId"]?.Text}): write operations are not generated yet");
-					continue;
-				}
-
-				EmitOperation(serverPath + path.Key, method.Value);
+				EmitOperation(serverPath + path.Key, method.Key, method.Value, path.Value["parameters"]?.Items.ToList() ?? []);
 			}
 		}
 
@@ -64,7 +60,7 @@ internal sealed partial class ApiGenerator
 		return new ApiOutput(ComposeModels(), ComposeApi(), _report, operations);
 	}
 
-	private void EmitOperation(string path, Node operation)
+	private void EmitOperation(string path, string verb, Node operation, List<Node> sharedParameters)
 	{
 		var baseName = Naming.Pascal(operation["operationId"]!.Text!);
 		var methodName = baseName + "Async";
@@ -73,7 +69,8 @@ internal sealed partial class ApiGenerator
 			throw new InvalidOperationException($"Duplicate operation name {methodName} in {_api.Key}.");
 		}
 
-		var (pathParameters, headerParameters, query) = ReadParameters(operation, baseName);
+		var (pathParameters, headerParameters, query) = ReadParameters(operation, sharedParameters, baseName);
+		var body = ReadBody(operation, baseName);
 		var requestName = baseName + "Request";
 		if (query.Count > 0)
 		{
@@ -83,6 +80,11 @@ internal sealed partial class ApiGenerator
 		var response = ResponseSchema(operation);
 		var returnType = response is null ? "Task<IApiResponse>" : $"Task<IApiResponse<{MapType(response, baseName + "Response")}>>";
 		var arguments = pathParameters.Select(p => $"{p.Alias}{p.Type} {p.Name}").ToList();
+		if (body is not null)
+		{
+			arguments.Add(body.Value.Required ? $"[Body] {body.Value.Type} body" : $"[Body] {body.Value.Type}? body = null");
+		}
+
 		if (query.Count > 0)
 		{
 			arguments.Add($"[Query] {requestName}? request = null");
@@ -91,21 +93,86 @@ internal sealed partial class ApiGenerator
 		arguments.AddRange(headerParameters);
 		arguments.Add("CancellationToken cancellationToken = default");
 		_members.Line($"\t{Summary(operation["summary"]?.Text ?? operation["description"]?.Text)}");
-		_members.Line($"\t[Get(\"{path}\")]");
+		_members.Line($"\t[{Naming.Pascal(verb)}(\"{path}\")]");
+		if (body is { MergePatch: true })
+		{
+			_members.Line($"\t[Headers(\"Content-Type: application/merge-patch+json\")]");
+		}
+
 		_members.Line($"\t{returnType} {methodName}({string.Join(", ", arguments)});");
 		_members.AppendLine();
-		if (query.Any(q => q.Wire == "after") && response is not null && ItemType(response) is { } itemType)
+		EmitPaging(verb, operation, (methodName, baseName, pathParameters, requestName), query, body, response);
+	}
+
+	private void EmitPaging(string verb, Node operation, (string MethodName, string BaseName, List<(string Alias, string Type, string Name)> Path, string RequestName) names, List<(string Name, string Wire, string Type, bool Csv, string? Doc)> query, (string Type, bool Required, bool MergePatch, string? SchemaName)? body, Node? response)
+	{
+		if (response is null)
 		{
-			EmitPagingExtension(operation, methodName, baseName, pathParameters, requestName, query.Any(q => q.Wire == "count"), itemType);
+			return;
+		}
+
+		if (verb == "get" && query.Any(q => q.Wire == "after") && ItemType(response) is { } itemType)
+		{
+			EmitPagingExtension(operation, names.MethodName, names.BaseName, names.Path, names.RequestName, query.Any(q => q.Wire == "count"), itemType);
+		}
+		else if (verb == "post" && BodyHasCursor(body) && ItemType(response) is { } bodyItemType)
+		{
+			EmitBodyPagingExtension(operation, names.MethodName, names.BaseName, body!.Value.Type, bodyItemType);
 		}
 	}
 
-	private (List<(string Alias, string Type, string Name)> Path, List<string> Headers, List<(string Name, string Wire, string Type, bool Csv, string? Doc)> Query) ReadParameters(Node operation, string baseName)
+	private bool BodyHasCursor((string Type, bool Required, bool MergePatch, string? SchemaName)? body)
+		=> body?.SchemaName is { } name && _schemas[name]["properties"]?.Has("after") == true;
+
+	private (string Type, bool Required, bool MergePatch, string? SchemaName)? ReadBody(Node operation, string baseName)
+	{
+		var body = operation["requestBody"];
+		if (body is null)
+		{
+			return null;
+		}
+
+		var content = body["content"]!.Entries.Single();
+		var mergePatch = content.Key == "application/merge-patch+json";
+		if (!mergePatch && content.Key != "application/json")
+		{
+			throw new InvalidOperationException($"Unsupported request content type '{content.Key}' on {baseName}.");
+		}
+
+		var schema = content.Value["schema"]!;
+		var schemaName = schema["$ref"]?.Text is { } reference ? reference[(reference.LastIndexOf('/') + 1)..] : null;
+		RegisterBody(schemaName, mergePatch);
+		return (MapType(schema, baseName + "Body"), body["required"]?.Text == "true", mergePatch, schemaName);
+	}
+
+	private void RegisterBody(string? schemaName, bool mergePatch)
+	{
+		if (schemaName is null)
+		{
+			return;
+		}
+
+		_bodies.Add(schemaName);
+		if (mergePatch)
+		{
+			_patches.Add(schemaName);
+		}
+	}
+
+	private void EmitBodyPagingExtension(Node operation, string methodName, string baseName, string bodyType, string itemType)
+	{
+		_extensions.Line($"\t{Summary(operation["summary"]?.Text)}");
+		_extensions.Line($"\tpublic static IAsyncEnumerable<{itemType}> {baseName}AllAsync(this {_api.InterfaceName} api, {bodyType} body, CancellationToken cancellationToken = default)");
+		_extensions.Line($"\t\t=> CiscoIqV1Paging.EnumerateByBodyAsync(cursor => api.{methodName}(body.WithAfter(cursor), cancellationToken: cancellationToken), page => page.Items, page => page.After, cancellationToken);");
+		_extensions.AppendLine();
+	}
+
+	private (List<(string Alias, string Type, string Name)> Path, List<string> Headers, List<(string Name, string Wire, string Type, bool Csv, string? Doc)> Query) ReadParameters(Node operation, List<Node> sharedParameters, string baseName)
 	{
 		var path = new List<(string Alias, string Type, string Name)>();
 		var headers = new List<string>();
 		var query = new List<(string Name, string Wire, string Type, bool Csv, string? Doc)>();
-		foreach (var parameter in (operation["parameters"]?.Items ?? []).Select(Resolve))
+		foreach (var parameter in DistinctParameters(sharedParameters, operation))
 		{
 			var wire = parameter["name"]!.Text!;
 			var location = parameter["in"]!.Text;
@@ -130,6 +197,12 @@ internal sealed partial class ApiGenerator
 		return (path, headers, query);
 	}
 
+	private IEnumerable<Node> DistinctParameters(List<Node> sharedParameters, Node operation)
+		=> sharedParameters.Concat(operation["parameters"]?.Items ?? [])
+			.Select(Resolve)
+			.GroupBy(parameter => parameter["in"]!.Text + ":" + parameter["name"]!.Text)
+			.Select(group => group.Last());
+
 	private (string Alias, string Type, string Name) PathParameter(string wire, Node schema, string baseName)
 	{
 		var argument = Naming.Camel(wire);
@@ -140,7 +213,20 @@ internal sealed partial class ApiGenerator
 	private (string Name, string Wire, string Type, bool Csv, string? Doc) QueryParameter(Node parameter, string wire, string baseName)
 	{
 		var schema = parameter["schema"]!;
-		return (wire == "orderby" ? "OrderBy" : Naming.Pascal(wire), wire, MapType(schema, baseName + Naming.Pascal(wire)), TypeNames(schema).Contains("array"), parameter["summary"]?.Text ?? parameter["description"]?.Text);
+		var isList = TypeNames(schema).Contains("array");
+		var doc = parameter["summary"]?.Text ?? parameter["description"]?.Text;
+		if (isList)
+		{
+			doc = $"{doc}{KnownValues(schema["items"])}";
+		}
+
+		return (wire == "orderby" ? "OrderBy" : Naming.Pascal(wire), wire, isList ? "List<string>" : MapType(schema, baseName + Naming.Pascal(wire)), isList, doc);
+	}
+
+	private string KnownValues(Node? items)
+	{
+		var target = items?["$ref"]?.Text is { } reference ? _schemas[reference[(reference.LastIndexOf('/') + 1)..]] : items;
+		return target is not null && IsEnum(target) ? $" (known values: {string.Join(", ", target["enum"]!.Items.Select(item => item.Text))})" : string.Empty;
 	}
 
 	private void EmitPagingExtension(Node operation, string methodName, string baseName, List<(string Alias, string Type, string Name)> pathParameters, string requestName, bool hasCount, string itemType)
@@ -157,14 +243,17 @@ internal sealed partial class ApiGenerator
 
 	private Node? ResponseSchema(Node operation)
 	{
-		var ok = operation["responses"]?["200"];
-		if (ok?["$ref"]?.Text is { } reference)
+		var success = operation["responses"]?.Entries.Where(entry => entry.Key.StartsWith('2')).OrderBy(entry => entry.Key, StringComparer.Ordinal).Select(entry => entry.Value).FirstOrDefault(entry => HasJson(entry));
+		if (success?["$ref"]?.Text is { } reference)
 		{
-			ok = _responses[reference[(reference.LastIndexOf('/') + 1)..]];
+			success = _responses[reference[(reference.LastIndexOf('/') + 1)..]];
 		}
 
-		return ok?["content"]?["application/json"]?["schema"];
+		return success?["content"]?["application/json"]?["schema"];
 	}
+
+	private bool HasJson(Node response)
+		=> (response["$ref"]?.Text is { } reference ? _responses[reference[(reference.LastIndexOf('/') + 1)..]] : response)["content"]?.Has("application/json") == true;
 
 	private string? ItemType(Node response)
 	{
@@ -176,7 +265,7 @@ internal sealed partial class ApiGenerator
 		var name = reference[(reference.LastIndexOf('/') + 1)..];
 		var items = _schemas[name]["properties"]?["items"];
 		return items is not null && TypeNames(items).Contains("array") && items["items"] is { } element
-			? MapType(element, Naming.TypeName(name) + "Item")
+			? MapType(element, Naming.TypeName(name) + "ItemsItem")
 			: null;
 	}
 
@@ -299,11 +388,11 @@ internal sealed partial class ApiGenerator
 		}
 		else
 		{
-			EmitClass(typeName, node);
+			EmitClass(typeName, node, _bodies.Contains(name), _patches.Contains(name));
 		}
 	}
 
-	private void EmitClass(string typeName, Node schema)
+	private void EmitClass(string typeName, Node schema, bool isRequestBody = false, bool isPatch = false)
 	{
 		AddType(typeName, string.Empty);
 		var builder = new StringBuilder();
@@ -314,21 +403,60 @@ internal sealed partial class ApiGenerator
 		var used = new HashSet<string> { typeName };
 		foreach (var property in schema["properties"]!.Entries)
 		{
-			var name = property.Key == "_type" ? "ResourceType" : Naming.Pascal(property.Key);
-			while (!used.Add(name))
-			{
-				name += "Value";
-			}
+			EmitProperty(builder, used, typeName, property, isRequestBody, isPatch);
+		}
 
-			var type = property.Key == "_type" ? "string" : MapType(property.Value, typeName + Naming.Pascal(property.Key));
-			builder.Line($"\t{Summary(property.Value["description"]?.Text ?? property.Value["title"]?.Text)}");
-			builder.Line($"\t[JsonProperty(\"{property.Key}\")]");
-			builder.Line($"\tpublic {type}? {name} {{ get; set; }}");
-			builder.AppendLine();
+		if (schema["properties"]!.Has("after") && isRequestBody)
+		{
+			EmitWithAfter(builder, typeName);
 		}
 
 		builder.AppendLine("}");
 		_types[typeName] = builder.ToString();
+	}
+
+	private void EmitProperty(StringBuilder builder, HashSet<string> used, string typeName, KeyValuePair<string, Node> property, bool isRequestBody, bool isPatch)
+	{
+		var readOnly = property.Value["readOnly"]?.Text == "true";
+		if (readOnly && isRequestBody)
+		{
+			return;
+		}
+
+		var name = UniqueName(used, property.Key);
+		var type = property.Key == "_type" ? "string" : MapType(property.Value, typeName + Naming.Pascal(property.Key));
+		builder.Line($"\t{Summary(property.Value["description"]?.Text ?? property.Value["title"]?.Text)}");
+		builder.Line($"\t[JsonProperty(\"{property.Key}\")]");
+		if (readOnly)
+		{
+			builder.AppendLine("\t[CiscoIqV1ReadOnly]");
+		}
+
+		var propertyType = isPatch ? $"CiscoIqV1Optional<{type}>" : $"{type}?";
+		builder.Line($"\tpublic {propertyType} {name} {{ get; set; }}");
+		builder.AppendLine();
+	}
+
+	private static string UniqueName(HashSet<string> used, string key)
+	{
+		var name = key == "_type" ? "ResourceType" : Naming.Pascal(key);
+		while (!used.Add(name))
+		{
+			name += "Value";
+		}
+
+		return name;
+	}
+
+	private static void EmitWithAfter(StringBuilder builder, string typeName)
+	{
+		builder.AppendLine("\t/// <summary>Returns a copy with the paging cursor replaced.</summary>");
+		builder.Line($"\tpublic {typeName} WithAfter(string? after)");
+		builder.AppendLine("\t{");
+		builder.Line($"\t\tvar copy = ({typeName})MemberwiseClone();");
+		builder.AppendLine("\t\tcopy.After = after;");
+		builder.AppendLine("\t\treturn copy;");
+		builder.AppendLine("\t}");
 	}
 
 	private void EmitEnum(string typeName, Node schema)

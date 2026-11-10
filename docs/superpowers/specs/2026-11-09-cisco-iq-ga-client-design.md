@@ -279,3 +279,17 @@ can follow in later releases of the same package.
    100. Whether the server honours 50000 is untested.
 7. **IAM and System coverage.** The first analysis covered Assessment, Asset and Product in
    detail. IAM and System request bodies and schemas still need reading.
+
+## Implementation status (2026-11-10)
+
+| Milestone | State |
+| --- | --- |
+| 1. Core and parity | Done and merged: generator, client, authentication, paging, errors, Asset, Product and Assessment reads |
+| 2. Writes | Done: all PATCH, PUT, POST and DELETE operations, with JSON Merge Patch members as `CiscoIqV1Optional<T>` and the System query endpoint paged through its bodies |
+| 3. IAM | Done: all IAM operations generated and exercised against the specification |
+| 4. Documentation | Done: README, migration table, reference notes marked as beta |
+| 5. Beta removal | Not started: the beta client is obsolete and is removed after 30 November 2026 |
+
+Resolved open questions: generated code is excluded from both coverage reports (approved), and the `Refit.Reflection` dependency is not needed once CSV query lists are plain `List<string>`.
+
+Still open: the mapping guide has not been read, the regional hosts are unconfirmed, and nothing has been verified against a live account.

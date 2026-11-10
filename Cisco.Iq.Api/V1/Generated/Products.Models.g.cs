@@ -17,38 +17,47 @@ public class AdvisoryProduct
 {
 	/// <summary>Concrete type discriminator in namespace.typeName format.</summary>
 	[JsonProperty("_type")]
+	[CiscoIqV1ReadOnly]
 	public string? ResourceType { get; set; }
 
 	/// <summary>Opaque, immutable identifier for this entity.</summary>
 	[JsonProperty("id")]
+	[CiscoIqV1ReadOnly]
 	public string? Id { get; set; }
 
 	/// <summary>Advisory that names this product.</summary>
 	[JsonProperty("advisory")]
+	[CiscoIqV1ReadOnly]
 	public string? Advisory { get; set; }
 
 	/// <summary>Product family name from the product tree hierarchy.</summary>
 	[JsonProperty("family")]
+	[CiscoIqV1ReadOnly]
 	public string? Family { get; set; }
 
 	/// <summary>Product name from the product tree hierarchy.</summary>
 	[JsonProperty("name")]
+	[CiscoIqV1ReadOnly]
 	public string? Name { get; set; }
 
 	/// <summary>Product identifier assigned within the advisory's product tree.</summary>
 	[JsonProperty("productId")]
+	[CiscoIqV1ReadOnly]
 	public string? ProductId { get; set; }
 
 	/// <summary>System metadata for provisioning state.</summary>
 	[JsonProperty("sys")]
+	[CiscoIqV1ReadOnly]
 	public AdvisoryProductSys? Sys { get; set; }
 
 	/// <summary>Vendor name from the product tree hierarchy.</summary>
 	[JsonProperty("vendor")]
+	[CiscoIqV1ReadOnly]
 	public string? Vendor { get; set; }
 
 	/// <summary>Product version from the product tree hierarchy.</summary>
 	[JsonProperty("version")]
+	[CiscoIqV1ReadOnly]
 	public string? Version { get; set; }
 
 }
@@ -73,14 +82,17 @@ public class AdvisoryProductSys
 {
 	/// <summary>When this entity was created.</summary>
 	[JsonProperty("createdAt")]
+	[CiscoIqV1ReadOnly]
 	public DateTimeOffset? CreatedAt { get; set; }
 
 	/// <summary>Who owns this instance.</summary>
 	[JsonProperty("ownership")]
+	[CiscoIqV1ReadOnly]
 	public Ownership? Ownership { get; set; }
 
 	/// <summary>When this entity was last modified.</summary>
 	[JsonProperty("updatedAt")]
+	[CiscoIqV1ReadOnly]
 	public DateTimeOffset? UpdatedAt { get; set; }
 
 }
@@ -206,70 +218,87 @@ public class AdvisoryVulnerability
 {
 	/// <summary>Concrete type discriminator in namespace.typeName format.</summary>
 	[JsonProperty("_type")]
+	[CiscoIqV1ReadOnly]
 	public string? ResourceType { get; set; }
 
 	/// <summary>Opaque, immutable identifier for this entity.</summary>
 	[JsonProperty("id")]
+	[CiscoIqV1ReadOnly]
 	public string? Id { get; set; }
 
 	/// <summary>Advisory containing this vulnerability.</summary>
 	[JsonProperty("advisory")]
+	[CiscoIqV1ReadOnly]
 	public string? Advisory { get; set; }
 
 	/// <summary>Cisco bugs identified by this vulnerability, including bugs whose details are not yet known.</summary>
 	[JsonProperty("bugs")]
+	[CiscoIqV1ReadOnly]
 	public BugRefListResponse? Bugs { get; set; }
 
 	/// <summary>CVE identifier for this vulnerability, when assigned.</summary>
 	[JsonProperty("cve")]
+	[CiscoIqV1ReadOnly]
 	public string? Cve { get; set; }
 
 	/// <summary>CWE identifier classifying the root-cause weakness, when assigned.</summary>
 	[JsonProperty("cwe")]
+	[CiscoIqV1ReadOnly]
 	public string? Cwe { get; set; }
 
 	/// <summary>Detailed explanation of the vulnerability and its conditions.</summary>
 	[JsonProperty("details")]
+	[CiscoIqV1ReadOnly]
 	public string? Details { get; set; }
 
 	/// <summary>When the vulnerability was first discovered, when known.</summary>
 	[JsonProperty("discoveredAt")]
+	[CiscoIqV1ReadOnly]
 	public DateTimeOffset? DiscoveredAt { get; set; }
 
 	/// <summary>Per-product vulnerability status entries.</summary>
 	[JsonProperty("productStatuses")]
+	[CiscoIqV1ReadOnly]
 	public List<VulnerabilityProductStatus>? ProductStatuses { get; set; }
 
 	/// <summary>When the vulnerability information was first publicly released.</summary>
 	[JsonProperty("releasedAt")]
+	[CiscoIqV1ReadOnly]
 	public DateTimeOffset? ReleasedAt { get; set; }
 
 	/// <summary>Remediation guidance entries for this vulnerability.</summary>
 	[JsonProperty("remediations")]
+	[CiscoIqV1ReadOnly]
 	public List<AdvisoryRemediation>? Remediations { get; set; }
 
 	/// <summary>Per-product CVSS scoring entries.</summary>
 	[JsonProperty("scores")]
+	[CiscoIqV1ReadOnly]
 	public List<VulnerabilityScore>? Scores { get; set; }
 
 	/// <summary>Human-readable summary of the vulnerability and its impact.</summary>
 	[JsonProperty("summary")]
+	[CiscoIqV1ReadOnly]
 	public string? Summary { get; set; }
 
 	/// <summary>System metadata for provisioning state.</summary>
 	[JsonProperty("sys")]
+	[CiscoIqV1ReadOnly]
 	public AdvisoryVulnerabilitySys? Sys { get; set; }
 
 	/// <summary>Threat intelligence entries for this vulnerability.</summary>
 	[JsonProperty("threats")]
+	[CiscoIqV1ReadOnly]
 	public List<AdvisoryThreat>? Threats { get; set; }
 
 	/// <summary>Brief human-readable title describing the vulnerability.</summary>
 	[JsonProperty("title")]
+	[CiscoIqV1ReadOnly]
 	public string? Title { get; set; }
 
 	/// <summary>Stable identifier for this vulnerability within the advisory.</summary>
 	[JsonProperty("vulnerabilityId")]
+	[CiscoIqV1ReadOnly]
 	public string? VulnerabilityId { get; set; }
 
 }
@@ -294,14 +323,17 @@ public class AdvisoryVulnerabilitySys
 {
 	/// <summary>When this entity was created.</summary>
 	[JsonProperty("createdAt")]
+	[CiscoIqV1ReadOnly]
 	public DateTimeOffset? CreatedAt { get; set; }
 
 	/// <summary>Who owns this instance.</summary>
 	[JsonProperty("ownership")]
+	[CiscoIqV1ReadOnly]
 	public Ownership? Ownership { get; set; }
 
 	/// <summary>When this entity was last modified.</summary>
 	[JsonProperty("updatedAt")]
+	[CiscoIqV1ReadOnly]
 	public DateTimeOffset? UpdatedAt { get; set; }
 
 }
@@ -312,86 +344,107 @@ public class Bug
 {
 	/// <summary>Concrete type discriminator in namespace.typeName format.</summary>
 	[JsonProperty("_type")]
+	[CiscoIqV1ReadOnly]
 	public string? ResourceType { get; set; }
 
 	/// <summary>Opaque, immutable identifier for this entity.</summary>
 	[JsonProperty("id")]
+	[CiscoIqV1ReadOnly]
 	public string? Id { get; set; }
 
 	/// <summary>Cisco bug number.</summary>
 	[JsonProperty("bugId")]
+	[CiscoIqV1ReadOnly]
 	public string? BugId { get; set; }
 
 	/// <summary>Category that classifies this Cisco bug in IQ.</summary>
 	[JsonProperty("bugType")]
+	[CiscoIqV1ReadOnly]
 	public BugType? BugType { get; set; }
 
 	/// <summary>Conditions under which the bug is reproducible.</summary>
 	[JsonProperty("conditions")]
+	[CiscoIqV1ReadOnly]
 	public string? Conditions { get; set; }
 
 	/// <summary>When this bug record was created in the Cisco Bug Search Tool.</summary>
 	[JsonProperty("createdAt")]
+	[CiscoIqV1ReadOnly]
 	public DateTimeOffset? CreatedAt { get; set; }
 
 	/// <summary>Software releases that contain the fix for this bug.</summary>
 	[JsonProperty("fixedReleases")]
+	[CiscoIqV1ReadOnly]
 	public List<string>? FixedReleases { get; set; }
 
 	/// <summary>Additional problem description supplied by Cisco engineering.</summary>
 	[JsonProperty("furtherProblemDescription")]
+	[CiscoIqV1ReadOnly]
 	public string? FurtherProblemDescription { get; set; }
 
 	/// <summary>When this bug record was last modified in the Cisco Bug Search Tool.</summary>
 	[JsonProperty("modifiedAt")]
+	[CiscoIqV1ReadOnly]
 	public DateTimeOffset? ModifiedAt { get; set; }
 
 	/// <summary>Operating system or platform family that the bug applies to, as reported by the Bug Search Tool (for example, 'IOS-XE').</summary>
 	[JsonProperty("osType")]
+	[CiscoIqV1ReadOnly]
 	public string? OsType { get; set; }
 
 	/// <summary>Product families that this bug affects.</summary>
 	[JsonProperty("productsAffected")]
+	[CiscoIqV1ReadOnly]
 	public List<string>? ProductsAffected { get; set; }
 
 	/// <summary>Canonical URL to the record for this bug in the Cisco Bug Search Tool.</summary>
 	[JsonProperty("referenceUrl")]
+	[CiscoIqV1ReadOnly]
 	public string? ReferenceUrl { get; set; }
 
 	/// <summary>Cisco bug IDs related to this bug (duplicates, dependencies, or related root causes).</summary>
 	[JsonProperty("relatedBugIds")]
+	[CiscoIqV1ReadOnly]
 	public List<string>? RelatedBugIds { get; set; }
 
 	/// <summary>Cisco-assigned severity level of the bug, from S1 (catastrophic) to S6 (informational).</summary>
 	[JsonProperty("severity")]
+	[CiscoIqV1ReadOnly]
 	public BugSeverity? Severity { get; set; }
 
 	/// <summary>Customer-facing bug status as published by the Bug Search Tool.</summary>
 	[JsonProperty("status")]
+	[CiscoIqV1ReadOnly]
 	public BugStatus? Status { get; set; }
 
 	/// <summary>Number of open Cisco TAC support cases associated with this bug.</summary>
 	[JsonProperty("supportCaseCount")]
+	[CiscoIqV1ReadOnly]
 	public int? SupportCaseCount { get; set; }
 
 	/// <summary>Observed symptom that customers experience when the bug triggers.</summary>
 	[JsonProperty("symptom")]
+	[CiscoIqV1ReadOnly]
 	public string? Symptom { get; set; }
 
 	/// <summary>System metadata for provisioning state.</summary>
 	[JsonProperty("sys")]
+	[CiscoIqV1ReadOnly]
 	public BugSys? Sys { get; set; }
 
 	/// <summary>Brief summary of the bug, as published by the Bug Search Tool.</summary>
 	[JsonProperty("title")]
+	[CiscoIqV1ReadOnly]
 	public string? Title { get; set; }
 
 	/// <summary>Software versions that this bug affects.</summary>
 	[JsonProperty("versionsAffected")]
+	[CiscoIqV1ReadOnly]
 	public List<string>? VersionsAffected { get; set; }
 
 	/// <summary>Documented workaround for the bug, if any.</summary>
 	[JsonProperty("workaround")]
+	[CiscoIqV1ReadOnly]
 	public string? Workaround { get; set; }
 
 }
@@ -494,14 +547,17 @@ public class BugSys
 {
 	/// <summary>When this entity was created.</summary>
 	[JsonProperty("createdAt")]
+	[CiscoIqV1ReadOnly]
 	public DateTimeOffset? CreatedAt { get; set; }
 
 	/// <summary>Who owns this instance.</summary>
 	[JsonProperty("ownership")]
+	[CiscoIqV1ReadOnly]
 	public Ownership? Ownership { get; set; }
 
 	/// <summary>When this entity was last modified.</summary>
 	[JsonProperty("updatedAt")]
+	[CiscoIqV1ReadOnly]
 	public DateTimeOffset? UpdatedAt { get; set; }
 
 }
@@ -603,86 +659,107 @@ public class FieldNotice
 {
 	/// <summary>Concrete type discriminator in namespace.typeName format.</summary>
 	[JsonProperty("_type")]
+	[CiscoIqV1ReadOnly]
 	public string? ResourceType { get; set; }
 
 	/// <summary>Opaque, immutable identifier for this entity.</summary>
 	[JsonProperty("id")]
+	[CiscoIqV1ReadOnly]
 	public string? Id { get; set; }
 
 	/// <summary>Physical component types affected by the field notice.</summary>
 	[JsonProperty("affectedPhysicalTypes")]
+	[CiscoIqV1ReadOnly]
 	public List<string>? AffectedPhysicalTypes { get; set; }
 
 	/// <summary>Catalog products affected by this field notice, identified by their product identifiers.</summary>
 	[JsonProperty("affectedProducts")]
+	[CiscoIqV1ReadOnly]
 	public ProductRefListResponse? AffectedProducts { get; set; }
 
 	/// <summary>Background information about the issue.</summary>
 	[JsonProperty("background")]
+	[CiscoIqV1ReadOnly]
 	public string? Background { get; set; }
 
 	/// <summary>Cisco bugs identified by this field notice, including bugs whose details are not yet known.</summary>
 	[JsonProperty("bugs")]
+	[CiscoIqV1ReadOnly]
 	public BugRefListResponse? Bugs { get; set; }
 
 	/// <summary>URL to the full field notice.</summary>
 	[JsonProperty("bulletinUrl")]
+	[CiscoIqV1ReadOnly]
 	public string? BulletinUrl { get; set; }
 
 	/// <summary>Qualifying note about the field notice or corrective action.</summary>
 	[JsonProperty("caveat")]
+	[CiscoIqV1ReadOnly]
 	public string? Caveat { get; set; }
 
 	/// <summary>Device operating systems associated with affected products.</summary>
 	[JsonProperty("deviceOs")]
+	[CiscoIqV1ReadOnly]
 	public List<string>? DeviceOs { get; set; }
 
 	/// <summary>Hardware or software domain covered by the field notice.</summary>
 	[JsonProperty("domain")]
+	[CiscoIqV1ReadOnly]
 	public FieldNoticeDomain? Domain { get; set; }
 
 	/// <summary>Published field notice identifier.</summary>
 	[JsonProperty("fieldNoticeId")]
+	[CiscoIqV1ReadOnly]
 	public string? FieldNoticeId { get; set; }
 
 	/// <summary>Version string of the field notice's current revision.</summary>
 	[JsonProperty("fieldNoticeVersion")]
+	[CiscoIqV1ReadOnly]
 	public string? FieldNoticeVersion { get; set; }
 
 	/// <summary>When this field notice was first published.</summary>
 	[JsonProperty("firstPublishedAt")]
+	[CiscoIqV1ReadOnly]
 	public DateTimeOffset? FirstPublishedAt { get; set; }
 
 	/// <summary>Impact rating of the field notice.</summary>
 	[JsonProperty("impactRating")]
+	[CiscoIqV1ReadOnly]
 	public FieldNoticeImpactRating? ImpactRating { get; set; }
 
 	/// <summary>When this field notice was last updated with new information, additional affected products, or revised remediation guidance.</summary>
 	[JsonProperty("lastRevisedAt")]
+	[CiscoIqV1ReadOnly]
 	public DateTimeOffset? LastRevisedAt { get; set; }
 
 	/// <summary>Detailed explanation of the issue, affected conditions, and operational impact.</summary>
 	[JsonProperty("problemDescription")]
+	[CiscoIqV1ReadOnly]
 	public string? ProblemDescription { get; set; }
 
 	/// <summary>Problem symptoms associated with the issue.</summary>
 	[JsonProperty("problemSymptoms")]
+	[CiscoIqV1ReadOnly]
 	public string? ProblemSymptoms { get; set; }
 
 	/// <summary>Related field notice and supporting URLs.</summary>
 	[JsonProperty("references")]
+	[CiscoIqV1ReadOnly]
 	public List<BulletinReference>? References { get; set; }
 
 	/// <summary>System metadata for provisioning state.</summary>
 	[JsonProperty("sys")]
+	[CiscoIqV1ReadOnly]
 	public FieldNoticeSys? Sys { get; set; }
 
 	/// <summary>Brief summary of the issue.</summary>
 	[JsonProperty("title")]
+	[CiscoIqV1ReadOnly]
 	public string? Title { get; set; }
 
 	/// <summary>Workaround or corrective action for the issue.</summary>
 	[JsonProperty("workaround")]
+	[CiscoIqV1ReadOnly]
 	public string? Workaround { get; set; }
 
 }
@@ -752,14 +829,17 @@ public class FieldNoticeSys
 {
 	/// <summary>When this entity was created.</summary>
 	[JsonProperty("createdAt")]
+	[CiscoIqV1ReadOnly]
 	public DateTimeOffset? CreatedAt { get; set; }
 
 	/// <summary>Who owns this instance.</summary>
 	[JsonProperty("ownership")]
+	[CiscoIqV1ReadOnly]
 	public Ownership? Ownership { get; set; }
 
 	/// <summary>When this entity was last modified.</summary>
 	[JsonProperty("updatedAt")]
+	[CiscoIqV1ReadOnly]
 	public DateTimeOffset? UpdatedAt { get; set; }
 
 }
@@ -812,10 +892,10 @@ public sealed record GetProductHardwareEndOfLifeBulletinRequest
 	[AliasAs("select")]
 	public string? Select { get; init; }
 
-	/// <summary>Inline relationship references</summary>
+	/// <summary>Inline relationship references (known values: products)</summary>
 	[AliasAs("inline")]
 	[Query(CollectionFormat.Csv)]
-	public List<HardwareEndOfLifeBulletinInlineMember>? Inline { get; init; }
+	public List<string>? Inline { get; init; }
 
 	/// <summary>Inline relationship page size</summary>
 	[AliasAs("inline.max")]
@@ -845,10 +925,10 @@ public sealed record GetProductSecurityAdvisoryRequest
 	[AliasAs("select")]
 	public string? Select { get; init; }
 
-	/// <summary>Inline relationship references</summary>
+	/// <summary>Inline relationship references (known values: products, vulnerabilities)</summary>
 	[AliasAs("inline")]
 	[Query(CollectionFormat.Csv)]
-	public List<SecurityAdvisoryInlineMember>? Inline { get; init; }
+	public List<string>? Inline { get; init; }
 
 	/// <summary>Inline relationship page size</summary>
 	[AliasAs("inline.max")]
@@ -876,87 +956,89 @@ public class HardwareEndOfLifeBulletin
 {
 	/// <summary>Concrete type discriminator in namespace.typeName format.</summary>
 	[JsonProperty("_type")]
+	[CiscoIqV1ReadOnly]
 	public string? ResourceType { get; set; }
 
 	/// <summary>Opaque, immutable identifier for this entity.</summary>
 	[JsonProperty("id")]
+	[CiscoIqV1ReadOnly]
 	public string? Id { get; set; }
 
 	/// <summary>Number of the published announcement.</summary>
 	[JsonProperty("bulletinNumber")]
+	[CiscoIqV1ReadOnly]
 	public string? BulletinNumber { get; set; }
 
 	/// <summary>Product this resource retires, as named in the published product.</summary>
 	[JsonProperty("bulletinPid")]
+	[CiscoIqV1ReadOnly]
 	public string? BulletinPid { get; set; }
 
 	/// <summary>Link to the published bulletin, which carries the migration guidance and any conditions attached to the milestone dates.</summary>
 	[JsonProperty("bulletinUrl")]
+	[CiscoIqV1ReadOnly]
 	public string? BulletinUrl { get; set; }
 
 	/// <summary>Products recommended as migration or replacement targets for the product this resource retires.</summary>
 	[JsonProperty("migrateToProducts")]
+	[CiscoIqV1ReadOnly]
 	public ProductRefListResponse? MigrateToProducts { get; set; }
 
 	/// <summary>Recommended replacement path for the retired product, as published.</summary>
 	[JsonProperty("migrationInfo")]
+	[CiscoIqV1ReadOnly]
 	public string? MigrationInfo { get; set; }
 
 	/// <summary>Dated lifecycle milestones for the retired product.</summary>
 	[JsonProperty("milestones")]
+	[CiscoIqV1ReadOnly]
 	public EndOfLifeSchedule? Milestones { get; set; }
 
 	/// <summary>Qualification the source attaches to this mapping, exceptions, conditions, or the reasoning behind a non-obvious match.</summary>
 	[JsonProperty("notes")]
+	[CiscoIqV1ReadOnly]
 	public string? Notes { get; set; }
 
 	/// <summary>Class of hardware the retired product represents.</summary>
 	[JsonProperty("physicalTypeName")]
+	[CiscoIqV1ReadOnly]
 	public string? PhysicalTypeName { get; set; }
 
 	/// <summary>Day the bulletin was posted.</summary>
 	[JsonProperty("postDate")]
+	[CiscoIqV1ReadOnly]
 	public DateOnly? PostDate { get; set; }
 
 	/// <summary>Product the resource resolves to.</summary>
 	[JsonProperty("productId")]
+	[CiscoIqV1ReadOnly]
 	public string? ProductId { get; set; }
 
 	/// <summary>Identifier for the product mapping used by this resource.</summary>
 	[JsonProperty("productRuleId")]
+	[CiscoIqV1ReadOnly]
 	public string? ProductRuleId { get; set; }
 
 	/// <summary>Products covered by this end-of-life product.</summary>
 	[JsonProperty("products")]
+	[CiscoIqV1ReadOnly]
 	public JToken? Products { get; set; }
 
 	/// <summary>Source record identifier assigned to this product.</summary>
 	[JsonProperty("sourceRecordId")]
+	[CiscoIqV1ReadOnly]
 	public string? SourceRecordId { get; set; }
 
 	/// <summary>System metadata for provisioning state.</summary>
 	[JsonProperty("sys")]
+	[CiscoIqV1ReadOnly]
 	public HardwareEndOfLifeBulletinSys? Sys { get; set; }
 
 	/// <summary>Announcement headline.</summary>
 	[JsonProperty("title")]
+	[CiscoIqV1ReadOnly]
 	public string? Title { get; set; }
 
-}
-
-/// <summary>Generated from the Cisco IQ OpenAPI specification.</summary>
-[GeneratedCode("Cisco.Iq.Api.Generator", "1.0")]
-[JsonConverter(typeof(CiscoIqV1StringValueConverter<HardwareEndOfLifeBulletinInlineMember>))]
-public readonly record struct HardwareEndOfLifeBulletinInlineMember(string Value) : ICiscoIqV1StringValue<HardwareEndOfLifeBulletinInlineMember>
-{
-	/// <summary>The value products.</summary>
-	public static readonly HardwareEndOfLifeBulletinInlineMember Products = new("products");
-
-	/// <inheritdoc />
-	public static HardwareEndOfLifeBulletinInlineMember Create(string value) => new(value);
-
-	/// <inheritdoc />
-	public override string ToString() => Value;
 }
 
 /// <summary>Collection response containing one page of hardwareEndOfLifeBulletin resources.</summary>
@@ -979,14 +1061,17 @@ public class HardwareEndOfLifeBulletinSys
 {
 	/// <summary>When this entity was created.</summary>
 	[JsonProperty("createdAt")]
+	[CiscoIqV1ReadOnly]
 	public DateTimeOffset? CreatedAt { get; set; }
 
 	/// <summary>Who owns this instance.</summary>
 	[JsonProperty("ownership")]
+	[CiscoIqV1ReadOnly]
 	public Ownership? Ownership { get; set; }
 
 	/// <summary>When this entity was last modified.</summary>
 	[JsonProperty("updatedAt")]
+	[CiscoIqV1ReadOnly]
 	public DateTimeOffset? UpdatedAt { get; set; }
 
 }
@@ -1291,10 +1376,10 @@ public sealed record ListProductHardwareEndOfLifeBulletinsRequest
 	[AliasAs("count")]
 	public bool? Count { get; init; }
 
-	/// <summary>Inline relationship references</summary>
+	/// <summary>Inline relationship references (known values: products)</summary>
 	[AliasAs("inline")]
 	[Query(CollectionFormat.Csv)]
-	public List<HardwareEndOfLifeBulletinInlineMember>? Inline { get; init; }
+	public List<string>? Inline { get; init; }
 
 	/// <summary>Inline relationship page size</summary>
 	[AliasAs("inline.max")]
@@ -1430,10 +1515,10 @@ public sealed record ListProductSecurityAdvisoriesRequest
 	[AliasAs("count")]
 	public bool? Count { get; init; }
 
-	/// <summary>Inline relationship references</summary>
+	/// <summary>Inline relationship references (known values: products, vulnerabilities)</summary>
 	[AliasAs("inline")]
 	[Query(CollectionFormat.Csv)]
-	public List<SecurityAdvisoryInlineMember>? Inline { get; init; }
+	public List<string>? Inline { get; init; }
 
 	/// <summary>Inline relationship page size</summary>
 	[AliasAs("inline.max")]
@@ -1557,70 +1642,87 @@ public class Product
 {
 	/// <summary>Concrete type discriminator in namespace.typeName format.</summary>
 	[JsonProperty("_type")]
+	[CiscoIqV1ReadOnly]
 	public string? ResourceType { get; set; }
 
 	/// <summary>Opaque, immutable identifier for this entity.</summary>
 	[JsonProperty("id")]
+	[CiscoIqV1ReadOnly]
 	public string? Id { get; set; }
 
 	/// <summary>Product identifier that groups the orderable variants of one base product.</summary>
 	[JsonProperty("baseProductId")]
+	[CiscoIqV1ReadOnly]
 	public string? BaseProductId { get; set; }
 
 	/// <summary>Name of the business unit responsible for the product.</summary>
 	[JsonProperty("businessEntityName")]
+	[CiscoIqV1ReadOnly]
 	public string? BusinessEntityName { get; set; }
 
 	/// <summary>Detailed description of the product.</summary>
 	[JsonProperty("description")]
+	[CiscoIqV1ReadOnly]
 	public string? Description { get; set; }
 
 	/// <summary>Platform family that groups related products for reporting and installed-base summaries.</summary>
 	[JsonProperty("family")]
+	[CiscoIqV1ReadOnly]
 	public string? Family { get; set; }
 
 	/// <summary>End-of-life bulletin for this product's hardware, if one has been published.</summary>
 	[JsonProperty("hardwareEndOfLifeBulletin")]
+	[CiscoIqV1ReadOnly]
 	public string? HardwareEndOfLifeBulletin { get; set; }
 
 	/// <summary>Whether each deployed unit of this product has a serial number.</summary>
 	[JsonProperty("hasSerialNumber")]
+	[CiscoIqV1ReadOnly]
 	public HasSerialNumber? HasSerialNumber { get; set; }
 
 	/// <summary>Identifier used to associate this product with an inventory item.</summary>
 	[JsonProperty("inventoryItemId")]
+	[CiscoIqV1ReadOnly]
 	public string? InventoryItemId { get; set; }
 
 	/// <summary>Whether deployed units of this product can be serviced.</summary>
 	[JsonProperty("isServiceable")]
+	[CiscoIqV1ReadOnly]
 	public IsServiceable? IsServiceable { get; set; }
 
 	/// <summary>Short display name for the product.</summary>
 	[JsonProperty("name")]
+	[CiscoIqV1ReadOnly]
 	public string? Name { get; set; }
 
 	/// <summary>Physical form of the product.</summary>
 	[JsonProperty("physicalType")]
+	[CiscoIqV1ReadOnly]
 	public PhysicalType? PhysicalType { get; set; }
 
 	/// <summary>Structured product identifier that uniquely identifies an orderable or installable product.</summary>
 	[JsonProperty("productId")]
+	[CiscoIqV1ReadOnly]
 	public string? ProductId { get; set; }
 
 	/// <summary>More specific functional grouping within productType.</summary>
 	[JsonProperty("productSubtype")]
+	[CiscoIqV1ReadOnly]
 	public string? ProductSubtype { get; set; }
 
 	/// <summary>Functional classification that describes the primary function of the product.</summary>
 	[JsonProperty("productType")]
+	[CiscoIqV1ReadOnly]
 	public string? ProductType { get; set; }
 
 	/// <summary>Operating system family supported by the product.</summary>
 	[JsonProperty("softwareType")]
+	[CiscoIqV1ReadOnly]
 	public string? SoftwareType { get; set; }
 
 	/// <summary>System metadata for provisioning state.</summary>
 	[JsonProperty("sys")]
+	[CiscoIqV1ReadOnly]
 	public ProductSys? Sys { get; set; }
 
 }
@@ -1663,14 +1765,17 @@ public class ProductSys
 {
 	/// <summary>When this entity was created.</summary>
 	[JsonProperty("createdAt")]
+	[CiscoIqV1ReadOnly]
 	public DateTimeOffset? CreatedAt { get; set; }
 
 	/// <summary>Who owns this instance.</summary>
 	[JsonProperty("ownership")]
+	[CiscoIqV1ReadOnly]
 	public Ownership? Ownership { get; set; }
 
 	/// <summary>When this entity was last modified.</summary>
 	[JsonProperty("updatedAt")]
+	[CiscoIqV1ReadOnly]
 	public DateTimeOffset? UpdatedAt { get; set; }
 
 }
@@ -1813,114 +1918,119 @@ public class SecurityAdvisory
 {
 	/// <summary>Concrete type discriminator in namespace.typeName format.</summary>
 	[JsonProperty("_type")]
+	[CiscoIqV1ReadOnly]
 	public string? ResourceType { get; set; }
 
 	/// <summary>Opaque, immutable identifier for this entity.</summary>
 	[JsonProperty("id")]
+	[CiscoIqV1ReadOnly]
 	public string? Id { get; set; }
 
 	/// <summary>Advisory identifier string published by the issuing organization.</summary>
 	[JsonProperty("advisoryId")]
+	[CiscoIqV1ReadOnly]
 	public string? AdvisoryId { get; set; }
 
 	/// <summary>Version string of the advisory's current revision.</summary>
 	[JsonProperty("advisoryVersion")]
+	[CiscoIqV1ReadOnly]
 	public string? AdvisoryVersion { get; set; }
 
 	/// <summary>Catalog products affected by this security advisory, identified by their product identifiers.</summary>
 	[JsonProperty("affectedProducts")]
+	[CiscoIqV1ReadOnly]
 	public ProductRefListResponse? AffectedProducts { get; set; }
 
 	/// <summary>Cisco bugs identified by this advisory, including bugs whose details are not yet known.</summary>
 	[JsonProperty("bugs")]
+	[CiscoIqV1ReadOnly]
 	public BugRefListResponse? Bugs { get; set; }
 
 	/// <summary>URL to the full advisory product.</summary>
 	[JsonProperty("bulletinUrl")]
+	[CiscoIqV1ReadOnly]
 	public string? BulletinUrl { get; set; }
 
 	/// <summary>Detailed explanation of the vulnerability and conditions.</summary>
 	[JsonProperty("details")]
+	[CiscoIqV1ReadOnly]
 	public string? Details { get; set; }
 
 	/// <summary>When this advisory was first published.</summary>
 	[JsonProperty("firstPublishedAt")]
+	[CiscoIqV1ReadOnly]
 	public DateTimeOffset? FirstPublishedAt { get; set; }
 
 	/// <summary>Brief headline describing the vulnerability.</summary>
 	[JsonProperty("headline")]
+	[CiscoIqV1ReadOnly]
 	public string? Headline { get; set; }
 
 	/// <summary>When this advisory was last updated.</summary>
 	[JsonProperty("lastRevisedAt")]
+	[CiscoIqV1ReadOnly]
 	public DateTimeOffset? LastRevisedAt { get; set; }
 
 	/// <summary>Products named by the advisory.</summary>
 	[JsonProperty("products")]
+	[CiscoIqV1ReadOnly]
 	public JToken? Products { get; set; }
 
 	/// <summary>Category of the organization that published this advisory.</summary>
 	[JsonProperty("publisherCategory")]
+	[CiscoIqV1ReadOnly]
 	public PublisherCategory? PublisherCategory { get; set; }
 
 	/// <summary>Name of the organization that published this advisory.</summary>
 	[JsonProperty("publisherName")]
+	[CiscoIqV1ReadOnly]
 	public string? PublisherName { get; set; }
 
 	/// <summary>URI namespace of the publishing organization.</summary>
 	[JsonProperty("publisherNamespace")]
+	[CiscoIqV1ReadOnly]
 	public string? PublisherNamespace { get; set; }
 
 	/// <summary>Related advisory and supporting URLs.</summary>
 	[JsonProperty("references")]
+	[CiscoIqV1ReadOnly]
 	public List<BulletinReference>? References { get; set; }
 
 	/// <summary>Ordered list of advisory revision history entries.</summary>
 	[JsonProperty("revisionHistory")]
+	[CiscoIqV1ReadOnly]
 	public List<AdvisoryRevision>? RevisionHistory { get; set; }
 
 	/// <summary>Severity classification based on CVSS v3 base score when assigned.</summary>
 	[JsonProperty("severity")]
+	[CiscoIqV1ReadOnly]
 	public AdvisorySeverity? Severity { get; set; }
 
 	/// <summary>Publication lifecycle state of the advisory.</summary>
 	[JsonProperty("status")]
+	[CiscoIqV1ReadOnly]
 	public AdvisoryStatus? Status { get; set; }
 
 	/// <summary>Summary of the vulnerability and its impact.</summary>
 	[JsonProperty("summary")]
+	[CiscoIqV1ReadOnly]
 	public string? Summary { get; set; }
 
 	/// <summary>System metadata for provisioning state.</summary>
 	[JsonProperty("sys")]
+	[CiscoIqV1ReadOnly]
 	public SecurityAdvisorySys? Sys { get; set; }
 
 	/// <summary>Brief summary of the vulnerability.</summary>
 	[JsonProperty("title")]
+	[CiscoIqV1ReadOnly]
 	public string? Title { get; set; }
 
 	/// <summary>Vulnerabilities described by the advisory.</summary>
 	[JsonProperty("vulnerabilities")]
+	[CiscoIqV1ReadOnly]
 	public JToken? Vulnerabilities { get; set; }
 
-}
-
-/// <summary>Generated from the Cisco IQ OpenAPI specification.</summary>
-[GeneratedCode("Cisco.Iq.Api.Generator", "1.0")]
-[JsonConverter(typeof(CiscoIqV1StringValueConverter<SecurityAdvisoryInlineMember>))]
-public readonly record struct SecurityAdvisoryInlineMember(string Value) : ICiscoIqV1StringValue<SecurityAdvisoryInlineMember>
-{
-	/// <summary>The value products.</summary>
-	public static readonly SecurityAdvisoryInlineMember Products = new("products");
-
-	/// <summary>The value vulnerabilities.</summary>
-	public static readonly SecurityAdvisoryInlineMember Vulnerabilities = new("vulnerabilities");
-
-	/// <inheritdoc />
-	public static SecurityAdvisoryInlineMember Create(string value) => new(value);
-
-	/// <inheritdoc />
-	public override string ToString() => Value;
 }
 
 /// <summary>Collection response containing one page of securityAdvisory resources.</summary>
@@ -1943,14 +2053,17 @@ public class SecurityAdvisorySys
 {
 	/// <summary>When this entity was created.</summary>
 	[JsonProperty("createdAt")]
+	[CiscoIqV1ReadOnly]
 	public DateTimeOffset? CreatedAt { get; set; }
 
 	/// <summary>Who owns this instance.</summary>
 	[JsonProperty("ownership")]
+	[CiscoIqV1ReadOnly]
 	public Ownership? Ownership { get; set; }
 
 	/// <summary>When this entity was last modified.</summary>
 	[JsonProperty("updatedAt")]
+	[CiscoIqV1ReadOnly]
 	public DateTimeOffset? UpdatedAt { get; set; }
 
 }
@@ -1961,74 +2074,92 @@ public class SoftwareEndOfLifeBulletin
 {
 	/// <summary>Concrete type discriminator in namespace.typeName format.</summary>
 	[JsonProperty("_type")]
+	[CiscoIqV1ReadOnly]
 	public string? ResourceType { get; set; }
 
 	/// <summary>Opaque, immutable identifier for this entity.</summary>
 	[JsonProperty("id")]
+	[CiscoIqV1ReadOnly]
 	public string? Id { get; set; }
 
 	/// <summary>Number of the published announcement.</summary>
 	[JsonProperty("bulletinNumber")]
+	[CiscoIqV1ReadOnly]
 	public string? BulletinNumber { get; set; }
 
 	/// <summary>Link to the published bulletin, which carries the upgrade guidance and any conditions attached to the milestone dates.</summary>
 	[JsonProperty("bulletinUrl")]
+	[CiscoIqV1ReadOnly]
 	public string? BulletinUrl { get; set; }
 
 	/// <summary>Hardware families explicitly excluded from the retirement.</summary>
 	[JsonProperty("exemptProductFamilies")]
+	[CiscoIqV1ReadOnly]
 	public List<string>? ExemptProductFamilies { get; set; }
 
 	/// <summary>Whether majorSoftwareVersion is a prefix to match rather than a version to compare.</summary>
 	[JsonProperty("isVersionPattern")]
+	[CiscoIqV1ReadOnly]
 	public bool? IsVersionPattern { get; set; }
 
 	/// <summary>Maintenance release this resource retires within its train, such as the '52' in IOS 12.2(52)SE.</summary>
 	[JsonProperty("maintenanceVersion")]
+	[CiscoIqV1ReadOnly]
 	public string? MaintenanceVersion { get; set; }
 
 	/// <summary>Major version being retired, such as '12.2'.</summary>
 	[JsonProperty("majorSoftwareVersion")]
+	[CiscoIqV1ReadOnly]
 	public string? MajorSoftwareVersion { get; set; }
 
 	/// <summary>Dated lifecycle milestones for the covered releases.</summary>
 	[JsonProperty("milestones")]
+	[CiscoIqV1ReadOnly]
 	public EndOfLifeSchedule? Milestones { get; set; }
 
 	/// <summary>Modules the retirement applies to, identified by product identifier.</summary>
 	[JsonProperty("moduleProductIds")]
+	[CiscoIqV1ReadOnly]
 	public List<string>? ModuleProductIds { get; set; }
 
 	/// <summary>Hardware platforms the retirement applies to, identified by product identifier rather than by name.</summary>
 	[JsonProperty("platformProductIds")]
+	[CiscoIqV1ReadOnly]
 	public List<string>? PlatformProductIds { get; set; }
 
 	/// <summary>Day the bulletin was posted.</summary>
 	[JsonProperty("postDate")]
+	[CiscoIqV1ReadOnly]
 	public DateOnly? PostDate { get; set; }
 
 	/// <summary>Hardware family the retirement applies to.</summary>
 	[JsonProperty("productFamily")]
+	[CiscoIqV1ReadOnly]
 	public string? ProductFamily { get; set; }
 
 	/// <summary>Release train being retired, such as 'SE' or 'SY'.</summary>
 	[JsonProperty("releaseTrain")]
+	[CiscoIqV1ReadOnly]
 	public string? ReleaseTrain { get; set; }
 
 	/// <summary>Software product line being retired.</summary>
 	[JsonProperty("softwareType")]
+	[CiscoIqV1ReadOnly]
 	public string? SoftwareType { get; set; }
 
 	/// <summary>Source record identifier assigned to this product.</summary>
 	[JsonProperty("sourceRecordId")]
+	[CiscoIqV1ReadOnly]
 	public string? SourceRecordId { get; set; }
 
 	/// <summary>System metadata for provisioning state.</summary>
 	[JsonProperty("sys")]
+	[CiscoIqV1ReadOnly]
 	public SoftwareEndOfLifeBulletinSys? Sys { get; set; }
 
 	/// <summary>Published announcement headline.</summary>
 	[JsonProperty("title")]
+	[CiscoIqV1ReadOnly]
 	public string? Title { get; set; }
 
 }
@@ -2053,14 +2184,17 @@ public class SoftwareEndOfLifeBulletinSys
 {
 	/// <summary>When this entity was created.</summary>
 	[JsonProperty("createdAt")]
+	[CiscoIqV1ReadOnly]
 	public DateTimeOffset? CreatedAt { get; set; }
 
 	/// <summary>Who owns this instance.</summary>
 	[JsonProperty("ownership")]
+	[CiscoIqV1ReadOnly]
 	public Ownership? Ownership { get; set; }
 
 	/// <summary>When this entity was last modified.</summary>
 	[JsonProperty("updatedAt")]
+	[CiscoIqV1ReadOnly]
 	public DateTimeOffset? UpdatedAt { get; set; }
 
 }

@@ -23,18 +23,21 @@ The official Cisco IQ API documentation, including the beta-to-GA API mapping gu
 
 ## What is covered
 
-| API | Namespace | State |
-| --- | --- | --- |
-| Asset (physical and virtual assets, coverage, data sources, licensing) | `Cisco.Iq.Api.V1.Assets` | Read operations |
-| Assessment (assessments, findings, insights, recommendations) | `Cisco.Iq.Api.V1.Assessments` | Read operations |
-| Product (products, security advisories, field notices, end-of-life bulletins) | `Cisco.Iq.Api.V1.Products` | Read operations |
-| Asset writes (`PATCH` and `PUT`) | | Not yet generated |
-| IAM (accounts, users, API keys, roles) | | Not yet generated |
-| System (resource groups, preferences, query, bulk) | | Not yet generated |
+Every operation in the five GA OpenAPI files is generated: 213 operations by method and path.
+
+| API | Client property | Namespace | Operations |
+| --- | --- | --- | --- |
+| Asset (physical and virtual assets, coverage, data sources, licensing) | `Assets` | `Cisco.Iq.Api.V1.Assets` | 28 |
+| Assessment (assessments, findings, insights, recommendations) | `Assessments` | `Cisco.Iq.Api.V1.Assessments` | 16 |
+| Product (products, security advisories, field notices, end-of-life bulletins) | `Products` | `Cisco.Iq.Api.V1.Products` | 25 |
+| IAM (accounts, users, groups, roles, policies, service accounts, API keys) | `Identity` | `Cisco.Iq.Api.V1.Identity` | 100 |
+| System (resource groups, preferences, query, bulk, schema discovery) | `Platform` | `Cisco.Iq.Api.V1.Platform` | 44 |
 
 The client is generated from the OpenAPI files Cisco publishes, which are kept in
-[docs/ga-spec/](docs/ga-spec/). It has not yet been verified against a live Cisco IQ account.
-
+[docs/ga-spec/](docs/ga-spec/). **It has not yet been verified against a live Cisco IQ account**:
+every operation is checked against the specification (method, path, body and headers), not
+against Cisco's service. Treat the write, delete and API key operations with care until they have
+been exercised against your own account.
 ## Relationship to `Cisco.Api`
 
 [`Cisco.Api`](https://github.com/panoramicdata/Cisco.Api) covers the Cisco Support APIs (EoX,
@@ -117,7 +120,7 @@ there is no next page. The cursor is opaque: the client passes it back unchanged
 
 A query string over **2,048 bytes** after encoding is refused by Cisco's edge before the API
 sees it. The client throws `CiscoIqV1QueryTooLongException` rather than send it. Use the System
-API's query endpoint for long filters once it is available in this package.
+API's query endpoint (`Platform.QueryAsync`) for long filters.
 
 ### Regions and hosts
 
@@ -126,6 +129,41 @@ set. Cisco's documentation also names regional hosts (`us-west-2.iq.cisco.com`,
 `eu-central-1.iq.cisco.com`, `ap-southeast-2.iq.cisco.com`). To use one, set `BaseAddress`. The
 OpenAPI files name different regional hosts, so confirm the host for your account. A key for
 the wrong region is rejected with 401.
+
+### Writes
+
+`PATCH` operations use JSON Merge Patch, in which a member can be left out (keep it), set, or
+sent as `null` (clear it). Patch bodies use `CiscoIqV1Optional<T>` for every member, so all three
+are possible. Members you do not set are not sent.
+
+```csharp
+using Cisco.Iq.Api.V1;
+using Cisco.Iq.Api.V1.Assets;
+
+using var updated = await client.Assets.UpdateAssetPhysicalAssetAsync(
+    "<asset-id>",
+    new UpdatePhysicalAssetRequest
+    {
+        Tags = new Dictionary<string, string> { ["site"] = "london" },     // set
+        Criticality = CiscoIqV1Optional.Null<AssetCriticality>()           // clear
+    },
+    ifMatch: "<etag-from-the-last-read>");
+```
+
+`PUT` and `POST` bodies are plain objects. Read-only properties that Cisco returns, such as `Id`
+and `Serial`, are never written back. Use `ifMatch` with the `ETag` from a read to avoid
+overwriting a change someone else made; a stale value returns 412.
+
+Some operations are destructive or sensitive: deleting resource groups, users and API keys,
+revoking keys, and creating a key, whose token is returned only once. They are exposed exactly as
+Cisco defines them and are never exercised against a live account by this repository's tests.
+
+### The System query endpoint
+
+`Platform.QueryAsync` runs a filter, projection and aggregation over one entity type, and pages
+through its request and response bodies instead of a `Link` header. `Platform.QueryAllAsync`
+follows the cursor for you and does not change your request object. It is also the way to run a
+filter too long for a query string.
 
 ### Errors, retries and rate limits
 
