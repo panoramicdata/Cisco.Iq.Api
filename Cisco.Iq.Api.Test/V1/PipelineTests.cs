@@ -122,7 +122,7 @@ public partial class PipelineTests
 			Max = 10,
 			Count = true,
 			OrderBy = "model",
-			Inline = [PhysicalAssetInlineMember.Children, PhysicalAssetInlineMember.Coverages]
+			Inline = ["children", "coverages"]
 		});
 
 		var query = Uri.UnescapeDataString(seen!.RequestUri!.Query);

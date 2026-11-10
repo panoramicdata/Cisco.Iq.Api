@@ -2,7 +2,7 @@ using Cisco.Iq.Api.Generator;
 
 var specDirectory = Argument("--spec-dir") ?? "docs/ga-spec";
 var outputDirectory = Argument("--out") ?? "Cisco.Iq.Api/V1/Generated";
-var keys = (Argument("--apis") ?? "asset,assessment,product").Split(',', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries);
+var keys = (Argument("--apis") ?? string.Join(",", ApiDefinition.All.Select(api => api.Key))).Split(',', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries);
 var check = args.Contains("--check");
 
 var apis = keys.Select(key => ApiDefinition.All.FirstOrDefault(api => api.Key == key)

@@ -18,9 +18,15 @@ internal static class V1Support
 		Func<HttpRequestMessage, HttpResponseMessage> respond,
 		Action<CiscoIqV1ClientOptions>? change = null,
 		List<TimeSpan>? delays = null)
+		=> ClientAsync((request, _) => Task.FromResult(respond(request)), change, delays);
+
+	internal static CiscoIqV1Client ClientAsync(
+		Func<HttpRequestMessage, CancellationToken, Task<HttpResponseMessage>> respond,
+		Action<CiscoIqV1ClientOptions>? change = null,
+		List<TimeSpan>? delays = null)
 		=> new(
 			Options(change),
-			new TestTransport((request, _) => Task.FromResult(respond(request))),
+			new TestTransport(respond),
 			(delay, _) =>
 			{
 				delays?.Add(delay);

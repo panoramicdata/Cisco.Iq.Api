@@ -1,6 +1,8 @@
 using Cisco.Iq.Api.V1.Assessments;
 using Cisco.Iq.Api.V1.Assets;
 using Cisco.Iq.Api.V1.Http;
+using Cisco.Iq.Api.V1.Identity;
+using Cisco.Iq.Api.V1.Platform;
 using Cisco.Iq.Api.V1.Products;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
@@ -49,8 +51,14 @@ public sealed partial class CiscoIqV1Client : IDisposable
 			BaseAddress = settings.EffectiveBaseAddress,
 			Timeout = TimeSpan.FromSeconds(settings.HttpClientTimeoutSeconds)
 		};
-		var json = new JsonSerializerSettings { DateParseHandling = DateParseHandling.None };
+		var json = new JsonSerializerSettings
+		{
+			DateParseHandling = DateParseHandling.None,
+			NullValueHandling = NullValueHandling.Ignore,
+			ContractResolver = new CiscoIqV1ContractResolver()
+		};
 		json.Converters.Add(new CiscoIqV1DateOnlyConverter());
+		json.Converters.Add(new CiscoIqV1OptionalConverter());
 		var refit = new RefitSettings
 		{
 			ContentSerializer = new NewtonsoftJsonContentSerializer(json),
@@ -60,6 +68,8 @@ public sealed partial class CiscoIqV1Client : IDisposable
 		Assets = RestService.For<IAssetApi>(_http, refit);
 		Assessments = RestService.For<IAssessmentApi>(_http, refit);
 		Products = RestService.For<IProductApi>(_http, refit);
+		Identity = RestService.For<IIamApi>(_http, refit);
+		Platform = RestService.For<ISystemApi>(_http, refit);
 		if (logger is not null)
 		{
 			LogInitialized(logger, settings.Region, settings.EffectiveBaseAddress.Host);
@@ -74,6 +84,12 @@ public sealed partial class CiscoIqV1Client : IDisposable
 
 	/// <summary>The Product API: products, security advisories, field notices and end-of-life bulletins.</summary>
 	public IProductApi Products { get; }
+
+	/// <summary>The IAM API: accounts, users, groups, roles, policies, service accounts and API keys.</summary>
+	public IIamApi Identity { get; }
+
+	/// <summary>The System API: resource groups, preferences, query, bulk and schema discovery.</summary>
+	public ISystemApi Platform { get; }
 
 	/// <summary>The latest observed rate-limit headers, or null before any are received.</summary>
 	public CiscoIqV1RateLimitInfo? LastRateLimit => Volatile.Read(ref _lastRateLimit);

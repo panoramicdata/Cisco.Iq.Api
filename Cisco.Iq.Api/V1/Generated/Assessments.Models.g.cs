@@ -17,42 +17,52 @@ public class Assessment
 {
 	/// <summary>Concrete type discriminator in namespace.typeName format.</summary>
 	[JsonProperty("_type")]
+	[CiscoIqV1ReadOnly]
 	public string? ResourceType { get; set; }
 
 	/// <summary>Opaque, immutable identifier for this entity.</summary>
 	[JsonProperty("id")]
+	[CiscoIqV1ReadOnly]
 	public string? Id { get; set; }
 
 	/// <summary>Overview copy shown in the assessment's 'About Assessment' section.</summary>
 	[JsonProperty("description")]
+	[CiscoIqV1ReadOnly]
 	public string? Description { get; set; }
 
 	/// <summary>Whether this assessment is currently available to run.</summary>
 	[JsonProperty("isActive")]
+	[CiscoIqV1ReadOnly]
 	public bool? IsActive { get; set; }
 
 	/// <summary>Title of the assessment shown as the overview heading (e.g., 'Configuration Assessment', 'Quantum Readiness Assessment').</summary>
 	[JsonProperty("name")]
+	[CiscoIqV1ReadOnly]
 	public string? Name { get; set; }
 
 	/// <summary>Stable programmatic identifier for this assessment definition.</summary>
 	[JsonProperty("slug")]
+	[CiscoIqV1ReadOnly]
 	public string? Slug { get; set; }
 
 	/// <summary>Software types this assessment supports.</summary>
 	[JsonProperty("softwareTypes")]
+	[CiscoIqV1ReadOnly]
 	public List<string>? SoftwareTypes { get; set; }
 
 	/// <summary>Support tiers that permit access to this assessment's findings.</summary>
 	[JsonProperty("supportTiers")]
+	[CiscoIqV1ReadOnly]
 	public EntitlementTierRefListResponse? SupportTiers { get; set; }
 
 	/// <summary>System metadata for provisioning state.</summary>
 	[JsonProperty("sys")]
+	[CiscoIqV1ReadOnly]
 	public AssessmentSys? Sys { get; set; }
 
 	/// <summary>Telemetry sources this assessment draws on to collect the data it evaluates.</summary>
 	[JsonProperty("telemetrySources")]
+	[CiscoIqV1ReadOnly]
 	public List<TelemetrySource>? TelemetrySources { get; set; }
 
 }
@@ -77,14 +87,17 @@ public class AssessmentSys
 {
 	/// <summary>When this entity was created.</summary>
 	[JsonProperty("createdAt")]
+	[CiscoIqV1ReadOnly]
 	public DateTimeOffset? CreatedAt { get; set; }
 
 	/// <summary>Who owns this instance.</summary>
 	[JsonProperty("ownership")]
+	[CiscoIqV1ReadOnly]
 	public Ownership? Ownership { get; set; }
 
 	/// <summary>When this entity was last modified.</summary>
 	[JsonProperty("updatedAt")]
+	[CiscoIqV1ReadOnly]
 	public DateTimeOffset? UpdatedAt { get; set; }
 
 }
@@ -281,74 +294,92 @@ public class Finding
 {
 	/// <summary>Concrete type discriminator in namespace.typeName format.</summary>
 	[JsonProperty("_type")]
+	[CiscoIqV1ReadOnly]
 	public string? ResourceType { get; set; }
 
 	/// <summary>Opaque, immutable identifier for this entity.</summary>
 	[JsonProperty("id")]
+	[CiscoIqV1ReadOnly]
 	public string? Id { get; set; }
 
 	/// <summary>The account this entity belongs to.</summary>
 	[JsonProperty("account")]
+	[CiscoIqV1ReadOnly]
 	public string? Account { get; set; }
 
 	/// <summary>The item to which this finding applies.</summary>
 	[JsonProperty("asset")]
+	[CiscoIqV1ReadOnly]
 	public string? Asset { get; set; }
 
 	/// <summary>Human-readable detailed explanation of what this finding represents and what was found on an evaluated entity</summary>
 	[JsonProperty("description")]
+	[CiscoIqV1ReadOnly]
 	public string? Description { get; set; }
 
 	/// <summary>The category-specific detail this finding carries.</summary>
 	[JsonProperty("detail")]
+	[CiscoIqV1ReadOnly]
 	public List<FindingDetails>? Detail { get; set; }
 
 	/// <summary>Stable identifier of the specific thing this finding is about on its asset, for example a procedureId, certificate serial number, issuer.</summary>
 	[JsonProperty("evaluationKey")]
+	[CiscoIqV1ReadOnly]
 	public string? EvaluationKey { get; set; }
 
 	/// <summary>Supporting data documenting this finding, configuration blocks, command outputs/snippets, metric values.</summary>
 	[JsonProperty("evidenceLogs")]
+	[CiscoIqV1ReadOnly]
 	public List<EvidenceLog>? EvidenceLogs { get; set; }
 
 	/// <summary>References to external resources such as knowledge base articles, hardening guides, configuration guides or vendor documentation.</summary>
 	[JsonProperty("externalReferences")]
+	[CiscoIqV1ReadOnly]
 	public List<ExternalReference>? ExternalReferences { get; set; }
 
 	/// <summary>When this finding was identified or discovered.</summary>
 	[JsonProperty("identifiedAt")]
+	[CiscoIqV1ReadOnly]
 	public DateTimeOffset? IdentifiedAt { get; set; }
 
 	/// <summary>The procedureDef this finding was produced by, the published catalog entry (the rules catalog) that defines the rule or check evaluated against the asset.</summary>
 	[JsonProperty("procedure")]
+	[CiscoIqV1ReadOnly]
 	public string? Procedure { get; set; }
 
 	/// <summary>findingRecommendation entities that address this finding.</summary>
 	[JsonProperty("recommendations")]
+	[CiscoIqV1ReadOnly]
 	public JToken? Recommendations { get; set; }
 
 	/// <summary>The evaluation outcome from assessment execution, whether the assessed condition passed, failed, generated a warning, or is in an exceptional state.</summary>
 	[JsonProperty("result")]
+	[CiscoIqV1ReadOnly]
 	public FindingResult? Result { get; set; }
 
 	/// <summary>Impact severity classification.</summary>
 	[JsonProperty("severity")]
+	[CiscoIqV1ReadOnly]
 	public FindingSeverity? Severity { get; set; }
 
 	/// <summary>System metadata for soft-deletion and purge lifecycle state.</summary>
 	[JsonProperty("sys")]
+	[CiscoIqV1ReadOnly]
 	public StandardSys? Sys { get; set; }
 
 	/// <summary>Tags assigned to this finding by the assessment engines.</summary>
 	[JsonProperty("tags")]
+	[CiscoIqV1ReadOnly]
 	public Dictionary<string, string>? Tags { get; set; }
 
 	/// <summary>Short, human-readable heading for this finding.</summary>
 	[JsonProperty("title")]
+	[CiscoIqV1ReadOnly]
 	public string? Title { get; set; }
 
 	/// <summary>Domain classification indicating whether this finding relates to technical infrastructure, organizational processes, human factors, or business operations.</summary>
 	[JsonProperty("type")]
+	[CiscoIqV1ReadOnly]
 	public FindingType? Type { get; set; }
 
 }
@@ -359,23 +390,9 @@ public class FindingDetails
 {
 	/// <summary>Concrete type discriminator in namespace.typeName format.</summary>
 	[JsonProperty("_type")]
+	[CiscoIqV1ReadOnly]
 	public string? ResourceType { get; set; }
 
-}
-
-/// <summary>Generated from the Cisco IQ OpenAPI specification.</summary>
-[GeneratedCode("Cisco.Iq.Api.Generator", "1.0")]
-[JsonConverter(typeof(CiscoIqV1StringValueConverter<FindingInlineMember>))]
-public readonly record struct FindingInlineMember(string Value) : ICiscoIqV1StringValue<FindingInlineMember>
-{
-	/// <summary>The value recommendations.</summary>
-	public static readonly FindingInlineMember Recommendations = new("recommendations");
-
-	/// <inheritdoc />
-	public static FindingInlineMember Create(string value) => new(value);
-
-	/// <inheritdoc />
-	public override string ToString() => Value;
 }
 
 /// <summary>Collection response containing one page of finding resources.</summary>
@@ -398,42 +415,52 @@ public class FindingRecommendation
 {
 	/// <summary>Concrete type discriminator in namespace.typeName format.</summary>
 	[JsonProperty("_type")]
+	[CiscoIqV1ReadOnly]
 	public string? ResourceType { get; set; }
 
 	/// <summary>Opaque, immutable identifier for this entity.</summary>
 	[JsonProperty("id")]
+	[CiscoIqV1ReadOnly]
 	public string? Id { get; set; }
 
 	/// <summary>The account this entity belongs to.</summary>
 	[JsonProperty("account")]
+	[CiscoIqV1ReadOnly]
 	public string? Account { get; set; }
 
 	/// <summary>Human-readable explanation of what this recommendation suggests and why it is relevant for the addressed finding.</summary>
 	[JsonProperty("description")]
+	[CiscoIqV1ReadOnly]
 	public string? Description { get; set; }
 
 	/// <summary>Finding-local key that, together with the finding, forms the recommendation's natural key.</summary>
 	[JsonProperty("evaluationKey")]
+	[CiscoIqV1ReadOnly]
 	public string? EvaluationKey { get; set; }
 
 	/// <summary>The finding this recommendation addresses.</summary>
 	[JsonProperty("finding")]
+	[CiscoIqV1ReadOnly]
 	public string? Finding { get; set; }
 
 	/// <summary>Detailed guidance for implementing this recommendation, including steps, prerequisites, verification procedures, and rollback plans.</summary>
 	[JsonProperty("implementationGuidance")]
+	[CiscoIqV1ReadOnly]
 	public ImplementationGuidance? ImplementationGuidance { get; set; }
 
 	/// <summary>System metadata for soft-deletion and purge lifecycle state.</summary>
 	[JsonProperty("sys")]
+	[CiscoIqV1ReadOnly]
 	public StandardSys? Sys { get; set; }
 
 	/// <summary>Tags assigned to this recommendation by the assessment engines.</summary>
 	[JsonProperty("tags")]
+	[CiscoIqV1ReadOnly]
 	public Dictionary<string, string>? Tags { get; set; }
 
 	/// <summary>Category of the recommended action, remediation, process improvement, strategic initiative, learning, optimization, or compliance.</summary>
 	[JsonProperty("type")]
+	[CiscoIqV1ReadOnly]
 	public RecommendationType? Type { get; set; }
 
 }
@@ -576,10 +603,10 @@ public sealed record GetAssessmentFindingRequest
 	[AliasAs("select")]
 	public string? Select { get; init; }
 
-	/// <summary>Inline relationship references</summary>
+	/// <summary>Inline relationship references (known values: recommendations)</summary>
 	[AliasAs("inline")]
 	[Query(CollectionFormat.Csv)]
-	public List<FindingInlineMember>? Inline { get; init; }
+	public List<string>? Inline { get; init; }
 
 	/// <summary>Inline relationship page size</summary>
 	[AliasAs("inline.max")]
@@ -609,10 +636,10 @@ public sealed record GetAssessmentInsightRequest
 	[AliasAs("select")]
 	public string? Select { get; init; }
 
-	/// <summary>Inline relationship references</summary>
+	/// <summary>Inline relationship references (known values: recommendations)</summary>
 	[AliasAs("inline")]
 	[Query(CollectionFormat.Csv)]
-	public List<InsightInlineMember>? Inline { get; init; }
+	public List<string>? Inline { get; init; }
 
 	/// <summary>Inline relationship page size</summary>
 	[AliasAs("inline.max")]
@@ -712,54 +739,67 @@ public class Insight
 {
 	/// <summary>Concrete type discriminator in namespace.typeName format.</summary>
 	[JsonProperty("_type")]
+	[CiscoIqV1ReadOnly]
 	public string? ResourceType { get; set; }
 
 	/// <summary>Opaque, immutable identifier for this entity.</summary>
 	[JsonProperty("id")]
+	[CiscoIqV1ReadOnly]
 	public string? Id { get; set; }
 
 	/// <summary>The account this entity belongs to.</summary>
 	[JsonProperty("account")]
+	[CiscoIqV1ReadOnly]
 	public string? Account { get; set; }
 
 	/// <summary>Nature of the insight, whether it identifies a problem, positive state, opportunity, trend, prediction, or neutral observation.</summary>
 	[JsonProperty("category")]
+	[CiscoIqV1ReadOnly]
 	public InsightCategory? Category { get; set; }
 
 	/// <summary>Human-readable detailed explanation of what this insight represents and why it matters beyond the raw observations.</summary>
 	[JsonProperty("description")]
+	[CiscoIqV1ReadOnly]
 	public string? Description { get; set; }
 
 	/// <summary>Stable identifier of the specific analytical conclusion this insight represents.</summary>
 	[JsonProperty("evaluationKey")]
+	[CiscoIqV1ReadOnly]
 	public string? EvaluationKey { get; set; }
 
 	/// <summary>When this insight was generated or identified.</summary>
 	[JsonProperty("identifiedAt")]
+	[CiscoIqV1ReadOnly]
 	public DateTimeOffset? IdentifiedAt { get; set; }
 
 	/// <summary>Brief, descriptive name of the insight.</summary>
 	[JsonProperty("name")]
+	[CiscoIqV1ReadOnly]
 	public string? Name { get; set; }
 
 	/// <summary>insightRecommendation entities that address this insight.</summary>
 	[JsonProperty("recommendations")]
+	[CiscoIqV1ReadOnly]
 	public JToken? Recommendations { get; set; }
 
 	/// <summary>The finding instances whose patterns this insight interprets.</summary>
 	[JsonProperty("supportingFindings")]
+	[CiscoIqV1ReadOnly]
 	public FindingRefListResponse? SupportingFindings { get; set; }
 
 	/// <summary>System metadata for soft-deletion and purge lifecycle state.</summary>
 	[JsonProperty("sys")]
+	[CiscoIqV1ReadOnly]
 	public StandardSys? Sys { get; set; }
 
 	/// <summary>Tags assigned to this insight by the assessment engine that generates it.</summary>
 	[JsonProperty("tags")]
+	[CiscoIqV1ReadOnly]
 	public Dictionary<string, string>? Tags { get; set; }
 
 	/// <summary>Domain classification indicating whether this insight relates to technical patterns, process observations, human factors, or business implications.</summary>
 	[JsonProperty("type")]
+	[CiscoIqV1ReadOnly]
 	public InsightType? Type { get; set; }
 
 }
@@ -794,21 +834,6 @@ public readonly record struct InsightCategory(string Value) : ICiscoIqV1StringVa
 	public override string ToString() => Value;
 }
 
-/// <summary>Generated from the Cisco IQ OpenAPI specification.</summary>
-[GeneratedCode("Cisco.Iq.Api.Generator", "1.0")]
-[JsonConverter(typeof(CiscoIqV1StringValueConverter<InsightInlineMember>))]
-public readonly record struct InsightInlineMember(string Value) : ICiscoIqV1StringValue<InsightInlineMember>
-{
-	/// <summary>The value recommendations.</summary>
-	public static readonly InsightInlineMember Recommendations = new("recommendations");
-
-	/// <inheritdoc />
-	public static InsightInlineMember Create(string value) => new(value);
-
-	/// <inheritdoc />
-	public override string ToString() => Value;
-}
-
 /// <summary>Collection response containing one page of insight resources.</summary>
 [GeneratedCode("Cisco.Iq.Api.Generator", "1.0")]
 public class InsightListResponse
@@ -829,42 +854,52 @@ public class InsightRecommendation
 {
 	/// <summary>Concrete type discriminator in namespace.typeName format.</summary>
 	[JsonProperty("_type")]
+	[CiscoIqV1ReadOnly]
 	public string? ResourceType { get; set; }
 
 	/// <summary>Opaque, immutable identifier for this entity.</summary>
 	[JsonProperty("id")]
+	[CiscoIqV1ReadOnly]
 	public string? Id { get; set; }
 
 	/// <summary>The account this entity belongs to.</summary>
 	[JsonProperty("account")]
+	[CiscoIqV1ReadOnly]
 	public string? Account { get; set; }
 
 	/// <summary>Human-readable explanation of what this recommendation suggests and why it is relevant for the addressed insight.</summary>
 	[JsonProperty("description")]
+	[CiscoIqV1ReadOnly]
 	public string? Description { get; set; }
 
 	/// <summary>Insight-local key that, together with the insight, forms the recommendation's natural key.</summary>
 	[JsonProperty("evaluationKey")]
+	[CiscoIqV1ReadOnly]
 	public string? EvaluationKey { get; set; }
 
 	/// <summary>Detailed guidance for implementing this recommendation, including steps, prerequisites, verification procedures, and rollback plans.</summary>
 	[JsonProperty("implementationGuidance")]
+	[CiscoIqV1ReadOnly]
 	public ImplementationGuidance? ImplementationGuidance { get; set; }
 
 	/// <summary>The insight this recommendation addresses.</summary>
 	[JsonProperty("insight")]
+	[CiscoIqV1ReadOnly]
 	public string? Insight { get; set; }
 
 	/// <summary>System metadata for soft-deletion and purge lifecycle state.</summary>
 	[JsonProperty("sys")]
+	[CiscoIqV1ReadOnly]
 	public StandardSys? Sys { get; set; }
 
 	/// <summary>Tags assigned to this recommendation by the assessment engines.</summary>
 	[JsonProperty("tags")]
+	[CiscoIqV1ReadOnly]
 	public Dictionary<string, string>? Tags { get; set; }
 
 	/// <summary>Category of the recommended action, remediation, process improvement, strategic initiative, learning, optimization, or compliance.</summary>
 	[JsonProperty("type")]
+	[CiscoIqV1ReadOnly]
 	public RecommendationType? Type { get; set; }
 
 }
@@ -995,10 +1030,10 @@ public sealed record ListAssessmentFindingsRequest
 	[AliasAs("count")]
 	public bool? Count { get; init; }
 
-	/// <summary>Inline relationship references</summary>
+	/// <summary>Inline relationship references (known values: recommendations)</summary>
 	[AliasAs("inline")]
 	[Query(CollectionFormat.Csv)]
-	public List<FindingInlineMember>? Inline { get; init; }
+	public List<string>? Inline { get; init; }
 
 	/// <summary>Inline relationship page size</summary>
 	[AliasAs("inline.max")]
@@ -1068,10 +1103,10 @@ public sealed record ListAssessmentInsightsRequest
 	[AliasAs("count")]
 	public bool? Count { get; init; }
 
-	/// <summary>Inline relationship references</summary>
+	/// <summary>Inline relationship references (known values: recommendations)</summary>
 	[AliasAs("inline")]
 	[Query(CollectionFormat.Csv)]
-	public List<InsightInlineMember>? Inline { get; init; }
+	public List<string>? Inline { get; init; }
 
 	/// <summary>Inline relationship page size</summary>
 	[AliasAs("inline.max")]
@@ -1255,10 +1290,12 @@ public class StandardSys
 {
 	/// <summary>When this entity was created.</summary>
 	[JsonProperty("createdAt")]
+	[CiscoIqV1ReadOnly]
 	public DateTimeOffset? CreatedAt { get; set; }
 
 	/// <summary>When this entity was last modified.</summary>
 	[JsonProperty("updatedAt")]
+	[CiscoIqV1ReadOnly]
 	public DateTimeOffset? UpdatedAt { get; set; }
 
 }
@@ -1269,50 +1306,62 @@ public class StandardsTimeline
 {
 	/// <summary>Concrete type discriminator in namespace.typeName format.</summary>
 	[JsonProperty("_type")]
+	[CiscoIqV1ReadOnly]
 	public string? ResourceType { get; set; }
 
 	/// <summary>Opaque, immutable identifier for this entity.</summary>
 	[JsonProperty("id")]
+	[CiscoIqV1ReadOnly]
 	public string? Id { get; set; }
 
 	/// <summary>Target date by which infrastructure in scope must reach full compliance under this timeline.</summary>
 	[JsonProperty("complianceDate")]
+	[CiscoIqV1ReadOnly]
 	public DateOnly? ComplianceDate { get; set; }
 
 	/// <summary>Description of the standards-published timeline.</summary>
 	[JsonProperty("description")]
+	[CiscoIqV1ReadOnly]
 	public string? Description { get; set; }
 
 	/// <summary>Optional geographic scope of the timeline, identifying the region, economic union, or country the compliance timeline applies to.</summary>
 	[JsonProperty("geoIdentifier")]
+	[CiscoIqV1ReadOnly]
 	public string? GeoIdentifier { get; set; }
 
 	/// <summary>Display name of the standards-published timeline.</summary>
 	[JsonProperty("name")]
+	[CiscoIqV1ReadOnly]
 	public string? Name { get; set; }
 
 	/// <summary>Short code of the organization that published the timeline, a standards organization or regulatory body.</summary>
 	[JsonProperty("publisherCode")]
+	[CiscoIqV1ReadOnly]
 	public string? PublisherCode { get; set; }
 
 	/// <summary>Full name of the organization that published the timeline, a standards organization or regulatory body.</summary>
 	[JsonProperty("publisherName")]
+	[CiscoIqV1ReadOnly]
 	public string? PublisherName { get; set; }
 
 	/// <summary>Stable programmatic key for the standards-published timeline.</summary>
 	[JsonProperty("slug")]
+	[CiscoIqV1ReadOnly]
 	public string? Slug { get; set; }
 
 	/// <summary>System metadata for provisioning state.</summary>
 	[JsonProperty("sys")]
+	[CiscoIqV1ReadOnly]
 	public StandardsTimelineSys? Sys { get; set; }
 
 	/// <summary>Tags on the standards-published timeline.</summary>
 	[JsonProperty("tags")]
+	[CiscoIqV1ReadOnly]
 	public Dictionary<string, string>? Tags { get; set; }
 
 	/// <summary>Discriminator identifying this timeline as standards-published.</summary>
 	[JsonProperty("timelineType")]
+	[CiscoIqV1ReadOnly]
 	public TimelineType? TimelineType { get; set; }
 
 }
@@ -1337,14 +1386,17 @@ public class StandardsTimelineSys
 {
 	/// <summary>When this entity was created.</summary>
 	[JsonProperty("createdAt")]
+	[CiscoIqV1ReadOnly]
 	public DateTimeOffset? CreatedAt { get; set; }
 
 	/// <summary>Who owns this instance.</summary>
 	[JsonProperty("ownership")]
+	[CiscoIqV1ReadOnly]
 	public Ownership? Ownership { get; set; }
 
 	/// <summary>When this entity was last modified.</summary>
 	[JsonProperty("updatedAt")]
+	[CiscoIqV1ReadOnly]
 	public DateTimeOffset? UpdatedAt { get; set; }
 
 }
