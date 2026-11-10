@@ -73,29 +73,7 @@ internal sealed partial class ApiGenerator
 			throw new InvalidOperationException($"Duplicate operation name {methodName} in {_api.Key}.");
 		}
 
-		var pathParameters = new List<(string Alias, string Type, string Name)>();
-		var headerParameters = new List<string>();
-		var query = new List<(string Name, string Wire, string Type, bool Csv, string? Doc)>();
-		foreach (var parameter in (operation["parameters"]?.Items ?? []).Select(Resolve))
-		{
-			var wire = parameter["name"]!.Text!;
-			var schema = parameter["schema"]!;
-			switch (parameter["in"]!.Text)
-			{
-				case "path":
-					var argument = Naming.Camel(wire);
-					var alias = argument.TrimStart('@') == wire ? string.Empty : $"[AliasAs(\"{wire}\")] ";
-					pathParameters.Add((alias, MapType(schema, baseName + Naming.Pascal(wire)), argument));
-					break;
-				case "header" when !wire.Equals("traceparent", StringComparison.OrdinalIgnoreCase):
-					headerParameters.Add($"[Header(\"{wire}\")] string? {Naming.Camel(wire)} = null");
-					break;
-				case "query":
-					query.Add((wire == "orderby" ? "OrderBy" : Naming.Pascal(wire), wire, MapType(schema, baseName + Naming.Pascal(wire)), TypeNames(schema).Contains("array"), parameter["summary"]?.Text ?? parameter["description"]?.Text));
-					break;
-			}
-		}
-
+		var (pathParameters, headerParameters, query) = ReadParameters(operation, baseName);
 		var requestName = baseName + "Request";
 		if (query.Count > 0)
 		{
@@ -120,6 +98,49 @@ internal sealed partial class ApiGenerator
 		{
 			EmitPagingExtension(operation, methodName, baseName, pathParameters, requestName, query.Any(q => q.Wire == "count"), itemType);
 		}
+	}
+
+	private (List<(string Alias, string Type, string Name)> Path, List<string> Headers, List<(string Name, string Wire, string Type, bool Csv, string? Doc)> Query) ReadParameters(Node operation, string baseName)
+	{
+		var path = new List<(string Alias, string Type, string Name)>();
+		var headers = new List<string>();
+		var query = new List<(string Name, string Wire, string Type, bool Csv, string? Doc)>();
+		foreach (var parameter in (operation["parameters"]?.Items ?? []).Select(Resolve))
+		{
+			var wire = parameter["name"]!.Text!;
+			var location = parameter["in"]!.Text;
+			if (location == "path")
+			{
+				path.Add(PathParameter(wire, parameter["schema"]!, baseName));
+			}
+			else if (location == "query")
+			{
+				query.Add(QueryParameter(parameter, wire, baseName));
+			}
+			else if (location != "header")
+			{
+				throw new InvalidOperationException($"Unsupported parameter location '{location}' on {baseName}.");
+			}
+			else if (!wire.Equals("traceparent", StringComparison.OrdinalIgnoreCase))
+			{
+				headers.Add($"[Header(\"{wire}\")] string? {Naming.Camel(wire)} = null");
+			}
+		}
+
+		return (path, headers, query);
+	}
+
+	private (string Alias, string Type, string Name) PathParameter(string wire, Node schema, string baseName)
+	{
+		var argument = Naming.Camel(wire);
+		var alias = argument.TrimStart('@') == wire ? string.Empty : $"[AliasAs(\"{wire}\")] ";
+		return (alias, MapType(schema, baseName + Naming.Pascal(wire)), argument);
+	}
+
+	private (string Name, string Wire, string Type, bool Csv, string? Doc) QueryParameter(Node parameter, string wire, string baseName)
+	{
+		var schema = parameter["schema"]!;
+		return (wire == "orderby" ? "OrderBy" : Naming.Pascal(wire), wire, MapType(schema, baseName + Naming.Pascal(wire)), TypeNames(schema).Contains("array"), parameter["summary"]?.Text ?? parameter["description"]?.Text);
 	}
 
 	private void EmitPagingExtension(Node operation, string methodName, string baseName, List<(string Alias, string Type, string Name)> pathParameters, string requestName, bool hasCount, string itemType)
@@ -190,17 +211,18 @@ internal sealed partial class ApiGenerator
 			return schema.Has("enum") ? "string" : MapReference(reference[(reference.LastIndexOf('/') + 1)..]);
 		}
 
-		foreach (var key in new[] { "anyOf", "oneOf" })
-		{
-			if (schema[key] is { IsList: true } alternatives)
-			{
-				var concrete = alternatives.Items.Where(item => item["type"]?.Text != "null").ToList();
-				return concrete.Count == 1 ? MapType(concrete[0], context) : Fallback(context);
-			}
-		}
+		var alternatives = schema["anyOf"] is { IsList: true } anyOf ? anyOf : schema["oneOf"] is { IsList: true } oneOf ? oneOf : null;
+		return alternatives is not null ? MapAlternatives(alternatives, context) : MapByType(schema, context);
+	}
 
-		var type = TypeNames(schema).FirstOrDefault();
-		return type switch
+	private string MapAlternatives(Node alternatives, string context)
+	{
+		var concrete = alternatives.Items.Where(item => item["type"]?.Text != "null").ToList();
+		return concrete.Count == 1 ? MapType(concrete[0], context) : Fallback(context);
+	}
+
+	private string MapByType(Node schema, string context)
+		=> TypeNames(schema).FirstOrDefault() switch
 		{
 			"string" => schema["format"]?.Text switch { "date-time" => "DateTimeOffset", "date" => "DateOnly", _ => "string" },
 			"integer" => schema["format"]?.Text == "int32" ? "int" : "long",
@@ -210,7 +232,6 @@ internal sealed partial class ApiGenerator
 			"object" => MapObject(schema, context),
 			_ => schema.Has("properties") ? MapObject(schema, context) : Fallback(context)
 		};
-	}
 
 	private string MapObject(Node schema, string context)
 	{

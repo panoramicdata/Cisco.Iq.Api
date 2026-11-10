@@ -48,6 +48,11 @@ public class CiscoIqV1ClientOptions
 			throw new ArgumentException("Region must be a defined region.", nameof(Region));
 		}
 
+		ValidateTransport();
+	}
+
+	private void ValidateTransport()
+	{
 		if (BaseAddress is not null && (!BaseAddress.IsAbsoluteUri || (BaseAddress.Scheme != Uri.UriSchemeHttps && BaseAddress.Scheme != Uri.UriSchemeHttp)))
 		{
 			throw new ArgumentException("BaseAddress must be an absolute http or https URI.", nameof(BaseAddress));

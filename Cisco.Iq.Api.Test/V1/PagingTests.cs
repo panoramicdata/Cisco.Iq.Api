@@ -1,4 +1,5 @@
 using System.Net.Http.Headers;
+using System.Runtime.CompilerServices;
 using Cisco.Iq.Api.V1;
 using Cisco.Iq.Api.V1.Assets;
 using Newtonsoft.Json;
@@ -8,6 +9,20 @@ namespace Cisco.Iq.Api.Test.V1;
 
 public class PagingTests
 {
+	private static async Task<int> Drain<T>(IAsyncEnumerable<T> source)
+		=> (await source.ToListAsync()).Count;
+
+	private static async Task<int> Drain<T>(ConfiguredCancelableAsyncEnumerable<T> source)
+	{
+		var count = 0;
+		await foreach (var _ in source)
+		{
+			count++;
+		}
+
+		return count;
+	}
+
 	private static HttpResponseHeaders HeadersWith(params string[] links)
 	{
 		var headers = new HttpResponseMessage().Headers;
@@ -93,18 +108,14 @@ public class PagingTests
 		using var failing = V1Support.Client(_ => V1Support.Json("null"));
 		Func<Task> act = async () =>
 		{
-			await foreach (var _ in failing.Assets.ListAssetPhysicalAssetsAllAsync(cancellationToken: sequenceSource.Token).WithCancellation(enumeratorSource.Token))
-			{
-			}
+			await Drain(failing.Assets.ListAssetPhysicalAssetsAllAsync(cancellationToken: sequenceSource.Token).WithCancellation(enumeratorSource.Token));
 		};
 		await act.Should().ThrowAsync<JsonSerializationException>();
 
 		await enumeratorSource.CancelAsync();
 		Func<Task> cancelled = async () =>
 		{
-			await foreach (var _ in client.Assets.ListAssetPhysicalAssetsAllAsync(cancellationToken: sequenceSource.Token).WithCancellation(enumeratorSource.Token))
-			{
-			}
+			await Drain(client.Assets.ListAssetPhysicalAssetsAllAsync(cancellationToken: sequenceSource.Token).WithCancellation(enumeratorSource.Token));
 		};
 		await cancelled.Should().ThrowAsync<OperationCanceledException>();
 	}
@@ -212,9 +223,7 @@ public class PagingTests
 			return V1Support.Json("{\"items\":[]}");
 		});
 
-		await foreach (var _ in client.Assets.ListAssetCoveragesForPhysicalAssetAllAsync("asset-9"))
-		{
-		}
+		await Drain(client.Assets.ListAssetCoveragesForPhysicalAssetAllAsync("asset-9"));
 
 		seen!.RequestUri!.AbsolutePath.Should().Be("/api/asset/v1/physicalAssets/asset-9/coverages");
 	}
@@ -238,9 +247,7 @@ public class PagingTests
 		using var client = V1Support.Client(_ => V1Support.Json("null"));
 		Func<Task> act = async () =>
 		{
-			await foreach (var _ in client.Assets.ListAssetPhysicalAssetsAllAsync())
-			{
-			}
+			await Drain(client.Assets.ListAssetPhysicalAssetsAllAsync());
 		};
 		await act.Should().ThrowAsync<JsonSerializationException>();
 	}
@@ -251,9 +258,7 @@ public class PagingTests
 		using var client = V1Support.Client(_ => V1Support.Json("{\"items\":[]}").WithHeader("Link", "</api/asset/v1/physicalAssets?after=same>; rel=\"next\""));
 		Func<Task> act = async () =>
 		{
-			await foreach (var _ in client.Assets.ListAssetPhysicalAssetsAllAsync())
-			{
-			}
+			await Drain(client.Assets.ListAssetPhysicalAssetsAllAsync());
 		};
 		await act.Should().ThrowAsync<InvalidDataException>();
 	}
@@ -266,9 +271,7 @@ public class PagingTests
 		await cancelled.CancelAsync();
 		Func<Task> act = async () =>
 		{
-			await foreach (var _ in client.Assets.ListAssetPhysicalAssetsAllAsync(cancellationToken: cancelled.Token))
-			{
-			}
+			await Drain(client.Assets.ListAssetPhysicalAssetsAllAsync(cancellationToken: cancelled.Token));
 		};
 		await act.Should().ThrowAsync<OperationCanceledException>();
 	}
@@ -278,15 +281,11 @@ public class PagingTests
 	{
 		Func<Task> noFetch = async () =>
 		{
-			await foreach (var _ in CiscoIqV1Paging.EnumerateAsync<object, object>(null!, _ => Array.Empty<object>()))
-			{
-			}
+			await Drain(CiscoIqV1Paging.EnumerateAsync<object, object>(null!, _ => Array.Empty<object>(), default));
 		};
 		Func<Task> noItems = async () =>
 		{
-			await foreach (var _ in CiscoIqV1Paging.EnumerateAsync<object, object>(_ => Task.FromResult<IApiResponse<object>>(null!), null!))
-			{
-			}
+			await Drain(CiscoIqV1Paging.EnumerateAsync<object, object>(_ => Task.FromResult<IApiResponse<object>>(null!), null!, default));
 		};
 		await noFetch.Should().ThrowAsync<ArgumentNullException>();
 		await noItems.Should().ThrowAsync<ArgumentNullException>();

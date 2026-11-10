@@ -13,6 +13,7 @@ public static class ClientGenerator
 		var counts = new SortedDictionary<string, int>(StringComparer.Ordinal);
 		foreach (var api in apis)
 		{
+			// nosemgrep: csharp.lang.security.filesystem.unsafe-path-combine.unsafe-path-combine -- a developer tool reading its own command-line directory; FileName is a constant.
 			var yaml = File.ReadAllText(Path.Combine(specDirectory, api.FileName));
 			var generator = new ApiGenerator(api, Node.Parse(yaml));
 			var output = generator.Generate();

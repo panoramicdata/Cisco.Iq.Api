@@ -3,3 +3,4 @@ exclude_paths:
   - "**/bin/**"
   - "**/obj/**"
   - "artifacts/**"
+  - "Cisco.Iq.Api/V1/Generated/**"

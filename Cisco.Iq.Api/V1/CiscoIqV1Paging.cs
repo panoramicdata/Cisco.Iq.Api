@@ -16,7 +16,7 @@ public static partial class CiscoIqV1Paging
 	public static async IAsyncEnumerable<TItem> EnumerateAsync<TPage, TItem>(
 		Func<string?, Task<IApiResponse<TPage>>> fetch,
 		Func<TPage, IReadOnlyList<TItem>?> items,
-		[EnumeratorCancellation] CancellationToken cancellationToken = default)
+		[EnumeratorCancellation] CancellationToken cancellationToken)
 	{
 		ArgumentNullException.ThrowIfNull(fetch);
 		ArgumentNullException.ThrowIfNull(items);
