@@ -1,0 +1,9 @@
+[
+	{
+		"api": "assessment",
+		"type": "EntitlementTierListResponse",
+		"property": "items",
+		"csharp": "List<JToken>",
+		"reason": "The specification types the items as entity reference strings, and describes them as entitlementTier resources. The live service returns the resources (checked 2026-11-10 against GET /api/assessment/v1/assessments/{id}/supportTiers), so a string list fails to parse."
+	}
+]

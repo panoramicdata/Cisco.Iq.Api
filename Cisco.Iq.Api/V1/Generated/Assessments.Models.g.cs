@@ -135,7 +135,7 @@ public class EntitlementTierListResponse
 {
 	/// <summary>Array of entitlementTier resources in this paginated response.</summary>
 	[JsonProperty("items")]
-	public List<string>? Items { get; set; }
+	public List<JToken>? Items { get; set; }
 
 }
 

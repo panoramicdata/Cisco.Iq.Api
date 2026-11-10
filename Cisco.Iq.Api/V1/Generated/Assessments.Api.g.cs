@@ -89,7 +89,7 @@ public static class AssessmentApiExtensions
 		=> CiscoIqV1Paging.EnumerateAsync(cursor => api.ListAssessmentAssessmentsAsync((request ?? new()) with { After = cursor, Count = null }, cancellationToken: cancellationToken), page => page.Items, cancellationToken);
 
 	/// <summary>Entitlement tiers this assessment applies to</summary>
-	public static IAsyncEnumerable<string> ListAssessmentSupportTiersForAssessmentAllAsync(this IAssessmentApi api, string id, ListAssessmentSupportTiersForAssessmentRequest? request = null, CancellationToken cancellationToken = default)
+	public static IAsyncEnumerable<JToken> ListAssessmentSupportTiersForAssessmentAllAsync(this IAssessmentApi api, string id, ListAssessmentSupportTiersForAssessmentRequest? request = null, CancellationToken cancellationToken = default)
 		=> CiscoIqV1Paging.EnumerateAsync(cursor => api.ListAssessmentSupportTiersForAssessmentAsync(id, (request ?? new()) with { After = cursor, Count = null }, cancellationToken: cancellationToken), page => page.Items, cancellationToken);
 
 	/// <summary>List finding recommendations</summary>

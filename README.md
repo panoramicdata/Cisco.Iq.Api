@@ -34,10 +34,13 @@ Every operation in the five GA OpenAPI files is generated: 213 operations by met
 | System (resource groups, preferences, query, bulk, schema discovery) | `Platform` | `Cisco.Iq.Api.V1.Platform` | 44 |
 
 The client is generated from the OpenAPI files Cisco publishes, which are kept in
-[docs/ga-spec/](docs/ga-spec/). **It has not yet been verified against a live Cisco IQ account**:
-every operation is checked against the specification (method, path, body and headers), not
-against Cisco's service. Treat the write, delete and API key operations with care until they have
-been exercised against your own account.
+[docs/ga-spec/](docs/ga-spec/). Every operation is checked against the specification (method, path,
+body and headers). **Read operations have also been checked against a live EMEA account** on
+10 November 2026: 22 list operations, cursor paging, and the first item of each collection with
+its related sub-collections (40 reads), all without errors. Collections that were empty on that
+account, and the write, delete and API key operations, have **not** been exercised live: treat
+them with care until you have tried them against your own account.
+
 ## Relationship to `Cisco.Api`
 
 [`Cisco.Api`](https://github.com/panoramicdata/Cisco.Api) covers the Cisco Support APIs (EoX,
@@ -125,10 +128,14 @@ API's query endpoint (`Platform.QueryAsync`) for long filters.
 ### Regions and hosts
 
 By default the client calls `https://iq.cisco.com` and sends `X-IQ-Region` with the region you
-set. Cisco's documentation also names regional hosts (`us-west-2.iq.cisco.com`,
-`eu-central-1.iq.cisco.com`, `ap-southeast-2.iq.cisco.com`). To use one, set `BaseAddress`. The
-OpenAPI files name different regional hosts, so confirm the host for your account. A key for
-the wrong region is rejected with 401.
+set. This was checked against a live EMEA account on 10 November 2026: the global host works,
+and so does the documented regional host for that region (`eu-central-1.iq.cisco.com`). The
+other documented regional hosts (`us-west-2.iq.cisco.com`, `ap-southeast-2.iq.cisco.com`)
+answer 401 to a key from another region, which is the expected rejection. To use a regional
+host, set `BaseAddress`.
+
+The hosts that appear in the OpenAPI files (`us-east-1.iq.cisco.com` and
+`eu-frankfurt-1.iq.cisco.com`) do not exist in DNS, so do not use them.
 
 ### Writes
 
@@ -164,6 +171,17 @@ Cisco defines them and are never exercised against a live account by this reposi
 through its request and response bodies instead of a `Link` header. `Platform.QueryAllAsync`
 follows the cursor for you and does not change your request object. It is also the way to run a
 filter too long for a query string.
+
+### Where the specification and the service disagree
+
+Cisco's OpenAPI files are the source of the generated client, with documented exceptions in
+[docs/ga-spec/overrides.json](docs/ga-spec/overrides.json), each with its evidence. A test fails
+if an exception stops being applied. Found so far:
+
+- `GET /api/assessment/v1/assessments/{id}/supportTiers` is typed as a list of reference strings,
+  but returns the entitlement tier resources. Its `Items` is a list of `JToken`.
+- The regional hosts in the OpenAPI files (`us-east-1`, `eu-frankfurt-1`) do not exist; the hosts
+  in Cisco's documentation do.
 
 ### Errors, retries and rate limits
 
@@ -258,6 +276,16 @@ the shared test assembly sets `failSkips: true`, so a full test run fails. Use
 push or pull request. The live check is the manually triggered `Live Cisco IQ integration`
 workflow. Cisco IQ has returned HTTP 403 for GitHub-hosted runners while the same credentials
 pass locally, so it is not a release gate.
+
+The GA client has its own read-only live checks (`V1/GaLiveTests`): list operations with a page
+size of one, cursor paging, and a walk that reads the first item of each collection and its
+relations. They never write, delete or create anything. They need a Cisco IQ API key:
+
+```powershell
+dotnet user-secrets set "CiscoIqV1:ApiKey" "<key>" --project Cisco.Iq.Api.Test
+dotnet user-secrets set "CiscoIqV1:Region" "EMEA" --project Cisco.Iq.Api.Test
+dotnet test --configuration Release --filter "FullyQualifiedName~GaLiveTests"
+```
 
 Version numbers come from `version.json` and Nerdbank.GitVersioning. Run `./Publish.ps1` from a
 clean main branch synchronised with origin/main: it resolves the version, pushes the tag and
