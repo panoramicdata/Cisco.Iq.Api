@@ -157,21 +157,10 @@ public class GaLiveTests
 
 	private static async Task<string?> FirstIdAsync(object api, MethodInfo list)
 	{
-		var arguments = list.GetParameters().Select(parameter =>
-		{
-			if (parameter.ParameterType.Name.EndsWith("Request", StringComparison.Ordinal))
-			{
-				var request = Activator.CreateInstance(parameter.ParameterType)!;
-				parameter.ParameterType.GetProperty("Max")?.SetValue(request, 1L);
-				return request;
-			}
-
-			return parameter.HasDefaultValue ? parameter.DefaultValue : null;
-		}).ToArray();
 		object response;
 		try
 		{
-			response = await AwaitResponse(list.Invoke(api, arguments)!);
+			response = await AwaitResponse(list.Invoke(api, ListArguments(list))!);
 		}
 		catch (CiscoIqV1AuthorizationException)
 		{
@@ -179,6 +168,21 @@ public class GaLiveTests
 		}
 
 		using var disposable = (IDisposable)response;
+		return IdOfFirstItem(response);
+	}
+
+	private static object?[] ListArguments(MethodInfo list)
+		=> list.GetParameters().Select(parameter => parameter.ParameterType.Name.EndsWith("Request", StringComparison.Ordinal) ? SinglePageRequest(parameter.ParameterType) : parameter.HasDefaultValue ? parameter.DefaultValue : null).ToArray();
+
+	private static object SinglePageRequest(Type type)
+	{
+		var request = Activator.CreateInstance(type)!;
+		type.GetProperty("Max")?.SetValue(request, 1L);
+		return request;
+	}
+
+	private static string? IdOfFirstItem(object response)
+	{
 		var content = response.GetType().GetProperty("Content")!.GetValue(response);
 		var items = content?.GetType().GetProperty("Items")?.GetValue(content) as System.Collections.IList;
 		return items is { Count: > 0 } ? items[0]!.GetType().GetProperty("Id")?.GetValue(items[0]) as string : null;
