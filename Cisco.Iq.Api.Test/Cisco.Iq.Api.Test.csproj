@@ -31,6 +31,7 @@
 
 	<ItemGroup>
 		<ProjectReference Include="..\Cisco.Iq.Api\Cisco.Iq.Api.csproj" />
+		<ProjectReference Include="..\tools\Cisco.Iq.Api.Generator\Cisco.Iq.Api.Generator.csproj" />
 		<None Update="Fixtures\**\*.json" CopyToOutputDirectory="PreserveNewest" />
 		<None Update="xunit.runner.json" CopyToOutputDirectory="PreserveNewest" />
 	</ItemGroup>

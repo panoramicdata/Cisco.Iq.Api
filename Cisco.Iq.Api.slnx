@@ -17,4 +17,5 @@
   </Folder>
   <Project Path="Cisco.Iq.Api.Test/Cisco.Iq.Api.Test.csproj" />
   <Project Path="Cisco.Iq.Api/Cisco.Iq.Api.csproj" />
+  <Project Path="tools/Cisco.Iq.Api.Generator/Cisco.Iq.Api.Generator.csproj" />
 </Solution>

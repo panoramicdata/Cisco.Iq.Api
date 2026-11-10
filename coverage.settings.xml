@@ -7,6 +7,7 @@
     <Sources>
       <Exclude>
         <Source>.*[\\/]obj[\\/].*</Source>
+        <Source>.*[\\/]V1[\\/]Generated[\\/].*</Source>
         <Source>.*Refit\.Generator.*</Source>
         <Source>.*Microsoft\.Extensions\.Logging\.Generators.*</Source>
         <Source>.*System\.Text\.RegularExpressions\.Generator.*</Source>
