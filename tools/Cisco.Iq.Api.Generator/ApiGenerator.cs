@@ -441,8 +441,15 @@ internal sealed partial class ApiGenerator
 			return;
 		}
 
-		var name = UniqueName(used, property.Key);
-		var type = property.Key == "_type" ? "string" : OverrideFor(typeName, property.Key)?.CSharp ?? MapType(property.Value, typeName + Naming.Pascal(property.Key));
+		var type = ResolvePropertyType(typeName, property);
+		WriteProperty(builder, property, UniqueName(used, property.Key), type, readOnly, isPatch);
+	}
+
+	private string ResolvePropertyType(string typeName, KeyValuePair<string, Node> property)
+		=> property.Key == "_type" ? "string" : OverrideFor(typeName, property.Key)?.CSharp ?? MapType(property.Value, typeName + Naming.Pascal(property.Key));
+
+	private static void WriteProperty(StringBuilder builder, KeyValuePair<string, Node> property, string name, string type, bool readOnly, bool isPatch)
+	{
 		builder.Line($"\t{Summary(property.Value["description"]?.Text ?? property.Value["title"]?.Text)}");
 		builder.Line($"\t[JsonProperty(\"{property.Key}\")]");
 		if (readOnly)
