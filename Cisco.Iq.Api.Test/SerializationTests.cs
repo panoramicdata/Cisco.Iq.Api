@@ -6,6 +6,10 @@ namespace Cisco.Iq.Api.Test;
 
 public class SerializationTests
 {
+	// .NET 11 no longer treats a double and a decimal of the same written value as equal, and the models use decimal.
+	private static JObject ParseFixture(string json)
+		=> (JObject)JsonConvert.DeserializeObject<JToken>(json, new JsonSerializerSettings { DateParseHandling = DateParseHandling.None, FloatParseHandling = FloatParseHandling.Decimal })!;
+
 	[Theory]
 	[InlineData("Asset")]
 	[InlineData("AssetLifecycle")]
@@ -14,7 +18,7 @@ public class SerializationTests
 	{
 		var type = typeof(Asset).Assembly.GetType("Cisco.Iq.Api.Data." + model)!;
 		var json = File.ReadAllText(Path.Combine(AppContext.BaseDirectory, "Fixtures", "Captured", model + ".json"));
-		var expected = JObject.Parse(json);
+		var expected = ParseFixture(json);
 		var value = JsonConvert.DeserializeObject(json, type)!;
 		JToken.DeepEquals(expected, JObject.FromObject(value)).Should().BeTrue();
 	}
@@ -33,7 +37,7 @@ public class SerializationTests
 	{
 		var type = typeof(Asset).Assembly.GetType("Cisco.Iq.Api.Data." + model)!;
 		var json = File.ReadAllText(Path.Combine(AppContext.BaseDirectory, "Fixtures", model + ".json"));
-		var expected = JObject.Parse(json);
+		var expected = ParseFixture(json);
 		var value = JsonConvert.DeserializeObject(json, type)!;
 		JToken.DeepEquals(expected, JObject.FromObject(value)).Should().BeTrue();
 		foreach (var property in expected.Properties()) { property.Value = JValue.CreateNull(); }
