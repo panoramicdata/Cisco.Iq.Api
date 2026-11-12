@@ -1,6 +1,7 @@
 using System.Net.Http.Headers;
 using System.Security.Cryptography;
 using System.Text;
+using Cisco.Iq.Api.Internal;
 
 namespace Cisco.Iq.Api.V1.Http;
 
@@ -18,10 +19,7 @@ internal sealed class CiscoIqV1RequestHandler(CiscoIqV1ClientOptions options) : 
 		}
 
 		request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", options.ApiKey);
-		request.Headers.Accept.Clear();
-		request.Headers.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
-		request.Headers.UserAgent.Clear();
-		request.Headers.UserAgent.ParseAdd(options.EffectiveUserAgent);
+		JsonRequestHeaders.Apply(request, options.EffectiveUserAgent);
 		request.Headers.Remove("X-IQ-Region");
 		if (options.SendRegionHeader)
 		{

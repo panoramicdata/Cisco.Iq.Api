@@ -40,10 +40,7 @@ internal sealed class CiscoIqAuthenticationHandler(CiscoIqClientOptions options,
 		request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", accessToken);
 		request.Headers.Remove("Cookie");
 		request.Headers.Add("Cookie", "account_region=" + options.AccountRegion.ToString().ToUpperInvariant());
-		request.Headers.Accept.Clear();
-		request.Headers.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
-		request.Headers.UserAgent.Clear();
-		request.Headers.UserAgent.ParseAdd(options.EffectiveUserAgent);
+		JsonRequestHeaders.Apply(request, options.EffectiveUserAgent);
 	}
 
 	private bool IsValid(TokenState? token, TokenState? rejected)
@@ -67,8 +64,7 @@ internal sealed class CiscoIqAuthenticationHandler(CiscoIqClientOptions options,
 			using var request = new HttpRequestMessage(HttpMethod.Post, "https://iq.cisco.com/cxp-iam/api/v1/auth/issueToken");
 			request.Headers.Authorization = new AuthenticationHeaderValue("Basic", options.Token);
 			request.Headers.Add("Cookie", "account_region=" + options.AccountRegion.ToString().ToUpperInvariant());
-			request.Headers.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
-			request.Headers.UserAgent.ParseAdd(options.EffectiveUserAgent);
+			JsonRequestHeaders.Apply(request, options.EffectiveUserAgent);
 			var body = options.AccountId is null ? "{}" : JsonConvert.SerializeObject(new Dictionary<string, string> { ["accountId"] = options.AccountId });
 			request.Content = new StringContent(body, Encoding.UTF8, "application/json");
 			using var response = await exchangeClient.SendAsync(request, cancellationToken).ConfigureAwait(false);

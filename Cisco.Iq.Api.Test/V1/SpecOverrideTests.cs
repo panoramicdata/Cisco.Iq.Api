@@ -20,7 +20,7 @@ public class SpecOverrideTests
 	[Fact]
 	public void EveryOverrideInTheFile_IsAppliedByTheGenerator()
 	{
-		var root = FindRoot();
+		var root = V1Support.RepositoryRoot();
 		var overrides = System.Text.Json.JsonSerializer.Deserialize<List<SpecOverride>>(File.ReadAllText(Path.Combine(root, "docs", "ga-spec", "overrides.json")), Options)!;
 		var result = ClientGenerator.Generate(Path.Combine(root, "docs", "ga-spec"), ApiDefinition.All);
 
@@ -30,16 +30,5 @@ public class SpecOverrideTests
 			item.Reason.Should().NotBeNullOrWhiteSpace();
 			result.Report.Should().Contain(line => line.Contains($"{item.Type}.{item.Property}: overridden", StringComparison.Ordinal), $"{item.Type}.{item.Property} should be used by the specification");
 		}
-	}
-
-	private static string FindRoot()
-	{
-		var directory = new DirectoryInfo(AppContext.BaseDirectory);
-		while (directory is not null && !File.Exists(Path.Combine(directory.FullName, "Cisco.Iq.Api.slnx")))
-		{
-			directory = directory.Parent;
-		}
-
-		return directory?.FullName ?? throw new InvalidOperationException("Could not find the repository root.");
 	}
 }

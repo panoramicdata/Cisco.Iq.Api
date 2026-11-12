@@ -42,4 +42,23 @@ internal static class V1Support
 		response.Headers.TryAddWithoutValidation(name, value);
 		return response;
 	}
+
+	internal static string RepositoryRoot()
+	{
+		var directory = new DirectoryInfo(AppContext.BaseDirectory);
+		while (directory is not null && !File.Exists(Path.Combine(directory.FullName, "Cisco.Iq.Api.slnx")))
+		{
+			directory = directory.Parent;
+		}
+
+		return directory?.FullName ?? throw new InvalidOperationException("Could not find the repository root.");
+	}
+
+	internal static CiscoIqV1Client Capturing(Action<HttpRequestMessage, string?> capture, Func<HttpResponseMessage> respond)
+		=> ClientAsync(async (request, cancellationToken) =>
+		{
+			var body = request.Content is null ? null : await request.Content.ReadAsStringAsync(cancellationToken);
+			capture(request, body);
+			return respond();
+		});
 }

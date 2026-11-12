@@ -81,7 +81,7 @@ public partial class GeneratedSurfaceTests
 	[Fact]
 	public void GeneratedCode_IsUpToDateWithTheSpecs()
 	{
-		var root = RepositoryRoot();
+		var root = V1Support.RepositoryRoot();
 		var result = ClientGenerator.Generate(Path.Combine(root, "docs", "ga-spec"), ApiDefinition.All);
 
 		result.Files.Should().HaveCount(10);
@@ -96,7 +96,7 @@ public partial class GeneratedSurfaceTests
 	[Fact]
 	public void Specs_AreFullyGenerated()
 	{
-		var result = ClientGenerator.Generate(Path.Combine(RepositoryRoot(), "docs", "ga-spec"), ApiDefinition.All);
+		var result = ClientGenerator.Generate(Path.Combine(V1Support.RepositoryRoot(), "docs", "ga-spec"), ApiDefinition.All);
 		result.OperationCounts.Should().BeEquivalentTo(new Dictionary<string, int> { ["assessment"] = 16, ["asset"] = 28, ["iam"] = 100, ["product"] = 25, ["system"] = 44 });
 		result.Report.Should().NotContain(line => line.Contains("skipped", StringComparison.Ordinal));
 	}
@@ -141,17 +141,6 @@ public partial class GeneratedSurfaceTests
 	{
 		await (Task)task;
 		return task.GetType().GetProperty("Result")!.GetValue(task)!;
-	}
-
-	private static string RepositoryRoot()
-	{
-		var directory = new DirectoryInfo(AppContext.BaseDirectory);
-		while (directory is not null && !File.Exists(Path.Combine(directory.FullName, "Cisco.Iq.Api.slnx")))
-		{
-			directory = directory.Parent;
-		}
-
-		return directory?.FullName ?? throw new InvalidOperationException("Could not find the repository root.");
 	}
 
 	[GeneratedRegex(@"\{([^}]+)\}")]

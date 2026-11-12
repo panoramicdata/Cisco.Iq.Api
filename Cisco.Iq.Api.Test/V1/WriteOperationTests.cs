@@ -83,12 +83,7 @@ public class WriteOperationTests
 	{
 		HttpRequestMessage? seen = null;
 		string? body = null;
-		using var client = V1Support.ClientAsync(async (request, cancellationToken) =>
-		{
-			seen = request;
-			body = await request.Content!.ReadAsStringAsync(cancellationToken);
-			return V1Support.Json("{\"id\":\"a1\"}").WithHeader("ETag", "\"v2\"");
-		});
+		using var client = V1Support.Capturing((request, text) => { seen = request; body = text; }, () => V1Support.Json("{\"id\":\"a1\"}").WithHeader("ETag", "\"v2\""));
 
 		using var response = await client.Assets.UpdateAssetPhysicalAssetAsync(
 			"a1",
@@ -109,12 +104,7 @@ public class WriteOperationTests
 	{
 		HttpRequestMessage? seen = null;
 		string? body = null;
-		using var client = V1Support.ClientAsync(async (request, cancellationToken) =>
-		{
-			seen = request;
-			body = await request.Content!.ReadAsStringAsync(cancellationToken);
-			return V1Support.Json("{\"id\":\"a1\"}");
-		});
+		using var client = V1Support.Capturing((request, text) => { seen = request; body = text; }, () => V1Support.Json("{\"id\":\"a1\"}"));
 
 		using var response = await client.Assets.ReplaceAssetPhysicalAssetAsync("a1", new ReplacePhysicalAssetRequest { Tags = new Dictionary<string, string> { ["a"] = "b" } });
 
@@ -127,11 +117,7 @@ public class WriteOperationTests
 	public async Task Post_CreatesAndParsesTheCreatedResource()
 	{
 		string? body = null;
-		using var client = V1Support.ClientAsync(async (request, cancellationToken) =>
-		{
-			body = await request.Content!.ReadAsStringAsync(cancellationToken);
-			return V1Support.Json("{\"id\":\"k1\",\"keyId\":\"kid\",\"keyType\":\"BEARER\",\"expiresAt\":\"2027-01-01T00:00:00Z\"}", HttpStatusCode.Created);
-		});
+		using var client = V1Support.Capturing((_, text) => body = text, () => V1Support.Json("{\"id\":\"k1\",\"keyId\":\"kid\",\"keyType\":\"BEARER\",\"expiresAt\":\"2027-01-01T00:00:00Z\"}", HttpStatusCode.Created));
 
 		using var response = await client.Identity.CreateIamApiKeyAsync(new CreateApiKeyRequest { DisplayName = "ci", Owner = "/iam/v1/serviceAccounts/s1" });
 
