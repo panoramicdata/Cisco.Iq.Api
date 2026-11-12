@@ -77,24 +77,20 @@ public class WriteOperationTests
 		System.Action act = () => converter.ReadJson(null!, typeof(CiscoIqV1Optional<string>), null, null!);
 		act.Should().Throw<NotSupportedException>();
 	}
-
 	[Fact]
 	public async Task Patch_SendsMergePatchWithConditionalHeaders()
 	{
-		HttpRequestMessage? seen = null;
-		string? body = null;
-		using var client = V1Support.Capturing((request, text) => { seen = request; body = text; }, () => V1Support.Json("{\"id\":\"a1\"}").WithHeader("ETag", "\"v2\""));
+		var seen = new Recorded();
+		using var client = Recording(seen, () => V1Support.Json("{\"id\":\"a1\"}").WithHeader("ETag", "\"v2\""));
 
 		using var response = await client.Assets.UpdateAssetPhysicalAssetAsync(
 			"a1",
 			new UpdatePhysicalAssetRequest { Criticality = CiscoIqV1Optional.Null<AssetCriticality>() },
 			ifMatch: "\"v1\"");
 
-		seen!.Method.Should().Be(HttpMethod.Patch);
-		seen.RequestUri!.AbsolutePath.Should().Be("/api/asset/v1/physicalAssets/a1");
-		seen.Content!.Headers.ContentType!.MediaType.Should().Be("application/merge-patch+json");
-		seen.Headers.GetValues("If-Match").Should().Equal("\"v1\"");
-		body.Should().Be("{\"criticality\":null}");
+		AssertSent(seen, HttpMethod.Patch, "application/merge-patch+json", "{\"criticality\":null}");
+		seen.Request!.RequestUri!.AbsolutePath.Should().Be("/api/asset/v1/physicalAssets/a1");
+		seen.Request.Headers.GetValues("If-Match").Should().Equal("\"v1\"");
 		response.Content!.Id.Should().Be("a1");
 		response.Headers!.GetValues("ETag").Should().Equal("\"v2\"");
 	}
@@ -102,48 +98,40 @@ public class WriteOperationTests
 	[Fact]
 	public async Task Put_ReplacesWithAJsonBody()
 	{
-		HttpRequestMessage? seen = null;
-		string? body = null;
-		using var client = V1Support.Capturing((request, text) => { seen = request; body = text; }, () => V1Support.Json("{\"id\":\"a1\"}"));
+		var seen = new Recorded();
+		using var client = Recording(seen, () => V1Support.Json("{\"id\":\"a1\"}"));
 
 		using var response = await client.Assets.ReplaceAssetPhysicalAssetAsync("a1", new ReplacePhysicalAssetRequest { Tags = new Dictionary<string, string> { ["a"] = "b" } });
 
-		seen!.Method.Should().Be(HttpMethod.Put);
-		seen.Content!.Headers.ContentType!.MediaType.Should().Be("application/json");
-		body.Should().Be("{\"tags\":{\"a\":\"b\"}}");
+		AssertSent(seen, HttpMethod.Put, "application/json", "{\"tags\":{\"a\":\"b\"}}");
 	}
 
 	[Fact]
 	public async Task Post_CreatesAndParsesTheCreatedResource()
 	{
-		string? body = null;
-		using var client = V1Support.Capturing((_, text) => body = text, () => V1Support.Json("{\"id\":\"k1\",\"keyId\":\"kid\",\"keyType\":\"BEARER\",\"expiresAt\":\"2027-01-01T00:00:00Z\"}", HttpStatusCode.Created));
+		var seen = new Recorded();
+		using var client = Recording(seen, () => V1Support.Json("{\"id\":\"k1\",\"keyId\":\"kid\",\"keyType\":\"BEARER\",\"expiresAt\":\"2027-01-01T00:00:00Z\"}", HttpStatusCode.Created));
 
 		using var response = await client.Identity.CreateIamApiKeyAsync(new CreateApiKeyRequest { DisplayName = "ci", Owner = "/iam/v1/serviceAccounts/s1" });
 
 		response.StatusCode.Should().Be(HttpStatusCode.Created);
 		response.Content!.KeyId.Should().Be("kid");
 		response.Content.ExpiresAt.Should().Be(new DateTimeOffset(2027, 1, 1, 0, 0, 0, TimeSpan.Zero));
-		JObject.Parse(body!).Should().BeEquivalentTo(JObject.Parse("{\"displayName\":\"ci\",\"owner\":\"/iam/v1/serviceAccounts/s1\"}"));
+		JObject.Parse(seen.Body!).Should().BeEquivalentTo(JObject.Parse("{\"displayName\":\"ci\",\"owner\":\"/iam/v1/serviceAccounts/s1\"}"));
 	}
 
 	[Fact]
 	public async Task Delete_ReturnsAnEmptyResponse()
 	{
-		HttpRequestMessage? seen = null;
-		using var client = V1Support.Client(request =>
-		{
-			seen = request;
-			return new HttpResponseMessage(HttpStatusCode.NoContent);
-		});
+		var seen = new Recorded();
+		using var client = Recording(seen, () => new HttpResponseMessage(HttpStatusCode.NoContent));
 
 		using var response = await client.Identity.DeleteIamApiKeyAsync("k1", ifMatch: "\"v1\"");
 
 		response.StatusCode.Should().Be(HttpStatusCode.NoContent);
-		seen!.Method.Should().Be(HttpMethod.Delete);
-		seen.Headers.GetValues("If-Match").Should().Equal("\"v1\"");
+		seen.Request!.Method.Should().Be(HttpMethod.Delete);
+		seen.Request.Headers.GetValues("If-Match").Should().Equal("\"v1\"");
 	}
-
 	[Fact]
 	public async Task PreconditionFailed_IsAnApiException()
 	{
@@ -177,9 +165,9 @@ public class WriteOperationTests
 	[Fact]
 	public async Task EnumerateByBody_RejectsMissingDelegatesAndARepeatedCursor()
 	{
-		Func<Task> noFetch = () => CiscoIqV1Paging.EnumerateByBodyAsync<JObject, JToken>(null!, _ => [], _ => null, default).ToListAsync().AsTask();
-		Func<Task> noItems = () => CiscoIqV1Paging.EnumerateByBodyAsync<JObject, JToken>(_ => Task.FromResult<Refit.IApiResponse<JObject>>(null!), null!, _ => null, default).ToListAsync().AsTask();
-		Func<Task> noNext = () => CiscoIqV1Paging.EnumerateByBodyAsync<JObject, JToken>(_ => Task.FromResult<Refit.IApiResponse<JObject>>(null!), _ => [], null!, default).ToListAsync().AsTask();
+		Func<Task> noFetch = () => EnumerateByBody(null, _ => [], _ => null);
+		Func<Task> noItems = () => EnumerateByBody(_ => Task.FromResult<Refit.IApiResponse<JObject>>(null!), null, _ => null);
+		Func<Task> noNext = () => EnumerateByBody(_ => Task.FromResult<Refit.IApiResponse<JObject>>(null!), _ => [], null);
 		await noFetch.Should().ThrowAsync<ArgumentNullException>();
 		await noItems.Should().ThrowAsync<ArgumentNullException>();
 		await noNext.Should().ThrowAsync<ArgumentNullException>();
@@ -188,4 +176,28 @@ public class WriteOperationTests
 		Func<Task> repeated = () => client.Platform.QueryAllAsync(new QueryRequest()).ToListAsync().AsTask();
 		await repeated.Should().ThrowAsync<InvalidDataException>();
 	}
+
+	private sealed class Recorded
+	{
+		internal HttpRequestMessage? Request { get; set; }
+
+		internal string? Body { get; set; }
+	}
+
+	private static CiscoIqV1Client Recording(Recorded seen, Func<HttpResponseMessage> respond)
+		=> V1Support.Capturing((request, text) =>
+		{
+			seen.Request = request;
+			seen.Body = text;
+		}, respond);
+
+	private static void AssertSent(Recorded seen, HttpMethod method, string mediaType, string body)
+	{
+		seen.Request!.Method.Should().Be(method);
+		seen.Request.Content!.Headers.ContentType!.MediaType.Should().Be(mediaType);
+		seen.Body.Should().Be(body);
+	}
+
+	private static Task<List<JToken>> EnumerateByBody(Func<string?, Task<Refit.IApiResponse<JObject>>>? fetch, Func<JObject, IReadOnlyList<JToken>?>? items, Func<JObject, string?>? next)
+		=> CiscoIqV1Paging.EnumerateByBodyAsync<JObject, JToken>(fetch!, items!, next!, default).ToListAsync().AsTask();
 }
