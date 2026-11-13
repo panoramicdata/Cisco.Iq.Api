@@ -8,6 +8,8 @@ A .NET library for the **Cisco IQ** REST APIs: asset inventory, contracts and co
 hardware and software end-of-life bulletins, security advisories (PSIRT), field notices and
 assessment findings.
 
+Supports .NET 11.0.
+
 The official Cisco IQ API documentation, including the beta-to-GA API mapping guide, is at
 <https://iq.cisco.com/apidocs/introduction>. See also the
 [Cisco IQ FAQ](https://iq.cisco.com/docs/faq.html) for Cisco's platform guidance.
@@ -234,7 +236,7 @@ package does not wrap them.
 
 ## Development and verification
 
-The solution targets .NET 10, uses central package management and xUnit v3 on
+The solution targets .NET 11.0, uses central package management and xUnit v3 on
 Microsoft.Testing.Platform. Builds treat compiler and MSBuild warnings as errors.
 
 The GA client is generated. After changing a file in `docs/ga-spec/`, run the generator from

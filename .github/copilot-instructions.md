@@ -1,6 +1,6 @@
 # Repository conventions
 
-This repository provides the Cisco IQ .NET API client. Target .NET 10 and manage NuGet
+This repository provides the Cisco IQ .NET API client. Target .NET 11.0 and manage NuGet
 versions centrally in `Directory.Packages.props`.
 
 Build with `dotnet build --configuration Release`. Run unit tests with
