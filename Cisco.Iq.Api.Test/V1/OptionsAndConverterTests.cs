@@ -209,7 +209,7 @@ public class OptionsAndConverterTests
 	public void UrlFormatter_UsesWireConventions()
 	{
 		var formatter = new CiscoIqV1UrlParameterFormatter();
-		string? Format(object? value) => formatter.Format(value, typeof(CiscoIqV1UrlParameterFormatter), value?.GetType() ?? typeof(object));
+		string? Format(object? value) => formatter.Format(value, Refit.GeneratedParameterAttributeProvider.Empty, value?.GetType() ?? typeof(object));
 		Format(null).Should().BeNull();
 		Format(true).Should().Be("true");
 		Format(false).Should().Be("false");

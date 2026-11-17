@@ -82,13 +82,13 @@ public class CoverageAndRobustnessTests
 	public void Formatter_HandlesBothBooleanValuesAndInvariantNumbers()
 	{
 		var formatter = new CiscoIqUrlParameterFormatter();
-		formatter.Format(true, typeof(bool), typeof(bool)).Should().Be("true");
-		formatter.Format(false, typeof(bool), typeof(bool)).Should().Be("false");
-		formatter.Format(12.5m, typeof(decimal), typeof(decimal)).Should().Be("12.5");
-		formatter.Format("hello", typeof(string), typeof(string)).Should().Be("hello");
+		formatter.Format(true, Refit.GeneratedParameterAttributeProvider.Empty, typeof(bool)).Should().Be("true");
+		formatter.Format(false, Refit.GeneratedParameterAttributeProvider.Empty, typeof(bool)).Should().Be("false");
+		formatter.Format(12.5m, Refit.GeneratedParameterAttributeProvider.Empty, typeof(decimal)).Should().Be("12.5");
+		formatter.Format("hello", Refit.GeneratedParameterAttributeProvider.Empty, typeof(string)).Should().Be("hello");
 		foreach (var invalid in new Enum[] { (CiscoIqSortOrder)99, (CiscoIqMilestoneType)99, (CiscoIqAccountRegion)99 })
 		{
-			Action act = () => formatter.Format(invalid, typeof(Enum), invalid.GetType());
+			Action act = () => formatter.Format(invalid, Refit.GeneratedParameterAttributeProvider.Empty, invalid.GetType());
 			act.Should().Throw<ArgumentException>();
 		}
 	}

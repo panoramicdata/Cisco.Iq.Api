@@ -151,7 +151,7 @@ public class EdgeCaseTests
 	public void Formatter_UsesWireValuesAndRejectsUndefinedEnums()
 	{
 		var formatter = new CiscoIqUrlParameterFormatter();
-		string? Format(object? value) => formatter.Format(value, typeof(AssetFilter), value?.GetType() ?? typeof(string));
+		string? Format(object? value) => formatter.Format(value, Refit.GeneratedParameterAttributeProvider.Empty, value?.GetType() ?? typeof(string));
 		Format(null).Should().BeNull();
 		Format(CiscoIqSortOrder.Ascending).Should().Be("ASC");
 		Format(CiscoIqSortOrder.Descending).Should().Be("DESC");

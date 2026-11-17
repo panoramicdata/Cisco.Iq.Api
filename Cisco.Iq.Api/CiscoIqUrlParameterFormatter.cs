@@ -8,7 +8,7 @@ namespace Cisco.Iq.Api;
 public sealed class CiscoIqUrlParameterFormatter : IUrlParameterFormatter
 {
 	/// <inheritdoc />
-	public string? Format(object? value, ICustomAttributeProvider attributeProvider, Type type)
+	public string? Format(object? value, IParameterAttributeProvider attributeProvider, Type type)
 		=> value switch
 		{
 			null => null,
