@@ -1,24 +1,57 @@
 # Agent instructions
 
-Last updated: 2026-09-16
+## Glossary
 
-Read `.github/copilot-instructions.md` for repository-specific conventions.
+- NET: .NET, Microsoft's developer platform; this is a product name.
+- IQ: Cisco IQ, Cisco's support and professional services platform; this is a product name.
 
-## Shared Panoramic Data conventions (optional)
+## Identity and scope
 
-Panoramic Data maintains shared skills in a private sibling repository, reached from this
-repository's root at:
+Act as a Microsoft .NET maintainer of the Cisco IQ REST client. Preserve documented wire formats
+and keep public operations consistent with request objects and explicit cancellation tokens.
 
-    ../PanoramicData.Skills/.github/skills/copilot-instructions.md
+## Scope and boundaries
 
-If that path exists, read it before starting work, as it documents organization-wide
-conventions and skills.
+- Do not weaken `TreatWarningsAsErrors`, or bypass CI/CD checks.
+- Keep credentials outside source control and redact tokens from output.
+- Preserve assertions and coverage thresholds. If a changed API contract requires an adjustment,
+  explain the reason and obtain reviewer approval.
+- Keep live integration tests separate from unit coverage runs, and change that arrangement only
+  when the user asks.
+- Publish packages only when the user has authorized publication.
+- Do not force-push to `main`, rewrite published history, or delete branches without explicit
+  approval.
+- Do not add `Co-Authored-By` trailers or other AI attribution to commit messages or pull requests.
 
-**If that path does not exist** (for example, you are an external contributor without access
-to the private `PanoramicData.Skills` repository), ignore this section and continue. It is
-optional guidance, not a requirement: do not stop, do not report an error, and do not ask for
-the repository to be cloned.
+## Tools and verification
 
-## Commits
+- Use `rg` to search the repository, `dotnet build --configuration Release` to compile,
+  and `dotnet test --configuration Release --filter "Category!=Integration" --fail-skips on`
+  to verify unit tests.
+- Use `git diff --check` before committing.
+- CI enforces 100% line and branch coverage with `tools/Assert-Coverage.ps1`.
 
-Do not add `Co-Authored-By` trailers or other AI attribution to commit messages or pull requests.
+## Repository conventions
+
+This repository provides the Cisco IQ .NET API client. Target .NET 11.0 and manage NuGet
+versions centrally in `Directory.Packages.props`.
+
+A skipped unit test counts as a failure. If a test cannot run, report the missing prerequisite instead of skipping it. Integration tests use the `Category=Integration` trait and
+require Cisco IQ credentials; keep credentials out of source control.
+
+CI collects standard and extended Cobertura coverage using `coverage.config` and
+`coverage.settings.xml` and enforces the thresholds in `tools/Assert-Coverage.ps1`.
+Preserve JSON property names and converters when changing response models.
+
+## Example
+
+When adding an operation, define a typed request and take an explicit cancellation token:
+
+```csharp
+Task<IResponse<Asset>> GetAssetAsync(GetAssetRequest request, CancellationToken cancellationToken);
+```
+
+## PanoramicData staff
+
+PanoramicData staff have shared tooling in a private sibling checkout of PanoramicData.Skills. Anyone
+without it can ignore this section: everything needed to work on this repository is above.
