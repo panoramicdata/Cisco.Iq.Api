@@ -36,7 +36,7 @@ and keep public operations consistent with request objects and explicit cancella
 This repository provides the Cisco IQ .NET API client. Target .NET 11.0 and manage NuGet
 versions centrally in `Directory.Packages.props`.
 
-Skipped unit tests must fail. Integration tests use the `Category=Integration` trait and
+Skipped unit tests must fail; if a test cannot run, report the missing prerequisite instead of skipping it. Integration tests use the `Category=Integration` trait and
 require Cisco IQ credentials; keep credentials out of source control.
 
 CI collects standard and extended Cobertura coverage using `coverage.config` and
