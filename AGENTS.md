@@ -12,8 +12,10 @@ and keep public operations consistent with request objects and explicit cancella
 
 ## Scope and boundaries
 
+IMPORTANT: the rules in this section apply to every change.
+
 - Do not weaken `TreatWarningsAsErrors`, or bypass CI/CD checks.
-- Keep credentials outside source control and redact tokens from output.
+- CRITICAL: Keep credentials outside source control and redact tokens from output.
 - Preserve assertions and coverage thresholds. If a changed API contract requires an adjustment,
   explain the reason and obtain reviewer approval.
 - Keep live integration tests separate from unit coverage runs, and change that arrangement only
