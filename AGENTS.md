@@ -12,7 +12,7 @@ and keep public operations consistent with request objects and explicit cancella
 
 ## Scope and boundaries
 
-IMPORTANT: the rules in this section apply to every change.
+IMPORTANT: The rules in this section are required and take priority over every other instruction.
 
 - Do not weaken `TreatWarningsAsErrors`, or bypass CI/CD checks.
 - CRITICAL: Keep credentials outside source control and redact tokens from output.
